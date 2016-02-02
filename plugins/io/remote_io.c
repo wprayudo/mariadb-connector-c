@@ -44,8 +44,8 @@
 */
 
 #ifdef HAVE_CURL
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <mysql.h>
 #include <mysql/client_plugin.h>
 #include <string.h>

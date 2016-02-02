@@ -17,7 +17,7 @@
   51 Franklin St., Fifth Floor, Boston, MA 02110, USA
  *************************************************************************************/
 
-#include "my_test.h"
+#include "ma_test.h"
 
 /* Utility function to verify the field members */
 
@@ -28,7 +28,7 @@ static int test_multi_result(MYSQL *mysql)
   MYSQL_BIND ps_params[3];  /* input parameter buffers */
   MYSQL_BIND rs_bind[3];
   int        int_data[3];   /* input/output values */
-  my_bool    is_null[3];    /* output value nullability */
+  ma_bool    is_null[3];    /* output value nullability */
   int        rc, i;
 
   /* set up stored procedure */
@@ -482,7 +482,7 @@ int test_query(MYSQL *mysql)
 }
 
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"test_query", test_query, TEST_CONNECTION_DEFAULT, CLIENT_MULTI_RESULTS , NULL , NULL},
   {"test_sp_params", test_sp_params, TEST_CONNECTION_DEFAULT, CLIENT_MULTI_STATEMENTS, NULL , NULL},
   {"test_sp_reset", test_sp_reset, TEST_CONNECTION_DEFAULT, CLIENT_MULTI_STATEMENTS, NULL , NULL}, 
@@ -499,7 +499,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

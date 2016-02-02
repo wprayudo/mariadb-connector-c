@@ -85,7 +85,7 @@
 */
 
 #undef SAFE_MUTEX
-#include <my_global.h>
+#include <ma_global.h>
 #include <m_string.h>
 #include <errno.h>
 
@@ -101,7 +101,7 @@
 #include <signal.h>
 #endif
 
-extern int my_snprintf(char* to, size_t n, const char* fmt, ...);
+extern int ma_snprintf(char* to, size_t n, const char* fmt, ...);
 
 char _dig_vec_upper[] =
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -149,7 +149,7 @@ char _dig_vec_lower[] =
  *      Typedefs to make things more obvious.
  */
 
-#define BOOLEAN my_bool
+#define BOOLEAN ma_bool
 
 /*
  *      Make it easy to change storage classes if necessary.
@@ -251,7 +251,7 @@ static BOOLEAN init_done= FALSE; /* Set to TRUE when initialization done */
 */
 static struct settings init_settings;
 static const char *db_process= 0;/* Pointer to process name; argv[0] */
-my_bool _dbug_on_= TRUE;	 /* FALSE if no debugging at all */
+ma_bool _dbug_on_= TRUE;	 /* FALSE if no debugging at all */
 
 typedef struct _db_code_state_ {
   const char *process;          /* Pointer to process name; usually argv[0] */
@@ -283,7 +283,7 @@ typedef struct _db_code_state_ {
 
 /*
   The test below is so we could call functions with DBUG_ENTER before
-  my_thread_init().
+  ma_thread_init().
 */
 #define get_code_state_if_not_set_or_return if (!cs && !((cs=code_state()))) return
 #define get_code_state_or_return if (!((cs=code_state()))) return
@@ -357,7 +357,7 @@ static const char *DbugStrTok(const char *s);
 ** Macros to allow dbugging with threads
 */
 
-#include <my_pthread.h>
+#include <ma_pthread.h>
 static pthread_mutex_t THR_LOCK_dbug;
 
 /**
@@ -390,7 +390,7 @@ static CODE_STATE *code_state(void)
     init_settings.flags=OPEN_APPEND;
   }
 
-  if (!(cs_ptr= (CODE_STATE**) my_thread_var_dbug()))
+  if (!(cs_ptr= (CODE_STATE**) ma_thread_var_dbug()))
     return 0;                                   /* Thread not initialised */
   if (!(cs= *cs_ptr))
   {
@@ -1290,7 +1290,7 @@ void _db_return_(uint _line_, struct _db_stack_frame_ *_stack_frame_)
   if (cs->framep != _stack_frame_)
   {
     char buf[512];
-    my_snprintf(buf, sizeof(buf), ERR_MISSING_RETURN, cs->func);
+    ma_snprintf(buf, sizeof(buf), ERR_MISSING_RETURN, cs->func);
     DbugExit(buf);
   }
 
@@ -1957,7 +1957,7 @@ static void DoPrefix(CODE_STATE *cs, uint _line_)
   cs->lineno++;
   if (cs->stack->flags & PID_ON)
   {
-    (void) fprintf(cs->stack->out_file, "%-7s: ", my_thread_name());
+    (void) fprintf(cs->stack->out_file, "%-7s: ", ma_thread_name());
   }
   if (cs->stack->flags & NUMBER_ON)
     (void) fprintf(cs->stack->out_file, "%5d: ", cs->lineno);
@@ -1965,7 +1965,7 @@ static void DoPrefix(CODE_STATE *cs, uint _line_)
   {
 #ifdef _WIN32
     /* FIXME This doesn't give microseconds as in Unix case, and the resolution is
-       in system ticks, 10 ms intervals. See my_getsystime.c for high res */
+       in system ticks, 10 ms intervals. See ma_getsystime.c for high res */
     SYSTEMTIME loc_t;
     GetLocalTime(&loc_t);
     (void) fprintf (cs->stack->out_file,
@@ -2449,7 +2449,7 @@ const char* _db_get_func_(void)
  * This block can be removed as soon as a fix for bug#14420
  * is implemented.
  */
-int i_am_a_dummy_function() {
+int i_am_a_dumma_function() {
        return 0;
 }
 

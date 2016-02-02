@@ -76,8 +76,8 @@ int pthread_cond_destroy(pthread_cond_t *cv)
 #define SCHED_POLICY SCHED_OTHER
 #endif
 
-#ifndef my_pthread_setprio
-void my_pthread_setprio(pthread_t thread_id,int prior)
+#ifndef ma_pthread_setprio
+void ma_pthread_setprio(pthread_t thread_id,int prior)
 {
 #ifdef HAVE_PTHREAD_SETSCHEDPARAM
   struct sched_param tmp_sched_param;
@@ -88,8 +88,8 @@ void my_pthread_setprio(pthread_t thread_id,int prior)
 }
 #endif
 
-#ifndef my_pthread_getprio
-int my_pthread_getprio(pthread_t thread_id)
+#ifndef ma_pthread_getprio
+int ma_pthread_getprio(pthread_t thread_id)
 {
 #ifdef HAVE_PTHREAD_SETSCHEDPARAM
   struct sched_param tmp_sched_param;
@@ -105,8 +105,8 @@ int my_pthread_getprio(pthread_t thread_id)
 }
 #endif
 
-#ifndef my_pthread_attr_setprio
-void my_pthread_attr_setprio(pthread_attr_t *attr, int priority)
+#ifndef ma_pthread_attr_setprio
+void ma_pthread_attr_setprio(pthread_attr_t *attr, int priority)
 {
 #ifdef HAVE_PTHREAD_SETSCHEDPARAM
   struct sched_param tmp_sched_param;
@@ -126,7 +126,7 @@ void my_pthread_attr_setprio(pthread_attr_t *attr, int priority)
 #define pthread_getspecific thr_getspecific
 #endif
 
-void *my_pthread_getspecific_imp(pthread_key_t key)
+void *ma_pthread_getspecific_imp(pthread_key_t key)
 {
   void *value;
   if (pthread_getspecific(key,(void *) &value))
@@ -139,11 +139,11 @@ void *my_pthread_getspecific_imp(pthread_key_t key)
 /* Some functions for RTS threads, AIX, Siemens Unix and UnixWare 7
    (and DEC OSF/1 3.2 too) */
 
-int my_pthread_create_detached=1;
+int ma_pthread_create_detached=1;
 
 #if defined(HAVE_NONPOSIX_SIGWAIT) || defined(HAVE_DEC_3_2_THREADS)
 
-int my_sigwait(const sigset_t *set,int *sig)
+int ma_sigwait(const sigset_t *set,int *sig)
 {
   int signal=sigwait((sigset_t*) set);
   if (signal < 0)
@@ -366,7 +366,7 @@ int sigwait(sigset_t *setp, int *sigp)
     pthread_attr_setscope(&thr_attr,PTHREAD_SCOPE_PROCESS);
     pthread_attr_setdetachstate(&thr_attr,PTHREAD_CREATE_DETACHED);
     pthread_attr_setstacksize(&thr_attr,8196);
-    my_pthread_attr_setprio(&thr_attr,100);	/* Very high priority */
+    ma_pthread_attr_setprio(&thr_attr,100);	/* Very high priority */
     VOID(pthread_create(&sigwait_thread_id,&thr_attr,sigwait_thread,setp));
     VOID(pthread_attr_destroy(&thr_attr));
   }
@@ -425,7 +425,7 @@ int pthread_signal(int sig, void (*func)())
  according to latest posix standard
 ****************************************************************************/
 
-/* Undefined wrappers set my_pthread.h so that we call os functions */
+/* Undefined wrappers set ma_pthread.h so that we call os functions */
 #undef pthread_mutex_init
 #undef pthread_mutex_lock
 #undef pthread_mutex_unlock
@@ -448,7 +448,7 @@ int pthread_signal(int sig, void (*func)())
 
 #include <netdb.h>
 
-int my_pthread_mutex_init(pthread_mutex_t *mp, const pthread_mutexattr_t *attr)
+int ma_pthread_mutex_init(pthread_mutex_t *mp, const pthread_mutexattr_t *attr)
 {
   int error;
   if (!attr)
@@ -458,7 +458,7 @@ int my_pthread_mutex_init(pthread_mutex_t *mp, const pthread_mutexattr_t *attr)
   return error;
 }
 
-int my_pthread_cond_init(pthread_cond_t *mp, const pthread_condattr_t *attr)
+int ma_pthread_cond_init(pthread_cond_t *mp, const pthread_condattr_t *attr)
 {
   int error;
   if (!attr)
@@ -483,7 +483,7 @@ int my_pthread_cond_init(pthread_cond_t *mp, const pthread_condattr_t *attr)
 
 #if defined(HPUX) || defined(HAVE_BROKEN_PTHREAD_COND_TIMEDWAIT)
 
-int my_pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
+int ma_pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 			      struct timespec *abstime)
 {
   int error=pthread_cond_timedwait(cond, mutex, abstime);
@@ -528,7 +528,7 @@ int my_pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 		(Not likely)  
 */
 
-int my_pthread_mutex_trylock(pthread_mutex_t *mutex)
+int ma_pthread_mutex_trylock(pthread_mutex_t *mutex)
 {
   int error= pthread_mutex_trylock(mutex);
   if (error == 1)

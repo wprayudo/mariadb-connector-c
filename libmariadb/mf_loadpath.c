@@ -25,11 +25,11 @@
 	/* if there is no path, prepend with own_path_prefix if given */
 	/* else unpack path according to current dir */
 
-my_string my_load_path(my_string to, const char *path,
+ma_string ma_load_path(ma_string to, const char *path,
 		       const char *own_path_prefix)
 {
   char buff[FN_REFLEN];
-  DBUG_ENTER("my_load_path");
+  DBUG_ENTER("ma_load_path");
   DBUG_PRINT("enter",("path: %s  prefix: %s",path,
 		      own_path_prefix ? own_path_prefix : ""));
 
@@ -41,7 +41,7 @@ my_string my_load_path(my_string to, const char *path,
 	    path[strlen(FN_PARENTDIR)] == FN_LIBCHAR) ||
 	   ! own_path_prefix)
   {
-    if (! my_getwd(buff,(uint) (FN_REFLEN-strlen(path)),MYF(0)))
+    if (! ma_getwd(buff,(uint) (FN_REFLEN-strlen(path)),MYF(0)))
       VOID(strcat(buff,path));
     else
       VOID(strmov(buff,path));
@@ -51,4 +51,4 @@ my_string my_load_path(my_string to, const char *path,
   strmov(to,buff);
   DBUG_PRINT("exit",("to: %s",to));
   DBUG_RETURN(to);
-} /* my_load_path */
+} /* ma_load_path */

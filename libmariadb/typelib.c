@@ -31,10 +31,10 @@
 **   If & 4 allow #number# as type
 ****************************************************************************/
 
-int find_type(my_string x, TYPELIB *typelib, uint full_name)
+int find_type(ma_string x, TYPELIB *typelib, uint full_name)
 {
   int find,pos,findpos= 0;
-  reg1 my_string i;
+  reg1 ma_string i;
   reg2 const char *j;
   DBUG_ENTER("find_type");
   DBUG_PRINT("enter",("x: '%s'  lib: %lx",x,typelib));
@@ -84,7 +84,7 @@ int find_type(my_string x, TYPELIB *typelib, uint full_name)
 	/* Get name of type nr 'nr' */
 	/* Warning first type is 1, 0 = empty field */
 
-void make_type(register my_string to, register uint nr, register TYPELIB *typelib)
+void make_type(register ma_string to, register uint nr, register TYPELIB *typelib)
 {
   DBUG_ENTER("make_type");
   if (!nr)

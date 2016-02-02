@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   Some basic tests of the client API.
 */
 
-#include "my_test.h"
+#include "ma_test.h"
 
 static int client_store_result(MYSQL *mysql)
 {
@@ -82,7 +82,7 @@ static int client_use_result(MYSQL *mysql)
 static int test_free_result(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   char       c2[5];
   ulong      bl1, l2;
   int        rc, c1, bc1;
@@ -104,28 +104,28 @@ static int test_free_result(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, query, strlen(query));
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= (void *)&bc1;
-  my_bind[0].length= &bl1;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= (void *)&bc1;
+  ma_bind[0].length= &bl1;
 
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
 
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_fetch(stmt);
   check_stmt_rc(rc, stmt);
 
   c2[0]= '\0'; l2= 0;
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void *)c2;
-  my_bind[0].buffer_length= 7;
-  my_bind[0].is_null= 0;
-  my_bind[0].length= &l2;
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void *)c2;
+  ma_bind[0].buffer_length= 7;
+  ma_bind[0].is_null= 0;
+  ma_bind[0].length= &l2;
 
-  rc= mysql_stmt_fetch_column(stmt, my_bind, 0, 0);
+  rc= mysql_stmt_fetch_column(stmt, ma_bind, 0, 0);
   check_stmt_rc(rc, stmt);
   FAIL_UNLESS(strncmp(c2, "1", 1) == 0, "c2 != '1'");
   FAIL_UNLESS(l2 == 1, "l2 != 1");
@@ -134,13 +134,13 @@ static int test_free_result(MYSQL *mysql)
   check_stmt_rc(rc, stmt);
 
   c1= 0, l2= 0;
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= (void *)&c1;
-  my_bind[0].buffer_length= 0;
-  my_bind[0].is_null= 0;
-  my_bind[0].length= &l2;
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= (void *)&c1;
+  ma_bind[0].buffer_length= 0;
+  ma_bind[0].is_null= 0;
+  ma_bind[0].length= &l2;
 
-  rc= mysql_stmt_fetch_column(stmt, my_bind, 0, 0);
+  rc= mysql_stmt_fetch_column(stmt, ma_bind, 0, 0);
   check_stmt_rc(rc, stmt);
   FAIL_UNLESS(c1 == 2, "c1 != 2");
   FAIL_UNLESS(l2 == 4, "l2 != 4");
@@ -165,7 +165,7 @@ static int test_free_result(MYSQL *mysql)
 static int test_free_store_result(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   char       c2[5];
   ulong      bl1, l2;
   int        rc, c1, bc1;
@@ -186,17 +186,17 @@ static int test_free_store_result(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, query, strlen(query));
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= (void *)&bc1;
-  my_bind[0].buffer_length= 0;
-  my_bind[0].is_null= 0;
-  my_bind[0].length= &bl1;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= (void *)&bc1;
+  ma_bind[0].buffer_length= 0;
+  ma_bind[0].is_null= 0;
+  ma_bind[0].length= &bl1;
 
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
 
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_store_result(stmt);
@@ -206,13 +206,13 @@ static int test_free_store_result(MYSQL *mysql)
   check_stmt_rc(rc, stmt);
 
   c2[0]= '\0'; l2= 0;
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void *)c2;
-  my_bind[0].buffer_length= 7;
-  my_bind[0].is_null= 0;
-  my_bind[0].length= &l2;
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void *)c2;
+  ma_bind[0].buffer_length= 7;
+  ma_bind[0].is_null= 0;
+  ma_bind[0].length= &l2;
 
-  rc= mysql_stmt_fetch_column(stmt, my_bind, 0, 0);
+  rc= mysql_stmt_fetch_column(stmt, ma_bind, 0, 0);
   check_stmt_rc(rc, stmt);
   FAIL_UNLESS(strncmp(c2, "1", 1) == 0, "c2 != '1'");
   FAIL_UNLESS(l2 == 1, "l2 != 1");
@@ -221,13 +221,13 @@ static int test_free_store_result(MYSQL *mysql)
   check_stmt_rc(rc, stmt);
 
   c1= 0, l2= 0;
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= (void *)&c1;
-  my_bind[0].buffer_length= 0;
-  my_bind[0].is_null= 0;
-  my_bind[0].length= &l2;
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= (void *)&c1;
+  ma_bind[0].buffer_length= 0;
+  ma_bind[0].is_null= 0;
+  ma_bind[0].length= &l2;
 
-  rc= mysql_stmt_fetch_column(stmt, my_bind, 0, 0);
+  rc= mysql_stmt_fetch_column(stmt, ma_bind, 0, 0);
   check_stmt_rc(rc, stmt);
   FAIL_UNLESS(c1 == 2, "c1 != 2");
   FAIL_UNLESS(l2 == 4, "l2 != 4");
@@ -249,9 +249,9 @@ static int test_store_result(MYSQL *mysql)
   int        rc;
   int32      nData;
   char       szData[100];
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   ulong      length, length1;
-  my_bool    is_null[2];
+  ma_bool    is_null[2];
   char       query[MAX_TEST_QUERY_LENGTH];
 
   rc= mysql_query(mysql, "DROP TABLE IF EXISTS test_store_result");
@@ -270,18 +270,18 @@ static int test_store_result(MYSQL *mysql)
   check_mysql_rc(rc, mysql);
 
   /* fetch */
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= (void *) &nData;       /* integer data */
-  my_bind[0].length= &length;
-  my_bind[0].is_null= &is_null[0];
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= (void *) &nData;       /* integer data */
+  ma_bind[0].length= &length;
+  ma_bind[0].is_null= &is_null[0];
 
   length= 0;
-  my_bind[1].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[1].buffer= szData;                /* string data */
-  my_bind[1].buffer_length= sizeof(szData);
-  my_bind[1].length= &length1;
-  my_bind[1].is_null= &is_null[1];
+  ma_bind[1].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[1].buffer= szData;                /* string data */
+  ma_bind[1].buffer_length= sizeof(szData);
+  ma_bind[1].length= &length1;
+  ma_bind[1].is_null= &is_null[1];
   length1= 0;
 
   strcpy(query, "SELECT * FROM test_store_result");
@@ -290,7 +290,7 @@ static int test_store_result(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, query, strlen(query));
   check_stmt_rc(rc, stmt);
 
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -426,7 +426,7 @@ static int test_store_result2(MYSQL *mysql)
   int        rc;
   int        nData;
   ulong      length;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   char query[MAX_TEST_QUERY_LENGTH];
 
   rc= mysql_query(mysql, "DROP TABLE IF EXISTS test_store_result");
@@ -444,12 +444,12 @@ static int test_store_result2(MYSQL *mysql)
   rc= mysql_commit(mysql);
   check_mysql_rc(rc, mysql);
 
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
 
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= (void *) &nData;      /* integer data */
-  my_bind[0].length= &length;
-  my_bind[0].is_null= 0;
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= (void *) &nData;      /* integer data */
+  ma_bind[0].length= &length;
+  ma_bind[0].is_null= 0;
 
   strcpy((char *)query , "SELECT col1 FROM test_store_result where col1= ?");
   stmt= mysql_stmt_init(mysql);
@@ -457,10 +457,10 @@ static int test_store_result2(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, query, strlen(query));
   check_stmt_rc(rc, stmt);
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   nData= 10; length= 0;
@@ -586,7 +586,7 @@ static int test_bug21726(MYSQL *mysql)
   };
   const char *update_query= "UPDATE t1 SET i= LAST_INSERT_ID(i + 1)";
   int rc;
-  my_ulonglong insert_id;
+  ma_ulonglong insert_id;
   const char *select_query= "SELECT * FROM t1";
   MYSQL_RES  *result;
 
@@ -932,6 +932,7 @@ select 1;\
 DROP TABLE IF EXISTS test_multi_tab";
   uint count, exp_value;
   uint rows[]= {0, 0, 2, 1, 3, 2, 2, 1, 1, 0, 0, 1, 0};
+  ma_bool reconnect= 1;
 
   /*
     First test that we get an error for multi statements
@@ -950,7 +951,7 @@ DROP TABLE IF EXISTS test_multi_tab";
   mysql_close(mysql);
   mysql= mysql_local;
 
-  mysql_local->reconnect= 1;
+  mysql_options(mysql_local, MYSQL_OPT_RECONNECT, &reconnect);
 
   rc= mysql_query(mysql_local, query);
   check_mysql_rc(rc, mysql);
@@ -1028,7 +1029,7 @@ DROP TABLE IF EXISTS test_multi_tab";
 
 
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"client_store_result", client_store_result, TEST_CONNECTION_DEFAULT, 0,  NULL,  NULL},
   {"client_use_result", client_use_result, TEST_CONNECTION_DEFAULT, 0,  NULL,  NULL},
   {"test_free_result", test_free_result, TEST_CONNECTION_DEFAULT, 0,  NULL,  NULL},
@@ -1058,7 +1059,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

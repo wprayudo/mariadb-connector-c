@@ -61,7 +61,7 @@ void * ma_ssl_init(MYSQL *mysql);
      0             success
      1             error
 */
-my_bool ma_ssl_connect(MARIADB_SSL *cssl);
+ma_bool ma_ssl_connect(MARIADB_SSL *cssl);
 
 /* ma_ssl_read
    reads up to length bytes from socket
@@ -96,7 +96,7 @@ size_t ma_ssl_write(MARIADB_SSL *cssl, const uchar* buffer, size_t length);
      0            success
      1            error
 */
-my_bool ma_ssl_close(MARIADB_SSL *cssl);
+ma_bool ma_ssl_close(MARIADB_SSL *cssl);
 
 /* ma_ssl_verify_server_cert
    validation check of server certificate
@@ -138,18 +138,18 @@ unsigned int ma_ssl_get_finger_print(MARIADB_SSL *cssl, unsigned char *fp, unsig
      0              success
      1              error
 */
-my_bool ma_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version);
+ma_bool ma_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version);
 
 /* Function prototypes */
 MARIADB_SSL *ma_pvio_ssl_init(MYSQL *mysql);
-my_bool ma_pvio_ssl_connect(MARIADB_SSL *cssl);
+ma_bool ma_pvio_ssl_connect(MARIADB_SSL *cssl);
 size_t ma_pvio_ssl_read(MARIADB_SSL *cssl, const uchar *buffer, size_t length);
 size_t ma_pvio_ssl_write(MARIADB_SSL *cssl, const uchar *buffer, size_t length);
-my_bool ma_pvio_ssl_close(MARIADB_SSL *cssl);
+ma_bool ma_pvio_ssl_close(MARIADB_SSL *cssl);
 int ma_pvio_ssl_verify_server_cert(MARIADB_SSL *cssl);
 const char *ma_pvio_ssl_cipher(MARIADB_SSL *cssl);
-my_bool ma_pvio_ssl_check_fp(MARIADB_SSL *cssl, const char *fp, const char *fp_list);
-my_bool ma_pvio_start_ssl(MARIADB_PVIO *pvio);
-my_bool ma_pvio_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version);
+ma_bool ma_pvio_ssl_check_fp(MARIADB_SSL *cssl, const char *fp, const char *fp_list);
+ma_bool ma_pvio_start_ssl(MARIADB_PVIO *pvio);
+ma_bool ma_pvio_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version);
 
 #endif /* _ma_ssl_h_ */

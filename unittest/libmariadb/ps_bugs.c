@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#include "my_test.h"
+#include "ma_test.h"
 
 #define MY_INT64_NUM_DECIMAL_DIGITS 21
 #define MAX_INDEXES 64
@@ -106,7 +106,7 @@ static int test_bug1115(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
   int rc, rowcount;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   ulong length[1];
   char szData[11];
   char query[MAX_TEST_QUERY_LENGTH];
@@ -155,16 +155,16 @@ session_id  char(9) NOT NULL, \
 
   FAIL_IF(mysql_stmt_param_count(stmt) != 1, "Paramcount != 1");
 
-  memset(my_bind, '\0', sizeof(MYSQL_BIND));
+  memset(ma_bind, '\0', sizeof(MYSQL_BIND));
 
   strcpy(szData, (char *)"abc");
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void *)szData;
-  my_bind[0].buffer_length= 10;
-  my_bind[0].length= &length[0];
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void *)szData;
+  ma_bind[0].buffer_length= 10;
+  ma_bind[0].length= &length[0];
   length[0]= 3;
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -176,14 +176,14 @@ session_id  char(9) NOT NULL, \
   FAIL_IF(rowcount != 1, "rowcount=%d != 1");
 
   strcpy(szData, (char *)"venu");
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void *)szData;
-  my_bind[0].buffer_length= 10;
-  my_bind[0].length= &length[0];
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void *)szData;
+  ma_bind[0].buffer_length= 10;
+  ma_bind[0].length= &length[0];
   length[0]= 4;
-  my_bind[0].is_null= 0;
+  ma_bind[0].is_null= 0;
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -195,14 +195,14 @@ session_id  char(9) NOT NULL, \
   FAIL_IF(rowcount != 0, "rowcount != 0");
 
   strcpy(szData, (char *)"abc");
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void *)szData;
-  my_bind[0].buffer_length= 10;
-  my_bind[0].length= &length[0];
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void *)szData;
+  ma_bind[0].buffer_length= 10;
+  ma_bind[0].length= &length[0];
   length[0]= 3;
-  my_bind[0].is_null= 0;
+  ma_bind[0].is_null= 0;
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -223,7 +223,7 @@ static int test_bug1180(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
   int rc, rowcount;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   ulong length[1];
   char szData[11];
   char query[MAX_TEST_QUERY_LENGTH];
@@ -245,17 +245,17 @@ static int test_bug1180(MYSQL *mysql)
 
   FAIL_IF(mysql_stmt_param_count(stmt) != 1, "Paramcount != 1");
 
-  memset(my_bind, '\0', sizeof(MYSQL_BIND));
+  memset(ma_bind, '\0', sizeof(MYSQL_BIND));
 
   strcpy(szData, (char *)"abc");
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void *)szData;
-  my_bind[0].buffer_length= 10;
-  my_bind[0].length= &length[0];
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void *)szData;
+  ma_bind[0].buffer_length= 10;
+  ma_bind[0].length= &length[0];
   length[0]= 3;
-  my_bind[0].is_null= 0;
+  ma_bind[0].is_null= 0;
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -268,14 +268,14 @@ static int test_bug1180(MYSQL *mysql)
   FAIL_IF(rowcount != 0, "rowcount != 0");
 
   strcpy(szData, (char *)"1111");
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void *)szData;
-  my_bind[0].buffer_length= 10;
-  my_bind[0].length= &length[0];
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void *)szData;
+  ma_bind[0].buffer_length= 10;
+  ma_bind[0].length= &length[0];
   length[0]= 4;
-  my_bind[0].is_null= 0;
+  ma_bind[0].is_null= 0;
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -287,14 +287,14 @@ static int test_bug1180(MYSQL *mysql)
   FAIL_IF(rowcount != 1, "rowcount != 1");
 
   strcpy(szData, (char *)"abc");
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void *)szData;
-  my_bind[0].buffer_length= 10;
-  my_bind[0].length= &length[0];
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void *)szData;
+  ma_bind[0].buffer_length= 10;
+  ma_bind[0].length= &length[0];
   length[0]= 3;
-  my_bind[0].is_null= 0;
+  ma_bind[0].is_null= 0;
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -321,9 +321,9 @@ static int test_bug1644(MYSQL *mysql)
   MYSQL_STMT *stmt;
   MYSQL_RES *result;
   MYSQL_ROW row;
-  MYSQL_BIND my_bind[4];
+  MYSQL_BIND ma_bind[4];
   int num;
-  my_bool isnull;
+  ma_bool isnull;
   int rc, i;
   char query[MAX_TEST_QUERY_LENGTH];
 
@@ -342,18 +342,18 @@ static int test_bug1644(MYSQL *mysql)
 
   FAIL_IF(mysql_stmt_param_count(stmt) != 4, "Paramcount != 4");
 
-  memset(my_bind, '\0', sizeof(MYSQL_BIND) * 4);
+  memset(ma_bind, '\0', sizeof(MYSQL_BIND) * 4);
 
   num= 22;
   isnull= 0;
   for (i= 0 ; i < 4 ; i++)
   {
-    my_bind[i].buffer_type= MYSQL_TYPE_LONG;
-    my_bind[i].buffer= (void *)&num;
-    my_bind[i].is_null= &isnull;
+    ma_bind[i].buffer_type= MYSQL_TYPE_LONG;
+    ma_bind[i].buffer= (void *)&num;
+    ma_bind[i].is_null= &isnull;
   }
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -361,9 +361,9 @@ static int test_bug1644(MYSQL *mysql)
 
   isnull= 1;
   for (i= 0 ; i < 4 ; i++)
-    my_bind[i].is_null= &isnull;
+    ma_bind[i].is_null= &isnull;
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -372,9 +372,9 @@ static int test_bug1644(MYSQL *mysql)
   isnull= 0;
   num= 88;
   for (i= 0 ; i < 4 ; i++)
-    my_bind[i].is_null= &isnull;
+    ma_bind[i].is_null= &isnull;
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -542,7 +542,7 @@ static int test_bug12744(MYSQL *mysql)
 static int test_bug1500(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[3];
+  MYSQL_BIND ma_bind[3];
   int        rc= 0;
   int32 int_data[3]= {2, 3, 4};
   char *data;
@@ -569,15 +569,15 @@ static int test_bug1500(MYSQL *mysql)
 
   FAIL_IF(mysql_stmt_param_count(stmt) != 3, "paramcount != 3");
 
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
 
-  my_bind[0].buffer= (void *)int_data;
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[2]= my_bind[1]= my_bind[0];
-  my_bind[1].buffer= (void *)(int_data + 1);
-  my_bind[2].buffer= (void *)(int_data + 2);
+  ma_bind[0].buffer= (void *)int_data;
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[2]= ma_bind[1]= ma_bind[0];
+  ma_bind[1].buffer= (void *)(int_data + 1);
+  ma_bind[2].buffer= (void *)(int_data + 2);
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -612,13 +612,13 @@ static int test_bug1500(MYSQL *mysql)
   FAIL_IF(mysql_stmt_param_count(stmt) != 1, "paramcount != 1");
 
   data= "Dogs";
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void *) data;
-  my_bind[0].buffer_length= (unsigned long)strlen(data);
-  my_bind[0].is_null= 0;
-  my_bind[0].length= 0;
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void *) data;
+  ma_bind[0].buffer_length= (unsigned long)strlen(data);
+  ma_bind[0].is_null= 0;
+  ma_bind[0].length= 0;
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -641,11 +641,11 @@ static int test_bug1500(MYSQL *mysql)
   FAIL_IF(mysql_stmt_param_count(stmt) != 1, "paramcount != 1");
 
   data= "Grave";
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void *) data;
-  my_bind[0].buffer_length= (unsigned long)strlen(data);
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void *) data;
+  ma_bind[0].buffer_length= (unsigned long)strlen(data);
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -798,8 +798,8 @@ static int test_bug15613(MYSQL *mysql)
 
 static int test_bug16144(MYSQL *mysql)
 {
-  const my_bool flag_orig= (my_bool) 0xde;
-  my_bool flag= flag_orig;
+  const ma_bool flag_orig= (ma_bool) 0xde;
+  ma_bool flag= flag_orig;
   MYSQL_STMT *stmt;
 
   /* Check that attr_get returns correct data on little and big endian CPUs */
@@ -823,7 +823,7 @@ static int test_bug1664(MYSQL *mysql)
     int        rc, int_data;
     const char *data;
     const char *str_data= "Simple string";
-    MYSQL_BIND my_bind[2];
+    MYSQL_BIND ma_bind[2];
     const char *query= "INSERT INTO test_long_data(col2, col1) VALUES(?, ?)";
 
 
@@ -839,16 +839,16 @@ static int test_bug1664(MYSQL *mysql)
 
     FAIL_IF(mysql_stmt_param_count(stmt) != 2, "Param count != 2");
 
-    memset(my_bind, '\0', sizeof(my_bind));
+    memset(ma_bind, '\0', sizeof(ma_bind));
 
-    my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-    my_bind[0].buffer= (void *)str_data;
-    my_bind[0].buffer_length= (unsigned long)strlen(str_data);
+    ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+    ma_bind[0].buffer= (void *)str_data;
+    ma_bind[0].buffer_length= (unsigned long)strlen(str_data);
 
-    my_bind[1].buffer= (void *)&int_data;
-    my_bind[1].buffer_type= MYSQL_TYPE_LONG;
+    ma_bind[1].buffer= (void *)&int_data;
+    ma_bind[1].buffer_type= MYSQL_TYPE_LONG;
 
-    rc= mysql_stmt_bind_param(stmt, my_bind);
+    rc= mysql_stmt_bind_param(stmt, ma_bind);
     check_stmt_rc(rc, stmt);
 
     int_data= 1;
@@ -934,7 +934,7 @@ static int test_bug1664(MYSQL *mysql)
     stmt= mysql_stmt_init(mysql);
     rc= mysql_stmt_prepare(stmt, query, strlen(query));
     check_stmt_rc(rc, stmt);
-    rc= mysql_stmt_bind_param(stmt, my_bind);
+    rc= mysql_stmt_bind_param(stmt, ma_bind);
     check_stmt_rc(rc, stmt);
 
     data= (char *)"SomeData";
@@ -970,7 +970,7 @@ error:
 static int test_ushort_bug(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[4];
+  MYSQL_BIND ma_bind[4];
   ushort     short_value;
   uint32     long_value;
   ulong      s_length, l_length, ll_length, t_length;
@@ -1000,26 +1000,26 @@ static int test_ushort_bug(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_SHORT;
-  my_bind[0].buffer= (void *)&short_value;
-  my_bind[0].is_unsigned= TRUE;
-  my_bind[0].length= &s_length;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_SHORT;
+  ma_bind[0].buffer= (void *)&short_value;
+  ma_bind[0].is_unsigned= TRUE;
+  ma_bind[0].length= &s_length;
 
-  my_bind[1].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[1].buffer= (void *)&long_value;
-  my_bind[1].length= &l_length;
+  ma_bind[1].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[1].buffer= (void *)&long_value;
+  ma_bind[1].length= &l_length;
 
-  my_bind[2].buffer_type= MYSQL_TYPE_LONGLONG;
-  my_bind[2].buffer= (void *)&longlong_value;
-  my_bind[2].length= &ll_length;
+  ma_bind[2].buffer_type= MYSQL_TYPE_LONGLONG;
+  ma_bind[2].buffer= (void *)&longlong_value;
+  ma_bind[2].length= &ll_length;
 
-  my_bind[3].buffer_type= MYSQL_TYPE_TINY;
-  my_bind[3].buffer= (void *)&tiny_value;
-  my_bind[3].is_unsigned= TRUE;
-  my_bind[3].length= &t_length;
+  ma_bind[3].buffer_type= MYSQL_TYPE_TINY;
+  ma_bind[3].buffer= (void *)&tiny_value;
+  ma_bind[3].is_unsigned= TRUE;
+  ma_bind[3].length= &t_length;
 
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_fetch(stmt);
@@ -1074,16 +1074,16 @@ static int test_bug1946(MYSQL *mysql)
 
 static int test_bug20152(MYSQL *mysql)
 {
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   MYSQL_STMT *stmt;
   MYSQL_TIME tm;
   int rc;
   const char *query= "INSERT INTO t1 (f1) VALUES (?)";
 
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_DATE;
-  my_bind[0].buffer= (void*)&tm;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_DATE;
+  ma_bind[0].buffer= (void*)&tm;
 
   memset(&tm, 0, sizeof(MYSQL_TIME));
 
@@ -1102,7 +1102,7 @@ static int test_bug20152(MYSQL *mysql)
   stmt= mysql_stmt_init(mysql);
   rc= mysql_stmt_prepare(stmt, query, strlen(query));
   check_stmt_rc(rc, stmt);
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
@@ -1260,7 +1260,7 @@ static int test_bug23383(MYSQL *mysql)
   const char *insert_query= "INSERT INTO t1 VALUES (1), (2)";
   const char *update_query= "UPDATE t1 SET i= 4 WHERE i = 3";
   MYSQL_STMT *stmt;
-  my_ulonglong row_count;
+  ma_ulonglong row_count;
   int rc;
 
   rc= mysql_query(mysql, "DROP TABLE IF EXISTS t1");
@@ -1277,7 +1277,7 @@ static int test_bug23383(MYSQL *mysql)
   rc= mysql_query(mysql, insert_query);
   FAIL_IF(!rc, "Error expected");
   row_count= mysql_affected_rows(mysql);
-  FAIL_UNLESS(row_count == (my_ulonglong)-1, "rowcount != -1");
+  FAIL_UNLESS(row_count == (ma_ulonglong)-1, "rowcount != -1");
 
   rc= mysql_query(mysql, update_query);
   check_mysql_rc(rc, mysql);
@@ -1300,7 +1300,7 @@ static int test_bug23383(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt);
   FAIL_UNLESS(rc != 0, "");
   row_count= mysql_stmt_affected_rows(stmt);
-  FAIL_UNLESS(row_count == (my_ulonglong)-1, "rowcount != -1");
+  FAIL_UNLESS(row_count == (ma_ulonglong)-1, "rowcount != -1");
 
   rc= mysql_stmt_prepare(stmt, update_query, strlen(update_query));
   check_stmt_rc(rc, stmt);
@@ -1373,7 +1373,7 @@ static int test_bug27592(MYSQL *mysql)
 
 static int test_bug28934(MYSQL *mysql)
 {
-  my_bool error= 0;
+  ma_bool error= 0;
   MYSQL_BIND bind[5];
   MYSQL_STMT *stmt;
   int rc, cnt;
@@ -1415,7 +1415,7 @@ static int test_bug3035(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
   int rc;
-  MYSQL_BIND bind_array[12], *my_bind= bind_array, *bind_end= my_bind + 12;
+  MYSQL_BIND bind_array[12], *ma_bind= bind_array, *bind_end= ma_bind + 12;
   int8 int8_val;
   uint8 uint8_val;
   int16 int16_val;
@@ -1466,8 +1466,8 @@ static int test_bug3035(MYSQL *mysql)
   check_mysql_rc(rc, mysql);
 
   memset(bind_array, '\0', sizeof(bind_array));
-  for (my_bind= bind_array; my_bind < bind_end; my_bind++)
-    my_bind->error= &my_bind->error_value;
+  for (ma_bind= bind_array; ma_bind < bind_end; ma_bind++)
+    ma_bind->error= &ma_bind->error_value;
 
   bind_array[0].buffer_type= MYSQL_TYPE_TINY;
   bind_array[0].buffer= (void *) &int8_val;
@@ -1605,7 +1605,7 @@ static int test_ps_conj_select(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
   int        rc;
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   int32      int_data;
   char       str_data[32];
   unsigned long str_length;
@@ -1632,16 +1632,16 @@ static int test_ps_conj_select(MYSQL *mysql)
   FAIL_IF(mysql_stmt_param_count(stmt) != 2, "param_count != 2");
 
   /* Always bzero all members of bind parameter */
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= (void *)&int_data;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= (void *)&int_data;
 
-  my_bind[1].buffer_type= MYSQL_TYPE_VAR_STRING;
-  my_bind[1].buffer= (void *)str_data;
-  my_bind[1].buffer_length= array_elements(str_data);
-  my_bind[1].length= &str_length;
+  ma_bind[1].buffer_type= MYSQL_TYPE_VAR_STRING;
+  ma_bind[1].buffer= (void *)str_data;
+  ma_bind[1].buffer_length= array_elements(str_data);
+  ma_bind[1].length= &str_length;
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
   int_data= 1;
   strcpy(str_data, "hh");
@@ -1667,12 +1667,12 @@ static int test_ps_null_param(MYSQL *mysql)
   int        rc;
 
   MYSQL_BIND in_bind;
-  my_bool    in_is_null;
+  ma_bool    in_is_null;
   long int   in_long;
 
   MYSQL_BIND out_bind;
   ulong      out_length;
-  my_bool    out_is_null;
+  ma_bool    out_is_null;
   char       out_str_data[20];
 
   const char *queries[]= {"select ?", "select ?+1",
@@ -1990,7 +1990,7 @@ static int test_bug3117(MYSQL *mysql)
   MYSQL_BIND buffer;
   longlong lii;
   ulong length;
-  my_bool is_null;
+  ma_bool is_null;
   int rc;
 
   rc= mysql_query(mysql, "DROP TABLE IF EXISTS t1");
@@ -2094,7 +2094,7 @@ static int test_bug36004(MYSQL *mysql)
 static int test_bug3796(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   const char *concat_arg0= "concat_with_";
   enum { OUT_BUFF_SIZE= 30 };
   char out_buff[OUT_BUFF_SIZE];
@@ -2124,21 +2124,21 @@ static int test_bug3796(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt);
   /* Bind input buffers */
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void *) concat_arg0;
-  my_bind[0].buffer_length= (unsigned long)strlen(concat_arg0);
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void *) concat_arg0;
+  ma_bind[0].buffer_length= (unsigned long)strlen(concat_arg0);
 
-  mysql_stmt_bind_param(stmt, my_bind);
+  mysql_stmt_bind_param(stmt, ma_bind);
 
   /* Execute the select statement */
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
-  my_bind[0].buffer= (void *) out_buff;
-  my_bind[0].buffer_length= OUT_BUFF_SIZE;
-  my_bind[0].length= &out_length;
+  ma_bind[0].buffer= (void *) out_buff;
+  ma_bind[0].buffer_length= OUT_BUFF_SIZE;
+  ma_bind[0].length= &out_length;
 
-  mysql_stmt_bind_result(stmt, my_bind);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   rc= mysql_stmt_fetch(stmt);
   check_stmt_rc(rc, stmt);
@@ -2167,7 +2167,7 @@ static int test_bug3796(MYSQL *mysql)
 static int test_bug4026(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   MYSQL_TIME time_in, time_out;
   MYSQL_TIME datetime_in, datetime_out;
   const char *stmt_text;
@@ -2183,15 +2183,15 @@ static int test_bug4026(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt);
   /* Bind input buffers */
-  memset(my_bind, '\0', sizeof(MYSQL_BIND) * 2);  
+  memset(ma_bind, '\0', sizeof(MYSQL_BIND) * 2);  
   memset(&time_in, '\0', sizeof(MYSQL_TIME));  
   memset(&time_out, '\0', sizeof(MYSQL_TIME));
   memset(&datetime_in, '\0', sizeof(MYSQL_TIME));
   memset(&datetime_out, '\0', sizeof(MYSQL_TIME));
-  my_bind[0].buffer_type= MYSQL_TYPE_TIME;
-  my_bind[0].buffer= (void *) &time_in;
-  my_bind[1].buffer_type= MYSQL_TYPE_DATETIME;
-  my_bind[1].buffer= (void *) &datetime_in;
+  ma_bind[0].buffer_type= MYSQL_TYPE_TIME;
+  ma_bind[0].buffer= (void *) &time_in;
+  ma_bind[1].buffer_type= MYSQL_TYPE_DATETIME;
+  ma_bind[1].buffer= (void *) &datetime_in;
 
   time_in.hour= 23;
   time_in.minute= 59;
@@ -2209,15 +2209,15 @@ static int test_bug4026(MYSQL *mysql)
   datetime_in.day= 31;
   datetime_in.time_type= MYSQL_TIMESTAMP_DATETIME;
 
-  mysql_stmt_bind_param(stmt, my_bind);
+  mysql_stmt_bind_param(stmt, ma_bind);
 
   /* Execute the select statement */
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
-  my_bind[0].buffer= (void *) &time_out;
-  my_bind[1].buffer= (void *) &datetime_out;
+  ma_bind[0].buffer= (void *) &time_out;
+  ma_bind[1].buffer= (void *) &datetime_out;
 
-  mysql_stmt_bind_result(stmt, my_bind);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   rc= mysql_stmt_fetch(stmt);
   FAIL_UNLESS(rc == 0, "rc != 0");
@@ -2231,7 +2231,7 @@ static int test_bug4026(MYSQL *mysql)
 static int test_bug4030(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[3];
+  MYSQL_BIND ma_bind[3];
   MYSQL_TIME time_canonical, time_out;
   MYSQL_TIME date_canonical, date_out;
   MYSQL_TIME datetime_canonical, datetime_out;
@@ -2250,19 +2250,19 @@ static int test_bug4030(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
   /* Bind output buffers */
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
   memset(&time_canonical, '\0', sizeof(time_canonical));
   memset(&time_out, '\0', sizeof(time_out));
   memset(&date_canonical, '\0', sizeof(date_canonical));
   memset(&date_out, '\0', sizeof(date_out));
   memset(&datetime_canonical, '\0', sizeof(datetime_canonical));
   memset(&datetime_out, '\0', sizeof(datetime_out));
-  my_bind[0].buffer_type= MYSQL_TYPE_TIME;
-  my_bind[0].buffer= (void *) &time_out;
-  my_bind[1].buffer_type= MYSQL_TYPE_DATE;
-  my_bind[1].buffer= (void *) &date_out;
-  my_bind[2].buffer_type= MYSQL_TYPE_DATETIME;
-  my_bind[2].buffer= (void *) &datetime_out;
+  ma_bind[0].buffer_type= MYSQL_TYPE_TIME;
+  ma_bind[0].buffer= (void *) &time_out;
+  ma_bind[1].buffer_type= MYSQL_TYPE_DATE;
+  ma_bind[1].buffer= (void *) &date_out;
+  ma_bind[2].buffer_type= MYSQL_TYPE_DATETIME;
+  ma_bind[2].buffer= (void *) &datetime_out;
 
   time_canonical.hour= 23;
   time_canonical.minute= 59;
@@ -2281,7 +2281,7 @@ static int test_bug4030(MYSQL *mysql)
   datetime_canonical.day= 31;
   datetime_canonical.time_type= MYSQL_TIMESTAMP_DATETIME;
 
-  mysql_stmt_bind_result(stmt, my_bind);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   rc= mysql_stmt_fetch(stmt);
   FAIL_UNLESS(rc == 0, "rc != 0");
@@ -2295,7 +2295,7 @@ static int test_bug4030(MYSQL *mysql)
 static int test_bug4079(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   const char *stmt_text;
   uint32 res;
   int rc;
@@ -2315,11 +2315,11 @@ static int test_bug4079(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
   /* Bind input buffers */
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= (void *) &res;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= (void *) &res;
 
-  mysql_stmt_bind_result(stmt, my_bind);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   rc= mysql_stmt_fetch(stmt);
   FAIL_UNLESS(rc == 1, "rc != 1");
@@ -2331,7 +2331,7 @@ static int test_bug4079(MYSQL *mysql)
 static int test_bug4172(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[3];
+  MYSQL_BIND ma_bind[3];
   const char *stmt_text;
   MYSQL_RES *res;
   MYSQL_ROW row;
@@ -2354,20 +2354,20 @@ static int test_bug4172(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt);  rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
-  memset(my_bind, '\0', sizeof(my_bind));  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= f;
-  my_bind[0].buffer_length= sizeof(f);
-  my_bind[0].length= &f_len;
-  my_bind[1].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[1].buffer= d;
-  my_bind[1].buffer_length= sizeof(d);
-  my_bind[1].length= &d_len;
-  my_bind[2].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[2].buffer= e;
-  my_bind[2].buffer_length= sizeof(e);
-  my_bind[2].length= &e_len;
+  memset(ma_bind, '\0', sizeof(ma_bind));  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= f;
+  ma_bind[0].buffer_length= sizeof(f);
+  ma_bind[0].length= &f_len;
+  ma_bind[1].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[1].buffer= d;
+  ma_bind[1].buffer_length= sizeof(d);
+  ma_bind[1].length= &d_len;
+  ma_bind[2].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[2].buffer= e;
+  ma_bind[2].buffer_length= sizeof(e);
+  ma_bind[2].length= &e_len;
 
-  mysql_stmt_bind_result(stmt, my_bind);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   mysql_stmt_store_result(stmt);
   rc= mysql_stmt_fetch(stmt);
@@ -2388,7 +2388,7 @@ static int test_bug4172(MYSQL *mysql)
 static int test_bug4231(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   MYSQL_TIME tm[2];
   const char *stmt_text;
   int rc;
@@ -2411,13 +2411,13 @@ static int test_bug4231(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt);
   /* Bind input buffers */
-  memset(my_bind, '\0', sizeof(my_bind));  memset(tm, '\0', sizeof(tm));
-  my_bind[0].buffer_type= MYSQL_TYPE_DATE;
-  my_bind[0].buffer= &tm[0];
-  my_bind[1].buffer_type= MYSQL_TYPE_DATE;
-  my_bind[1].buffer= &tm[1];
+  memset(ma_bind, '\0', sizeof(ma_bind));  memset(tm, '\0', sizeof(tm));
+  ma_bind[0].buffer_type= MYSQL_TYPE_DATE;
+  ma_bind[0].buffer= &tm[0];
+  ma_bind[1].buffer_type= MYSQL_TYPE_DATE;
+  ma_bind[1].buffer= &tm[1];
 
-  mysql_stmt_bind_param(stmt, my_bind);
+  mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
   /*
     First set server-side params to some non-zero non-equal values:
@@ -2497,7 +2497,7 @@ static int test_bug4236(MYSQL *mysql)
 static int test_bug5126(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   int32 c1, c2;
   const char *stmt_text;
   int rc;
@@ -2522,13 +2522,13 @@ static int test_bug5126(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
   /* Bind output buffers */
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= &c1;
-  my_bind[1].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[1].buffer= &c2;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= &c1;
+  ma_bind[1].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[1].buffer= &c2;
 
-  mysql_stmt_bind_result(stmt, my_bind);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   rc= mysql_stmt_fetch(stmt);
   FAIL_UNLESS(rc == 0, "rc != 0");
@@ -2540,7 +2540,7 @@ static int test_bug5126(MYSQL *mysql)
 static int test_bug5194(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND *my_bind;
+  MYSQL_BIND *ma_bind;
   char *query;
   char *param_str;
   int param_str_length;
@@ -2637,12 +2637,12 @@ static int test_bug5194(MYSQL *mysql)
   rc= mysql_real_query(mysql, stmt_text, strlen(stmt_text));
   check_mysql_rc(rc, mysql);
 
-  my_bind= (MYSQL_BIND*) malloc(MAX_PARAM_COUNT * sizeof(MYSQL_BIND));
+  ma_bind= (MYSQL_BIND*) malloc(MAX_PARAM_COUNT * sizeof(MYSQL_BIND));
   query= (char*) malloc(strlen(query_template) +
                         MAX_PARAM_COUNT * CHARS_PER_PARAM + 1);
   param_str= (char*) malloc(COLUMN_COUNT * CHARS_PER_PARAM);
 
-  FAIL_IF(my_bind == 0 || query == 0 || param_str == 0, "Not enought memory")
+  FAIL_IF(ma_bind == 0 || query == 0 || param_str == 0, "Not enought memory")
 
   stmt= mysql_stmt_init(mysql);
 
@@ -2654,11 +2654,11 @@ static int test_bug5194(MYSQL *mysql)
   param_str_length= (int)strlen(param_str);
 
   /* setup bind array */
-  memset(my_bind, '\0', MAX_PARAM_COUNT * sizeof(MYSQL_BIND));
+  memset(ma_bind, '\0', MAX_PARAM_COUNT * sizeof(MYSQL_BIND));
   for (i= 0; i < MAX_PARAM_COUNT; ++i)
   {
-    my_bind[i].buffer_type= MYSQL_TYPE_FLOAT;
-    my_bind[i].buffer= fa_ptr;
+    ma_bind[i].buffer_type= MYSQL_TYPE_FLOAT;
+    ma_bind[i].buffer= fa_ptr;
     if (++fa_ptr == float_array + COLUMN_COUNT)
       fa_ptr= float_array;
   }
@@ -2690,7 +2690,7 @@ static int test_bug5194(MYSQL *mysql)
     check_stmt_rc(rc, stmt);
 
     /* bind the parameter array and execute the query */
-    rc= mysql_stmt_bind_param(stmt, my_bind);
+    rc= mysql_stmt_bind_param(stmt, ma_bind);
     check_stmt_rc(rc, stmt);
     rc= mysql_stmt_execute(stmt);
     check_stmt_rc(rc, stmt);
@@ -2701,7 +2701,7 @@ static int test_bug5194(MYSQL *mysql)
   free(query);
   rc= mysql_stmt_close(stmt);
   check_stmt_rc(rc, stmt);
-  free(my_bind);
+  free(ma_bind);
   stmt_text= "drop table t1";
   rc= mysql_real_query(mysql, stmt_text, strlen(stmt_text));
   check_mysql_rc(rc, mysql);
@@ -2746,21 +2746,21 @@ static int test_bug5399(MYSQL *mysql)
 #define NUM_OF_USED_STMT 97 
   MYSQL_STMT *stmt_list[NUM_OF_USED_STMT];
   MYSQL_STMT **stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   char buff[600];
   int rc;
   int32 no;
 
 
-  memset(my_bind, '\0', sizeof(my_bind));  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= &no;
+  memset(ma_bind, '\0', sizeof(ma_bind));  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= &no;
 
   for (stmt= stmt_list; stmt != stmt_list + NUM_OF_USED_STMT; ++stmt)
   {
     sprintf(buff, "select %d", (int) (stmt - stmt_list));
     *stmt= mysql_stmt_init(mysql);
     rc= mysql_stmt_prepare(*stmt, buff, strlen(buff));
-    check_stmt_rc(rc, *stmt);    mysql_stmt_bind_result(*stmt, my_bind);
+    check_stmt_rc(rc, *stmt);    mysql_stmt_bind_result(*stmt, ma_bind);
   }
 
   for (stmt= stmt_list; stmt != stmt_list + NUM_OF_USED_STMT; ++stmt)
@@ -2785,7 +2785,7 @@ static int test_bug6046(MYSQL *mysql)
   const char *stmt_text;
   int rc;
   short b= 1;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
 
 
   stmt_text= "DROP TABLE IF EXISTS t1";
@@ -2806,10 +2806,10 @@ static int test_bug6046(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt);
   b= 1;
-  memset(my_bind, '\0', sizeof(my_bind));  my_bind[0].buffer= &b;
-  my_bind[0].buffer_type= MYSQL_TYPE_SHORT;
+  memset(ma_bind, '\0', sizeof(ma_bind));  ma_bind[0].buffer= &b;
+  ma_bind[0].buffer_type= MYSQL_TYPE_SHORT;
 
-  mysql_stmt_bind_param(stmt, my_bind);
+  mysql_stmt_bind_param(stmt, ma_bind);
 
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
@@ -2824,7 +2824,7 @@ static int test_bug6046(MYSQL *mysql)
 static int test_bug6049(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   MYSQL_RES *res;
   MYSQL_ROW row;
   const char *stmt_text;
@@ -2845,13 +2845,13 @@ static int test_bug6049(MYSQL *mysql)
   check_stmt_rc(rc, stmt);
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type    = MYSQL_TYPE_STRING;
-  my_bind[0].buffer         = &buffer;
-  my_bind[0].buffer_length  = sizeof(buffer);
-  my_bind[0].length         = &length;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type    = MYSQL_TYPE_STRING;
+  ma_bind[0].buffer         = &buffer;
+  ma_bind[0].buffer_length  = sizeof(buffer);
+  ma_bind[0].length         = &length;
 
-  mysql_stmt_bind_result(stmt, my_bind);
+  mysql_stmt_bind_result(stmt, ma_bind);
   rc= mysql_stmt_fetch(stmt);
   check_stmt_rc(rc, stmt);
 
@@ -2865,7 +2865,7 @@ static int test_bug6049(MYSQL *mysql)
 static int test_bug6058(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   MYSQL_RES *res;
   MYSQL_ROW row;
   const char *stmt_text;
@@ -2886,13 +2886,13 @@ static int test_bug6058(MYSQL *mysql)
   check_stmt_rc(rc, stmt);
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type    = MYSQL_TYPE_STRING;
-  my_bind[0].buffer         = &buffer;
-  my_bind[0].buffer_length  = sizeof(buffer);
-  my_bind[0].length         = &length;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type    = MYSQL_TYPE_STRING;
+  ma_bind[0].buffer         = &buffer;
+  ma_bind[0].buffer_length  = sizeof(buffer);
+  ma_bind[0].length         = &length;
 
-  mysql_stmt_bind_result(stmt, my_bind);
+  mysql_stmt_bind_result(stmt, ma_bind);
   rc= mysql_stmt_fetch(stmt);
   check_stmt_rc(rc, stmt);
 
@@ -2925,11 +2925,11 @@ static int test_bug6096(MYSQL *mysql)
   MYSQL_STMT *stmt;
   MYSQL_RES *query_result, *stmt_metadata;
   const char *stmt_text;
-  MYSQL_BIND my_bind[12];
+  MYSQL_BIND ma_bind[12];
   MYSQL_FIELD *query_field_list, *stmt_field_list;
   ulong query_field_count, stmt_field_count;
   int rc;
-  my_bool update_max_length= TRUE;
+  ma_bool update_max_length= TRUE;
   uint i;
 
 
@@ -2975,14 +2975,14 @@ static int test_bug6096(MYSQL *mysql)
 
   /* Bind and fetch the data */
 
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
   for (i= 0; i < stmt_field_count; ++i)
   {
-    my_bind[i].buffer_type= MYSQL_TYPE_STRING;
-    my_bind[i].buffer_length= stmt_field_list[i].max_length + 1;
-    my_bind[i].buffer= malloc(my_bind[i].buffer_length);
+    ma_bind[i].buffer_type= MYSQL_TYPE_STRING;
+    ma_bind[i].buffer_length= stmt_field_list[i].max_length + 1;
+    ma_bind[i].buffer= malloc(ma_bind[i].buffer_length);
   }
-  mysql_stmt_bind_result(stmt, my_bind);
+  mysql_stmt_bind_result(stmt, ma_bind);
   rc= mysql_stmt_fetch(stmt);
   diag("rc=%d", rc);
   check_stmt_rc(rc, stmt);
@@ -2992,7 +2992,7 @@ static int test_bug6096(MYSQL *mysql)
   /* Clean up */
 
   for (i= 0; i < stmt_field_count; ++i)
-    free(my_bind[i].buffer);
+    free(ma_bind[i].buffer);
   mysql_stmt_close(stmt);
   mysql_free_result(query_result);
   mysql_free_result(stmt_metadata);
@@ -3029,7 +3029,7 @@ static int test_bug8330(MYSQL *mysql)
   MYSQL_STMT *stmt[2];
   int i, rc;
   const char *query= "select a,b from t1 where a=?";
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   long lval[2];
 
   stmt_text= "drop table if exists t1";
@@ -3040,16 +3040,16 @@ static int test_bug8330(MYSQL *mysql)
   rc= mysql_real_query(mysql, stmt_text, strlen(stmt_text));
   check_mysql_rc(rc, mysql);
 
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
   for (i=0; i < 2; i++)
   {
     stmt[i]= mysql_stmt_init(mysql);
     rc= mysql_stmt_prepare(stmt[i], query, strlen(query));
     check_stmt_rc(rc, stmt[i]);
-    my_bind[i].buffer_type= MYSQL_TYPE_LONG;
-    my_bind[i].buffer= (void*) &lval[i];
-    my_bind[i].is_null= 0;
-    mysql_stmt_bind_param(stmt[i], &my_bind[i]);
+    ma_bind[i].buffer_type= MYSQL_TYPE_LONG;
+    ma_bind[i].buffer= (void*) &lval[i];
+    ma_bind[i].is_null= 0;
+    mysql_stmt_bind_param(stmt[i], &ma_bind[i]);
   }
 
   rc= mysql_stmt_execute(stmt[0]);
@@ -3328,10 +3328,10 @@ static int test_bug8722(MYSQL *mysql)
 static int test_decimal_bug(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   char       data[30];
   int        rc;
-  my_bool    is_null;
+  ma_bool    is_null;
 
   mysql_autocommit(mysql, TRUE);
 
@@ -3354,15 +3354,15 @@ static int test_decimal_bug(MYSQL *mysql)
     We need to bzero bind structure because mysql_stmt_bind_param checks all
     its members.
   */
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
 
-  my_bind[0].buffer_type= MYSQL_TYPE_NEWDECIMAL;
-  my_bind[0].buffer= (void *)data;
-  my_bind[0].buffer_length= 25;
-  my_bind[0].is_null= &is_null;
+  ma_bind[0].buffer_type= MYSQL_TYPE_NEWDECIMAL;
+  ma_bind[0].buffer= (void *)data;
+  ma_bind[0].buffer_length= 25;
+  ma_bind[0].is_null= &is_null;
 
   is_null= 0;
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   strcpy(data, "8.0");
@@ -3370,7 +3370,7 @@ static int test_decimal_bug(MYSQL *mysql)
   check_stmt_rc(rc, stmt);
 
   data[0]= 0;
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_fetch(stmt);
@@ -3386,7 +3386,7 @@ static int test_decimal_bug(MYSQL *mysql)
   check_stmt_rc(rc, stmt);
 
   data[0]= 0;
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_fetch(stmt);
@@ -3409,7 +3409,7 @@ static int test_decimal_bug(MYSQL *mysql)
   check_stmt_rc(rc, stmt);
 
   data[0]= 0;
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_fetch(stmt);
@@ -3596,7 +3596,7 @@ error:
 static int test_sshort_bug(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[4];
+  MYSQL_BIND ma_bind[4];
   short      short_value;
   int32      long_value;
   ulong      s_length, l_length, ll_length, t_length;
@@ -3625,25 +3625,25 @@ static int test_sshort_bug(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_SHORT;
-  my_bind[0].buffer= (void *)&short_value;
-  my_bind[0].length= &s_length;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_SHORT;
+  ma_bind[0].buffer= (void *)&short_value;
+  ma_bind[0].length= &s_length;
 
-  my_bind[1].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[1].buffer= (void *)&long_value;
-  my_bind[1].length= &l_length;
+  ma_bind[1].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[1].buffer= (void *)&long_value;
+  ma_bind[1].length= &l_length;
 
-  my_bind[2].buffer_type= MYSQL_TYPE_LONGLONG;
-  my_bind[2].buffer= (void *)&longlong_value;
-  my_bind[2].length= &ll_length;
+  ma_bind[2].buffer_type= MYSQL_TYPE_LONGLONG;
+  ma_bind[2].buffer= (void *)&longlong_value;
+  ma_bind[2].length= &ll_length;
 
-  my_bind[3].buffer_type= MYSQL_TYPE_TINY;
-  my_bind[3].buffer= (void *)&tiny_value;
-  my_bind[3].is_unsigned= TRUE;
-  my_bind[3].length= &t_length;
+  ma_bind[3].buffer_type= MYSQL_TYPE_TINY;
+  ma_bind[3].buffer= (void *)&tiny_value;
+  ma_bind[3].is_unsigned= TRUE;
+  ma_bind[3].length= &t_length;
 
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_fetch(stmt);
@@ -3674,7 +3674,7 @@ static int test_sshort_bug(MYSQL *mysql)
 static int test_stiny_bug(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[4];
+  MYSQL_BIND ma_bind[4];
   short      short_value;
   int32      long_value;
   ulong      s_length, l_length, ll_length, t_length;
@@ -3703,24 +3703,24 @@ static int test_stiny_bug(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_SHORT;
-  my_bind[0].buffer= (void *)&short_value;
-  my_bind[0].length= &s_length;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_SHORT;
+  ma_bind[0].buffer= (void *)&short_value;
+  ma_bind[0].length= &s_length;
 
-  my_bind[1].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[1].buffer= (void *)&long_value;
-  my_bind[1].length= &l_length;
+  ma_bind[1].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[1].buffer= (void *)&long_value;
+  ma_bind[1].length= &l_length;
 
-  my_bind[2].buffer_type= MYSQL_TYPE_LONGLONG;
-  my_bind[2].buffer= (void *)&longlong_value;
-  my_bind[2].length= &ll_length;
+  ma_bind[2].buffer_type= MYSQL_TYPE_LONGLONG;
+  ma_bind[2].buffer= (void *)&longlong_value;
+  ma_bind[2].length= &ll_length;
 
-  my_bind[3].buffer_type= MYSQL_TYPE_TINY;
-  my_bind[3].buffer= (void *)&tiny_value;
-  my_bind[3].length= &t_length;
+  ma_bind[3].buffer_type= MYSQL_TYPE_TINY;
+  ma_bind[3].buffer= (void *)&tiny_value;
+  ma_bind[3].length= &t_length;
 
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_fetch(stmt);
@@ -3909,7 +3909,111 @@ static int test_conc141(MYSQL *mysql)
   return OK;
 }
 
-struct my_tests_st my_tests[] = {
+static int test_conc154(MYSQL *mysql)
+{
+  MYSQL_STMT *stmt;
+  const char *stmtstr= "SELECT * FROM t1";
+  int rc;
+
+  /* 1st: empty result set without free_result */
+  rc= mysql_query(mysql, "DROP TABLE IF EXISTS t1");
+  check_mysql_rc(rc, mysql);
+  rc= mysql_query(mysql, "CREATE TABLE t1 (a varchar(20))");
+  check_mysql_rc(rc, mysql);
+
+  stmt= mysql_stmt_init(mysql);
+  rc= mysql_stmt_prepare(stmt, stmtstr, strlen(stmtstr));
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_execute(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_store_result(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_execute(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_store_result(stmt);
+  check_stmt_rc(rc, stmt);
+
+  mysql_stmt_close(stmt);
+
+  /* 2nd: empty result set with free_result */
+  stmt= mysql_stmt_init(mysql);
+  rc= mysql_stmt_prepare(stmt, stmtstr, strlen(stmtstr));
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_execute(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_store_result(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_free_result(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_execute(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_store_result(stmt);
+  check_stmt_rc(rc, stmt);
+  rc= mysql_stmt_free_result(stmt);
+  check_stmt_rc(rc, stmt);
+
+  mysql_stmt_close(stmt);
+
+  /* 3rd: non empty result without free_result */
+  rc= mysql_query(mysql, "INSERT INTO t1 VALUES ('test_conc154')");
+  check_mysql_rc(rc, mysql);
+
+  stmt= mysql_stmt_init(mysql);
+  rc= mysql_stmt_prepare(stmt, stmtstr, strlen(stmtstr));
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_execute(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_store_result(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_execute(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_store_result(stmt);
+  check_stmt_rc(rc, stmt);
+
+  mysql_stmt_close(stmt);
+
+  /* 4th non empty result set with free_result */
+  stmt= mysql_stmt_init(mysql);
+  rc= mysql_stmt_prepare(stmt, stmtstr, strlen(stmtstr));
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_execute(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_store_result(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_free_result(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_execute(stmt);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_store_result(stmt);
+  check_stmt_rc(rc, stmt);
+  rc= mysql_stmt_free_result(stmt);
+  check_stmt_rc(rc, stmt);
+
+  mysql_stmt_close(stmt);
+
+  return OK;
+}
+
+struct ma_tests_st ma_tests[] = {
+  {"test_conc154", test_conc154, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
   {"test_conc141", test_conc141, TEST_CONNECTION_NEW, 0, NULL , NULL},
   {"test_conc67", test_conc67, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
   {"test_conc_5", test_conc_5, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
@@ -3975,7 +4079,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

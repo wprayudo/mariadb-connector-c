@@ -21,12 +21,12 @@
 #include "mysys_priv.h"
 #include <stdarg.h>
 
-gptr my_multi_malloc(myf myFlags, ...)
+gptr ma_multi_malloc(myf myFlags, ...)
 {
   va_list args;
   char **ptr,*start,*res;
   uint tot_length,length;
-  DBUG_ENTER("my_multi_malloc");
+  DBUG_ENTER("ma_multi_malloc");
 
   va_start(args,myFlags);
   tot_length=0;
@@ -37,7 +37,7 @@ gptr my_multi_malloc(myf myFlags, ...)
   }
   va_end(args);
 
-  if (!(start=(char *) my_malloc(tot_length,myFlags)))
+  if (!(start=(char *) ma_malloc(tot_length,myFlags)))
     DBUG_RETURN(0); /* purecov: inspected */
 
   va_start(args,myFlags);

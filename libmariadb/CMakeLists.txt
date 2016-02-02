@@ -34,11 +34,11 @@ SET(EXPORT_SYMBOLS
  mariadb_dyncol_val_double
  mariadb_dyncol_val_long
  mariadb_dyncol_val_str
- mariadb_flush_multi_command
  mariadb_get_charset_by_name
  mariadb_get_charset_by_nr
  mariadb_get_info
  mariadb_get_infov
+ mariadb_stmt_execute_direct
  mysql_affected_rows
  mysql_autocommit
  mysql_autocommit_cont
@@ -306,10 +306,8 @@ my_malloc.c
 my_messnc.c
 my_net.c
 my_once.c
-my_open.c
 my_port.c 
 my_pthread.c
-my_read.c
 my_realloc.c
 my_seek.c
 my_static.c

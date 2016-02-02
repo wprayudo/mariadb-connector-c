@@ -16,7 +16,7 @@
    MA 02111-1307, USA */
 
 #include "mysys_priv.h"
-#include "my_static.h"
+#include "ma_static.h"
 #include "mysys_err.h"
 #include "m_ctype.h"
 #include <m_string.h>
@@ -27,7 +27,7 @@
 #endif
 #include <signal.h>
 #ifdef VMS
-#include <my_static.c>
+#include <ma_static.c>
 #include <m_ctype.h>
 #endif
 #ifdef _WIN32
@@ -35,15 +35,15 @@
 #include <locale.h>
 #include <crtdbg.h>
 #endif
-my_bool have_tcpip=0;
-static void my_win_init(void);
-static my_bool win32_have_tcpip(void);
-static my_bool win32_init_tcp_ip();
+ma_bool have_tcpip=0;
+static void ma_win_init(void);
+static ma_bool win32_have_tcpip(void);
+static ma_bool win32_init_tcp_ip();
 #else
-#define my_win_init()
+#define ma_win_init()
 #endif
 
-my_bool my_init_done=0;
+ma_bool ma_init_done=0;
 
 
 
@@ -59,29 +59,29 @@ static ulong atoi_octal(const char *str)
 }
 
 
-	/* Init my_sys functions and my_sys variabels */
+	/* Init ma_sys functions and ma_sys variabels */
 
-void my_init(void)
+void ma_init(void)
 {
-  my_string str;
-  if (my_init_done)
+  ma_string str;
+  if (ma_init_done)
     return;
-  my_init_done=1;
+  ma_init_done=1;
 #ifdef THREAD
 #if defined(HAVE_PTHREAD_INIT)
   pthread_init();			/* Must be called before DBUG_ENTER */
 #endif
-  my_thread_global_init();
+  ma_thread_global_init();
 #ifndef _WIN32
-  sigfillset(&my_signals);		/* signals blocked by mf_brkhant */
+  sigfillset(&ma_signals);		/* signals blocked by mf_brkhant */
 #endif
 #endif /* THREAD */
 #ifdef UNIXWARE_7
   (void) isatty(0);			/* Go around connect() bug in UW7 */
 #endif
   {
-    DBUG_ENTER("my_init");
-    DBUG_PROCESS(my_progname ? my_progname : (char*) "unknown");
+    DBUG_ENTER("ma_init");
+    DBUG_PROCESS(ma_progname ? ma_progname : (char*) "unknown");
     if (!home_dir)
     {					/* Don't initialize twice */
       if ((home_dir=getenv("HOME")) != 0)
@@ -89,10 +89,10 @@ void my_init(void)
 #ifndef VMS
       /* Default creation of new files */
       if ((str=getenv("UMASK")) != 0)
-        my_umask=(int) (atoi_octal(str) | 0600);
+        ma_umask=(int) (atoi_octal(str) | 0600);
 	/* Default creation of new dir's */
       if ((str=getenv("UMASK_DIR")) != 0)
-        my_umask_dir=(int) (atoi_octal(str) | 0700);
+        ma_umask_dir=(int) (atoi_octal(str) | 0700);
 #endif
 #ifdef VMS
       init_ctype();			/* Stupid linker don't link _ctype.c */
@@ -100,26 +100,26 @@ void my_init(void)
       DBUG_PRINT("exit",("home: '%s'",home_dir));
     }
 #ifdef _WIN32
-    my_win_init();
+    ma_win_init();
 #endif
     DBUG_VOID_RETURN;
   }
-} /* my_init */
+} /* ma_init */
 
 
-	/* End my_sys */
+	/* End ma_sys */
 
-void my_end(int infoflag)
+void ma_end(int infoflag)
 {
   FILE *info_file;
   if (!(info_file=DBUG_FILE))
     info_file=stderr;
   if (infoflag & MY_CHECK_ERROR || info_file != stderr)
   {					/* Test if some file is left open */
-    if (my_file_opened | my_stream_opened)
+    if (ma_file_opened | ma_stream_opened)
     {
-      sprintf(errbuff[0],EE(EE_OPEN_WARNING),my_file_opened,my_stream_opened);
-      (void) my_message_no_curses(EE_OPEN_WARNING,errbuff[0],ME_BELL);
+      sprintf(errbuff[0],EE(EE_OPEN_WARNING),ma_file_opened,ma_stream_opened);
+      (void) ma_message_no_curses(EE_OPEN_WARNING,errbuff[0],ME_BELL);
       DBUG_PRINT("error",("%s",errbuff[0]));
     }
   }
@@ -164,16 +164,16 @@ Voluntary context switches %ld, Involuntary context switches %ld\n",
   pthread_mutex_destroy(&THR_LOCK_malloc);
   pthread_mutex_destroy(&THR_LOCK_open);
   pthread_mutex_destroy(&THR_LOCK_net);
-  DBUG_END();				/* Must be done before my_thread_end */
-  my_thread_end();
-  my_thread_global_end();
+  DBUG_END();				/* Must be done before ma_thread_end */
+  ma_thread_end();
+  ma_thread_global_end();
 #endif
 #ifdef _WIN32
   if (have_tcpip);
     WSACleanup( );
 #endif /* _WIN32 */
-    my_init_done=0;
-} /* my_end */
+    ma_init_done=0;
+} /* ma_end */
 
 #ifdef _WIN32
 
@@ -201,9 +201,9 @@ void setEnvString(char *ret, const char *name, const char *value)
   DBUG_VOID_RETURN ;
 }
 
-static void my_win_init(void)
+static void ma_win_init(void)
 {
-  DBUG_ENTER("my_win_init");
+  DBUG_ENTER("ma_win_init");
   win32_init_tcp_ip();
   DBUG_VOID_RETURN ;
 }
@@ -220,7 +220,7 @@ static void my_win_init(void)
 #define WINSOCK2KEY "SYSTEM\\CurrentControlSet\\Services\\Winsock2\\Parameters"
 #define WINSOCKKEY  "SYSTEM\\CurrentControlSet\\Services\\Winsock\\Parameters"
 
-static my_bool win32_have_tcpip(void)
+static ma_bool win32_have_tcpip(void)
 {
   HKEY hTcpipRegKey;
   if (RegOpenKeyEx ( HKEY_LOCAL_MACHINE, TCPIPKEY, 0, KEY_READ,
@@ -239,7 +239,7 @@ static my_bool win32_have_tcpip(void)
   return (TRUE);
 }
 
-static my_bool win32_init_tcp_ip()
+static ma_bool win32_init_tcp_ip()
 {
   if (win32_have_tcpip())
   {

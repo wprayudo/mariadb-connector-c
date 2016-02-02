@@ -21,7 +21,7 @@
    Stefan Esser */
 
 
-#include "my_global.h"
+#include "ma_global.h"
 #include "string.h"
 
 /* This code is heavily based on the PHP md5 implementation */ 

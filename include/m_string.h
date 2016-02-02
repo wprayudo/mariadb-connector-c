@@ -122,8 +122,8 @@ extern	void bzero(gptr dst, size_t len);
 #if !defined(bcmp) && !defined(HAVE_BCMP)
 extern	int bcmp(const char *s1,const char *s2, size_t len);
 #ifdef HAVE_purify
-extern	int my_bcmp(const char *s1,const char *s2, size_t len);
-#define bcmp(A,B,C) my_bcmp((A),(B),(C))
+extern	int ma_bcmp(const char *s1,const char *s2, size_t len);
+#define bcmp(A,B,C) ma_bcmp((A),(B),(C))
 #endif
 #endif
 
@@ -143,9 +143,9 @@ extern	char *strend(const char *s);
 extern  char *strcend(const char *, char);
 extern	char *strfield(char *src,int fields,int chars,int blanks,
 			   int tabch);
-extern	char *strfill(my_string s, size_t len, pchar fill);
+extern	char *strfill(ma_string s, size_t len, pchar fill);
 extern	uint strinstr(const char *str,const char *search);
-extern  uint r_strinstr(reg1 my_string str,int from, reg4 my_string search);
+extern  uint r_strinstr(reg1 ma_string str,int from, reg4 ma_string search);
 extern	char *strkey(char *dst,char *head,char *tail,char *flags);
 extern	char *strmake(char *dst,const char *src, size_t length);
 #ifndef strmake_overlapp
@@ -191,8 +191,8 @@ extern int is_prefix(const char *, const char *);
 /* Conversion rutins */
 
 #ifdef USE_MY_ITOA
-extern char *my_itoa(int val,char *dst,int radix);
-extern char *my_ltoa(long val,char *dst,int radix);
+extern char *ma_itoa(int val,char *dst,int radix);
+extern char *ma_ltoa(long val,char *dst,int radix);
 #endif
 
 extern char *llstr(longlong value,char *buff);

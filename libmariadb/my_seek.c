@@ -20,31 +20,31 @@
 	/* Seek to position in file */
 	/*ARGSUSED*/
 
-my_off_t my_seek(File fd, my_off_t pos, int whence,
+ma_off_t ma_seek(File fd, ma_off_t pos, int whence,
 		 myf MyFlags __attribute__((unused)))
 {
   reg1 os_off_t newpos;
-  DBUG_ENTER("my_seek");
+  DBUG_ENTER("ma_seek");
   DBUG_PRINT("my",("Fd: %d  Hpos: %lu  Pos: %lu  Whence: %d  MyFlags: %d",
 		   fd, ((ulonglong) pos) >> 32, (ulong) pos, whence, MyFlags));
   newpos=lseek(fd, pos, whence);
   if (newpos == (os_off_t) -1)
   {
-    my_errno=errno;
+    g_errno=errno;
     DBUG_PRINT("error",("lseek: %lu, errno: %d",newpos,errno));
     DBUG_RETURN(MY_FILEPOS_ERROR);
   }
-  DBUG_RETURN((my_off_t) newpos);
-} /* my_seek */
+  DBUG_RETURN((ma_off_t) newpos);
+} /* ma_seek */
 
 
 	/* Tell current position of file */
 	/* ARGSUSED */
 
-my_off_t my_tell(File fd, myf MyFlags __attribute__((unused)))
+ma_off_t ma_tell(File fd, myf MyFlags __attribute__((unused)))
 {
   os_off_t pos;
-  DBUG_ENTER("my_tell");
+  DBUG_ENTER("ma_tell");
   DBUG_PRINT("my",("Fd: %d  MyFlags: %d",fd, MyFlags));
 #ifdef HAVE_TELL
   pos=tell(fd);
@@ -52,7 +52,7 @@ my_off_t my_tell(File fd, myf MyFlags __attribute__((unused)))
   pos=lseek(fd, 0L, MY_SEEK_CUR);
 #endif
   if (pos == (os_off_t) -1)
-    my_errno=errno;
+    g_errno=errno;
   DBUG_PRINT("exit",("pos: %lu",pos));
-  DBUG_RETURN((my_off_t) pos);
-} /* my_tell */
+  DBUG_RETURN((ma_off_t) pos);
+} /* ma_tell */

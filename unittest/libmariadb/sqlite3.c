@@ -2,7 +2,7 @@
   Some basic tests for sqlite
 */
 
-#include "my_test.h"
+#include "ma_test.h"
 
 #ifdef HAVE_SQLITE
 static int test1(MYSQL *mysql)
@@ -172,7 +172,7 @@ static int test_simple_prepare(MYSQL *my)
 #endif
 
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
 #ifdef HAVE_SQLITE
   {"test-sqlite", test1, TEST_CONNECTION_NONE, 0,  NULL,  NULL},
   {"test_simple_prepare", test_simple_prepare, TEST_CONNECTION_NONE, 0, NULL, NULL},
@@ -189,7 +189,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

@@ -17,8 +17,8 @@
   51 Franklin St., Fifth Floor, Boston, MA 02110, USA
 
  *************************************************************************************/
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <ma_common.h>
 #include <ma_pvio.h>
 #include <errmsg.h>
@@ -31,16 +31,16 @@
 
 #ifndef HAVE_OPENSSL_DEFAULT
 #include <memory.h>
-#define my_malloc(A,B) malloc((A))
-#undef my_free
-#define my_free(A) free((A))
-#define my_snprintf snprintf
-#define my_vsnprintf vsnprintf
+#define ma_malloc(A,B) malloc((A))
+#undef ma_free
+#define ma_free(A) free((A))
+#define ma_snprintf snprintf
+#define ma_vsnprintf vsnprintf
 #undef SAFE_MUTEX
 #endif
-#include <my_pthread.h>
+#include <ma_pthread.h>
 
-extern my_bool ma_ssl_initialized;
+extern ma_bool ma_ssl_initialized;
 static SSL_CTX *SSL_context= NULL;
 
 #define MAX_SSL_ERR_LEN 100
@@ -97,19 +97,19 @@ static void ma_ssl_get_error(char *errmsg, size_t length)
    set during ssl_initialization
  */
 #if (OPENSSL_VERSION_NUMBER < 0x10000000) 
-static unsigned long my_cb_threadid(void)
+static unsigned long ma_cb_threadid(void)
 {
   /* cast pthread_t to unsigned long */
   return (unsigned long) pthread_self();
 }
 #else
-static void my_cb_threadid(CRYPTO_THREADID *id)
+static void ma_cb_threadid(CRYPTO_THREADID *id)
 {
   CRYPTO_THREADID_set_numeric(id, (unsigned long)pthread_self());
 }
 #endif
 
-static void my_cb_locking(int mode, int n, const char *file, int line)
+static void ma_cb_locking(int mode, int n, const char *file, int line)
 {
   if (mode & CRYPTO_LOCK)
     pthread_mutex_lock(&LOCK_crypto[n]);
@@ -125,7 +125,7 @@ static int ssl_thread_init()
   if (LOCK_crypto == NULL)
   {
     if (!(LOCK_crypto= 
-          (pthread_mutex_t *)my_malloc(sizeof(pthread_mutex_t) * max, MYF(0))))
+          (pthread_mutex_t *)ma_malloc(sizeof(pthread_mutex_t) * max, MYF(0))))
       return 1;
 
     for (i=0; i < max; i++)
@@ -133,11 +133,11 @@ static int ssl_thread_init()
   }
 
 #if (OPENSSL_VERSION_NUMBER < 0x10000000) 
-  CRYPTO_set_id_callback(my_cb_threadid);
+  CRYPTO_set_id_callback(ma_cb_threadid);
 #else
-  CRYPTO_THREADID_set_callback(my_cb_threadid);
+  CRYPTO_THREADID_set_callback(ma_cb_threadid);
 #endif
-  CRYPTO_set_locking_callback(my_cb_locking);
+  CRYPTO_set_locking_callback(ma_cb_locking);
 
   return 0;
 }
@@ -148,7 +148,7 @@ static int ssl_thread_init()
   context SSL_context
 
   SYNOPSIS
-    my_ssl_start
+    ma_ssl_start
       mysql        connection handle
 
   RETURN VALUES
@@ -200,7 +200,7 @@ end:
    mysql_server_end() function
 
    SYNOPSIS
-     my_ssl_end()
+     ma_ssl_end()
        void
 
    RETURN VALUES
@@ -218,7 +218,7 @@ void ma_ssl_end()
     for (i=0; i < CRYPTO_num_locks(); i++)
       pthread_mutex_destroy(&LOCK_crypto[i]);
 
-    my_free((gptr)LOCK_crypto);
+    ma_free((gptr)LOCK_crypto);
     LOCK_crypto= NULL;
 
     if (SSL_context)
@@ -324,7 +324,7 @@ error:
   return 1;
 }
 
-static int my_verify_callback(int ok, X509_STORE_CTX *ctx)
+static int ma_verify_callback(int ok, X509_STORE_CTX *ctx)
 {
   X509 *check_cert;
   SSL *ssl;
@@ -375,7 +375,7 @@ void *ma_ssl_init(MYSQL *mysql)
   verify= (!mysql->options.ssl_ca && !mysql->options.ssl_capath) ?
            SSL_VERIFY_NONE : SSL_VERIFY_PEER;
 
-  SSL_CTX_set_verify(SSL_context, verify, my_verify_callback);
+  SSL_CTX_set_verify(SSL_context, verify, ma_verify_callback);
   SSL_CTX_set_verify_depth(SSL_context, 1);
 
   pthread_mutex_unlock(&LOCK_openssl_config);
@@ -387,10 +387,10 @@ error:
   return NULL;
 }
 
-my_bool ma_ssl_connect(MARIADB_SSL *cssl)
+ma_bool ma_ssl_connect(MARIADB_SSL *cssl)
 {
   SSL *ssl = (SSL *)cssl->ssl;
-  my_bool blocking;
+  ma_bool blocking;
   MYSQL *mysql;
   MARIADB_PVIO *pvio;
   int rc;
@@ -418,7 +418,7 @@ my_bool ma_ssl_connect(MARIADB_SSL *cssl)
   rc= SSL_get_verify_result(ssl);
   if (rc != X509_V_OK)
   {
-    my_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN, 
+    ma_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN, 
                  ER(CR_SSL_CONNECTION_ERROR), X509_verify_cert_error_string(rc));
     /* restore blocking mode */
     if (!blocking)
@@ -442,7 +442,7 @@ size_t ma_ssl_write(MARIADB_SSL *cssl, const uchar* buffer, size_t length)
   return SSL_write((SSL *)cssl->ssl, (void *)buffer, (int)length);
 }
 
-my_bool ma_ssl_close(MARIADB_SSL *cssl)
+ma_bool ma_ssl_close(MARIADB_SSL *cssl)
 {
   int i, rc;
   SSL *ssl;
@@ -548,7 +548,7 @@ unsigned int ma_ssl_get_finger_print(MARIADB_SSL *cssl, unsigned char *fp, unsig
 
   if (!(cert= SSL_get_peer_certificate(cssl->ssl)))
   {
-    my_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
+    ma_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
                         ER(CR_SSL_CONNECTION_ERROR), 
                         "Unable to get server certificate");
     return 0;
@@ -556,7 +556,7 @@ unsigned int ma_ssl_get_finger_print(MARIADB_SSL *cssl, unsigned char *fp, unsig
 
   if (len < EVP_MAX_MD_SIZE)
   {
-    my_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
+    ma_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
                         ER(CR_SSL_CONNECTION_ERROR), 
                         "Finger print buffer too small");
     return 0;
@@ -564,8 +564,8 @@ unsigned int ma_ssl_get_finger_print(MARIADB_SSL *cssl, unsigned char *fp, unsig
   fp_len= len;
   if (!X509_digest(cert, digest, fp, &fp_len))
   {
-    my_free(fp);
-    my_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
+    ma_free(fp);
+    ma_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
                         ER(CR_SSL_CONNECTION_ERROR), 
                         "invalid finger print of server certificate");
     return 0;
@@ -576,7 +576,7 @@ unsigned int ma_ssl_get_finger_print(MARIADB_SSL *cssl, unsigned char *fp, unsig
 
 extern char *ssl_protocol_version[5];
 
-my_bool ma_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version)
+ma_bool ma_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version)
 {
   SSL *ssl;
 

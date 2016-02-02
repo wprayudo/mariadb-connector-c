@@ -27,7 +27,7 @@
   even if space allocation failed
 */
 
-my_bool init_dynamic_array(DYNAMIC_ARRAY *array, uint element_size,
+ma_bool init_dynamic_array(DYNAMIC_ARRAY *array, uint element_size,
                            uint init_alloc, uint alloc_increment CALLER_INFO_PROTO)
 {
   DBUG_ENTER("init_dynamic_array");
@@ -44,7 +44,7 @@ my_bool init_dynamic_array(DYNAMIC_ARRAY *array, uint element_size,
   array->max_element=init_alloc;
   array->alloc_increment=alloc_increment;
   array->size_of_element=element_size;
-  if (!(array->buffer=(char*) my_malloc_ci(element_size*init_alloc,MYF(MY_WME))))
+  if (!(array->buffer=(char*) ma_malloc_ci(element_size*init_alloc,MYF(MY_WME))))
   {
     array->max_element=0;
     DBUG_RETURN(TRUE);
@@ -53,7 +53,7 @@ my_bool init_dynamic_array(DYNAMIC_ARRAY *array, uint element_size,
 }
 
 
-my_bool insert_dynamic(DYNAMIC_ARRAY *array, gptr element)
+ma_bool insert_dynamic(DYNAMIC_ARRAY *array, gptr element)
 {
   gptr buffer;
   if (array->elements == array->max_element)
@@ -78,7 +78,7 @@ unsigned char *alloc_dynamic(DYNAMIC_ARRAY *array)
   if (array->elements == array->max_element)
   {
     char *new_ptr;
-    if (!(new_ptr=(char*) my_realloc(array->buffer,(array->max_element+
+    if (!(new_ptr=(char*) ma_realloc(array->buffer,(array->max_element+
 				     array->alloc_increment)*
 				     array->size_of_element,
 				     MYF(MY_WME | MY_ALLOW_ZERO_PTR))))
@@ -100,7 +100,7 @@ unsigned char *pop_dynamic(DYNAMIC_ARRAY *array)
 }
 
 
-my_bool set_dynamic(DYNAMIC_ARRAY *array, gptr element, uint idx)
+ma_bool set_dynamic(DYNAMIC_ARRAY *array, gptr element, uint idx)
 {
   if (idx >= array->elements)
   {
@@ -110,7 +110,7 @@ my_bool set_dynamic(DYNAMIC_ARRAY *array, gptr element, uint idx)
       char *new_ptr;
       size=(idx+array->alloc_increment)/array->alloc_increment;
       size*= array->alloc_increment;
-      if (!(new_ptr=(char*) my_realloc(array->buffer,size*
+      if (!(new_ptr=(char*) ma_realloc(array->buffer,size*
 				       array->size_of_element,
 				       MYF(MY_WME | MY_ALLOW_ZERO_PTR))))
 	return TRUE;
@@ -145,7 +145,7 @@ void delete_dynamic(DYNAMIC_ARRAY *array)
 {
   if (array->buffer)
   {
-    my_free(array->buffer);
+    ma_free(array->buffer);
     array->buffer=0;
     array->elements=array->max_element=0;
   }
@@ -167,7 +167,7 @@ void freeze_size(DYNAMIC_ARRAY *array)
 
   if (array->buffer && array->max_element != elements)
   {
-    array->buffer=(char*) my_realloc(array->buffer,
+    array->buffer=(char*) ma_realloc(array->buffer,
 				     elements*array->size_of_element,
 				     MYF(MY_WME));
     array->max_element=elements;

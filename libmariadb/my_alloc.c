@@ -17,8 +17,8 @@
 
 /* Routines to handle mallocing of results which will be freed the same time */
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <m_string.h>
 
 void init_alloc_root(MEM_ROOT *mem_root, size_t block_size, size_t pre_alloc_size)
@@ -31,7 +31,7 @@ void init_alloc_root(MEM_ROOT *mem_root, size_t block_size, size_t pre_alloc_siz
   if (pre_alloc_size)
   {
     if ((mem_root->free = mem_root->pre_alloc=
-	 (USED_MEM*) my_malloc(pre_alloc_size+ ALIGN_SIZE(sizeof(USED_MEM)),
+	 (USED_MEM*) ma_malloc(pre_alloc_size+ ALIGN_SIZE(sizeof(USED_MEM)),
 			       MYF(0))))
     {
       mem_root->free->size=pre_alloc_size+ALIGN_SIZE(sizeof(USED_MEM));
@@ -48,7 +48,7 @@ gptr alloc_root(MEM_ROOT *mem_root, size_t Size)
   reg1 USED_MEM *next;
   Size+=ALIGN_SIZE(sizeof(USED_MEM));
 
-  if (!(next = (USED_MEM*) my_malloc(Size,MYF(MY_WME))))
+  if (!(next = (USED_MEM*) ma_malloc(Size,MYF(MY_WME))))
   {
     if (mem_root->error_handler)
       (*mem_root->error_handler)();
@@ -78,7 +78,7 @@ gptr alloc_root(MEM_ROOT *mem_root, size_t Size)
     if (max_left*4 < mem_root->block_size && get_size < mem_root->block_size)
       get_size=mem_root->block_size;		/* Normal alloc */
 
-    if (!(next = (USED_MEM*) my_malloc(get_size,MYF(MY_WME | MY_ZEROFILL))))
+    if (!(next = (USED_MEM*) ma_malloc(get_size,MYF(MY_WME | MY_ZEROFILL))))
     {
       if (mem_root->error_handler)
 	(*mem_root->error_handler)();
@@ -116,13 +116,13 @@ void free_root(MEM_ROOT *root, myf MyFlags)
   {
     old=next; next= next->next ;
     if (old != root->pre_alloc)
-      my_free(old);
+      ma_free(old);
   }
   for (next= root->free ; next ; )
   {
     old=next; next= next->next ;
     if (old != root->pre_alloc)
-      my_free(old);
+      ma_free(old);
   }
   root->used=root->free=0;
   if (root->pre_alloc)

@@ -40,7 +40,7 @@
 #include "m_string.h"
 #include <ctype.h>
 #include "m_ctype.h"
-#include <my_dir.h>
+#include <ma_dir.h>
 #include <mysql.h>
 #include <mariadb/ma_io.h>
 
@@ -70,7 +70,7 @@ NullS,
 #define windows_ext	".ini"
 #endif
 
-static my_bool search_default_file(DYNAMIC_ARRAY *args,MEM_ROOT *alloc,
+static ma_bool search_default_file(DYNAMIC_ARRAY *args,MEM_ROOT *alloc,
 				   const char *dir, const char *config_file,
 				   const char *ext, TYPELIB *group);
 
@@ -81,7 +81,7 @@ void load_defaults(const char *conf_file, const char **groups,
   DYNAMIC_ARRAY args;
   const char **dirs, *forced_default_file;
   TYPELIB group;
-  my_bool found_print_defaults=0;
+  ma_bool found_print_defaults=0;
   uint args_used=0;
   MEM_ROOT alloc;
   char *ptr,**res;
@@ -127,7 +127,7 @@ void load_defaults(const char *conf_file, const char **groups,
   for (; *groups ; groups++)
     group.count++;
 
-  if (my_init_dynamic_array(&args, sizeof(char*),*argc, 32))
+  if (ma_init_dynamic_array(&args, sizeof(char*),*argc, 32))
     goto err;
   if (forced_default_file)
   {
@@ -222,14 +222,14 @@ void free_defaults(char **argv)
 }
 
 
-static my_bool search_default_file(DYNAMIC_ARRAY *args, MEM_ROOT *alloc,
+static ma_bool search_default_file(DYNAMIC_ARRAY *args, MEM_ROOT *alloc,
 				   const char *dir, const char *config_file,
 				   const char *ext, TYPELIB *group)
 {
   char name[FN_REFLEN+10],buff[4096],*ptr,*end,*value,*tmp;
   MA_FILE *file;
   uint line=0;
-  my_bool read_values= 0, found_group= 0, is_escaped= 0, is_quoted= 0;
+  ma_bool read_values= 0, found_group= 0, is_escaped= 0, is_quoted= 0;
 
   if (!strstr(config_file, "://"))
   {
@@ -251,7 +251,7 @@ static my_bool search_default_file(DYNAMIC_ARRAY *args, MEM_ROOT *alloc,
 #if !defined(_WIN32) && !defined(OS2)
     {
       MY_STAT stat_info;
-      if (!my_stat(name,&stat_info,MYF(0)))
+      if (!ma_stat(name,&stat_info,MYF(0)))
         return 0;
       if (stat_info.st_mode & S_IWOTH) /* ignore world-writeable files */
       {

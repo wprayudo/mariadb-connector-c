@@ -27,20 +27,20 @@
     char is 1.
 */
 
-#include <my_global.h>
+#include <ma_global.h>
 #include "m_string.h"
 
 uint strinstr(reg1 const char *str,reg4 const char *search)
 {
-  reg2 my_string i,j;
-  my_string start = (my_string) str;
+  reg2 ma_string i,j;
+  ma_string start = (ma_string) str;
 
  skipp:
   while (*str != '\0')
   {
     if (*str++ == *search)
     {
-      i=(my_string) str; j= (my_string) search+1;
+      i=(ma_string) str; j= (ma_string) search+1;
       while (*j)
 	if (*i++ != *j++) goto skipp;
       return ((uint) (str - start));

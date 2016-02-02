@@ -49,13 +49,13 @@
 #else
 #include <string.h>
 #endif
-#include <my_global.h>
+#include <ma_global.h>
 #include <m_ctype.h>
 #include <m_string.h>
 
 #include <iconv.h>
 
-extern int my_snprintf(char* to, size_t n, const char* fmt, ...);
+extern int ma_snprintf(char* to, size_t n, const char* fmt, ...);
 /*
   +----------------------------------------------------------------------+
   | PHP Version 5                                                        |
@@ -710,7 +710,7 @@ size_t mysql_cset_escape_quotes(const CHARSET_INFO *cset, char *newstr,
   const char   *newstr_s = newstr;
   const char   *newstr_e = newstr + 2 * escapestr_len;
   const char   *end = escapestr + escapestr_len;
-  my_bool  escape_overflow = FALSE;
+  ma_bool  escape_overflow = FALSE;
 
   DBUG_ENTER("mysql_cset_escape_quotes");
 
@@ -764,7 +764,7 @@ size_t mysql_cset_escape_slashes(const CHARSET_INFO * cset, char *newstr,
   const char   *newstr_s = newstr;
   const char   *newstr_e = newstr + 2 * escapestr_len;
   const char   *end = escapestr + escapestr_len;
-  my_bool  escape_overflow = FALSE;
+  ma_bool  escape_overflow = FALSE;
 
   DBUG_ENTER("mysql_cset_escape_slashes");
   DBUG_PRINT("info", ("charset=%s", cset->name));
@@ -1086,7 +1086,7 @@ char *madb_get_os_character_set()
   char *p= NULL;
 #ifdef _WIN32
   char codepage[FN_REFLEN];
-  my_snprintf(codepage, FN_REFLEN, "%u", GetConsoleWindow() ?
+  ma_snprintf(codepage, FN_REFLEN, "%u", GetConsoleWindow() ?
               GetConsoleCP() : GetACP());
   p= codepage;
 #elif defined(HAVE_NL_LANGINFO) && defined(HAVE_SETLOCALE)
@@ -1128,7 +1128,7 @@ int madb_get_windows_cp(const char *charset)
    Another purpose it to avoid BOMs in result string, adding BE if necessary
    e.g.UTF16 does not work form iconv, while UTF-16 does.
  */
-static void map_charset_name(const char *cs_name, my_bool target_cs, char *buffer, size_t buff_len)
+static void map_charset_name(const char *cs_name, ma_bool target_cs, char *buffer, size_t buff_len)
 {
   char *ptr= buffer, digits[3], endianness[3]= "BE";
 

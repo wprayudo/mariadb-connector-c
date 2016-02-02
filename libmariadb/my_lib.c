@@ -21,7 +21,7 @@
 #define USES_TYPES		/* sys/types is included */
 #include	"mysys_priv.h"
 #include	<m_string.h>
-#include	<my_dir.h>	/* Structs used by my_dir,includes sys/types */
+#include	<ma_dir.h>	/* Structs used by ma_dir,includes sys/types */
 #include	"mysys_err.h"
 #if defined(HAVE_DIRENT_H)
 # include <dirent.h>
@@ -54,7 +54,7 @@
 #endif
 
 #ifdef OS2
-#include "my_os2dirsrch.h"
+#include "ma_os2dirsrch.h"
 #endif
 
 #if defined(THREAD) && defined(HAVE_READDIR_R)
@@ -71,13 +71,13 @@ static int	comp_names(struct fileinfo *a,struct fileinfo *b);
 
 	/* We need this because program don't know with malloc we used */
 
-void my_dirend(MY_DIR *buffer)
+void ma_dirend(MY_DIR *buffer)
 {
-  DBUG_ENTER("my_dirend");
+  DBUG_ENTER("ma_dirend");
   if (buffer)
-    my_free(buffer);
+    ma_free(buffer);
   DBUG_VOID_RETURN;
-} /* my_dirend */
+} /* ma_dirend */
 
 
 	/* Compare in sort of filenames */
@@ -90,7 +90,7 @@ static int comp_names(struct fileinfo *a, struct fileinfo *b)
 
 #if !defined(MSDOS) && !defined(_WIN32)
 
-MY_DIR	*my_dir(const char *path, myf MyFlags)
+MY_DIR	*ma_dir(const char *path, myf MyFlags)
 {
   DIR		*dirp;
   struct dirent *dp;
@@ -98,21 +98,21 @@ MY_DIR	*my_dir(const char *path, myf MyFlags)
   char	       *buffer, *obuffer, *tempptr;
   uint		fcnt,i,size,firstfcnt, maxfcnt,length;
   char		tmp_path[FN_REFLEN+1],*tmp_file;
-  my_ptrdiff_t	diff;
+  ma_ptrdiff_t	diff;
   bool		eof;
 #ifdef THREAD
   char	dirent_tmp[sizeof(struct dirent)+_POSIX_PATH_MAX+1];
 #endif
-  DBUG_ENTER("my_dir");
+  DBUG_ENTER("ma_dir");
   DBUG_PRINT("my",("path: '%s' stat: %d  MyFlags: %d",path,MyFlags));
 
 #if defined(THREAD) && !defined(HAVE_READDIR_R)
   pthread_mutex_lock(&THR_LOCK_open);
 #endif
 
-  dirp = opendir(directory_file_name(tmp_path,(my_string) path));
+  dirp = opendir(directory_file_name(tmp_path,(ma_string) path));
   size = STARTSIZE;
-  if (dirp == NULL || ! (buffer = (char *) my_malloc(size, MyFlags)))
+  if (dirp == NULL || ! (buffer = (char *) ma_malloc(size, MyFlags)))
     goto error;
 
   fcnt = 0;
@@ -139,14 +139,14 @@ MY_DIR	*my_dir(const char *path, myf MyFlags)
       if (MyFlags & MY_WANT_STAT)
       {
 	(void)strmov(tmp_file,dp->d_name);
-	(void)my_stat(tmp_path, &fnames[fcnt].mystat, MyFlags);
+	(void)ma_stat(tmp_path, &fnames[fcnt].mystat, MyFlags);
       }
       ++fcnt;
     }
     if (eof)
       break;
     size += STARTSIZE; obuffer = buffer;
-    if (!(buffer = (char *) my_realloc((gptr) buffer, size,
+    if (!(buffer = (char *) ma_realloc((gptr) buffer, size,
 				       MyFlags | MY_FREE_ON_ERROR)))
       goto error;			/* No memory */
     length= (uint) (sizeof(struct fileinfo ) * firstfcnt);
@@ -180,13 +180,13 @@ MY_DIR	*my_dir(const char *path, myf MyFlags)
 #if defined(THREAD) && !defined(HAVE_READDIR_R)
   pthread_mutex_unlock(&THR_LOCK_open);
 #endif
-  my_errno=errno;
+  g_errno=errno;
   if (dirp)
     (void) closedir(dirp);
   if (MyFlags & (MY_FAE+MY_WME))
-    my_error(EE_DIR,MYF(ME_BELL+ME_WAITTANG),path,my_errno);
+    ma_error(EE_DIR,MYF(ME_BELL+ME_WAITTANG),path,g_errno);
   DBUG_RETURN((MY_DIR *) NULL);
-} /* my_dir */
+} /* ma_dir */
 
 
 /*
@@ -199,13 +199,13 @@ MY_DIR	*my_dir(const char *path, myf MyFlags)
  * Returns pointer to dst;
  */
 
-my_string directory_file_name (my_string dst, const char *src)
+ma_string directory_file_name (ma_string dst, const char *src)
 {
 #ifndef VMS
 
   /* Process as Unix format: just remove test the final slash. */
 
-  my_string end;
+  ma_string end;
 
   if (src[0] == 0)
     src= (char*) ".";				/* Use empty as current */
@@ -221,7 +221,7 @@ my_string directory_file_name (my_string dst, const char *src)
 
   long slen;
   long rlen;
-  my_string ptr, rptr;
+  ma_string ptr, rptr;
   char bracket;
   struct FAB fab = cc$rms_fab;
   struct NAM nam = cc$rms_nam;
@@ -344,7 +344,7 @@ my_string directory_file_name (my_string dst, const char *src)
 *****************************************************************************
 */
 
-MY_DIR	*my_dir(const char *path, myf MyFlags)
+MY_DIR	*ma_dir(const char *path, myf MyFlags)
 {
   struct fileinfo *fnames;
   char	       *buffer, *obuffer, *tempptr;
@@ -357,13 +357,13 @@ MY_DIR	*my_dir(const char *path, myf MyFlags)
 #endif
   ushort	mode;
   char		tmp_path[FN_REFLEN],*tmp_file,attrib;
-  my_ptrdiff_t	diff;
+  ma_ptrdiff_t	diff;
 #ifdef _WIN64
   __int64       handle;
 #else
   long		handle;
 #endif
-  DBUG_ENTER("my_dir");
+  DBUG_ENTER("ma_dir");
   DBUG_PRINT("my",("path: '%s' stat: %d  MyFlags: %d",path,MyFlags));
 
   /* Put LIB-CHAR as last path-character if not there */
@@ -392,7 +392,7 @@ MY_DIR	*my_dir(const char *path, myf MyFlags)
   size = STARTSIZE;
   firstfcnt = maxfcnt = (size - sizeof(MY_DIR)) /
     (sizeof(struct fileinfo) + FN_LEN);
-  if ((buffer = (char *) my_malloc(size, MyFlags)) == 0)
+  if ((buffer = (char *) ma_malloc(size, MyFlags)) == 0)
     goto error;
   fnames=   (struct fileinfo *) (buffer + sizeof(MY_DIR));
   tempptr = (char *) (fnames + maxfcnt);
@@ -435,7 +435,7 @@ MY_DIR	*my_dir(const char *path, myf MyFlags)
     if (eof)
       break;
     size += STARTSIZE; obuffer = buffer;
-    if (!(buffer = (char *) my_realloc((gptr) buffer, size,
+    if (!(buffer = (char *) ma_realloc((gptr) buffer, size,
 				       MyFlags | MY_FREE_ON_ERROR)))
       goto error;
     length= sizeof(struct fileinfo ) * firstfcnt;
@@ -463,15 +463,15 @@ MY_DIR	*my_dir(const char *path, myf MyFlags)
   DBUG_RETURN((MY_DIR *) buffer);
 
 error:
-  my_errno=errno;
+  g_errno=errno;
 #ifndef __BORLANDC__
   if (handle != -1)
       _findclose(handle);
 #endif
   if (MyFlags & MY_FAE+MY_WME)
-    my_error(EE_DIR,MYF(ME_BELL+ME_WAITTANG),path,errno);
+    ma_error(EE_DIR,MYF(ME_BELL+ME_WAITTANG),path,errno);
   DBUG_RETURN((MY_DIR *) NULL);
-} /* my_dir */
+} /* ma_dir */
 
 #else /* MSDOS and not WIN32 */
 
@@ -480,7 +480,7 @@ error:
 ** At MSDOS you always get stat of files, but time is in packed MSDOS-format
 ******************************************************************************/
 
-MY_DIR	*my_dir(const char* path, myf MyFlags)
+MY_DIR	*ma_dir(const char* path, myf MyFlags)
 {
   struct fileinfo *fnames;
   char	       *buffer, *obuffer, *tempptr;
@@ -489,8 +489,8 @@ MY_DIR	*my_dir(const char* path, myf MyFlags)
   struct find_t find;
   ushort	mode;
   char		tmp_path[FN_REFLEN],*tmp_file,attrib;
-  my_ptrdiff_t	diff;
-  DBUG_ENTER("my_dir");
+  ma_ptrdiff_t	diff;
+  DBUG_ENTER("ma_dir");
   DBUG_PRINT("my",("path: '%s' stat: %d  MyFlags: %d",path,MyFlags));
 
   /* Put LIB-CHAR as last path-character if not there */
@@ -514,7 +514,7 @@ MY_DIR	*my_dir(const char* path, myf MyFlags)
   size = STARTSIZE;
   firstfcnt = maxfcnt = (size - sizeof(MY_DIR)) /
     (sizeof(struct fileinfo) + FN_LEN);
-  if ((buffer = (char *) my_malloc(size, MyFlags)) == 0)
+  if ((buffer = (char *) ma_malloc(size, MyFlags)) == 0)
     goto error;
   fnames=   (struct fileinfo *) (buffer + sizeof(MY_DIR));
   tempptr = (char *) (fnames + maxfcnt);
@@ -543,7 +543,7 @@ MY_DIR	*my_dir(const char* path, myf MyFlags)
     if (eof)
       break;
     size += STARTSIZE; obuffer = buffer;
-    if (!(buffer = (char *) my_realloc((gptr) buffer, size,
+    if (!(buffer = (char *) ma_realloc((gptr) buffer, size,
 				       MyFlags | MY_FREE_ON_ERROR)))
       goto error;
     length= sizeof(struct fileinfo ) * firstfcnt;
@@ -569,9 +569,9 @@ MY_DIR	*my_dir(const char* path, myf MyFlags)
 
 error:
   if (MyFlags & MY_FAE+MY_WME)
-    my_error(EE_DIR,MYF(ME_BELL+ME_WAITTANG),path,errno);
+    ma_error(EE_DIR,MYF(ME_BELL+ME_WAITTANG),path,errno);
   DBUG_RETURN((MY_DIR *) NULL);
-} /* my_dir */
+} /* ma_dir */
 
 #endif /* WIN32 && MSDOS */
 
@@ -580,35 +580,35 @@ error:
 ** Note that MY_STAT is assumed to be same as struct stat
 ****************************************************************************/ 
 
-int my_fstat(int Filedes, MY_STAT *stat_area, myf MyFlags )
+int ma_fstat(int Filedes, MY_STAT *stat_area, myf MyFlags )
 {
-  DBUG_ENTER("my_fstat");
+  DBUG_ENTER("ma_fstat");
   DBUG_PRINT("my",("fd: %d MyFlags: %d",Filedes,MyFlags));
   DBUG_RETURN(fstat(Filedes, (struct stat *) stat_area));
 }
 
-MY_STAT *my_stat(const char *path, MY_STAT *stat_area, myf my_flags)
+MY_STAT *ma_stat(const char *path, MY_STAT *stat_area, myf ma_flags)
 {
   int m_used;
-  DBUG_ENTER("my_stat");
+  DBUG_ENTER("ma_stat");
   DBUG_PRINT("my", ("path: '%s', stat_area: %lx, MyFlags: %d", path,
-	     (unsigned char *) stat_area, my_flags));
+	     (unsigned char *) stat_area, ma_flags));
 
   if ((m_used= (stat_area == NULL)))
-    if (!(stat_area = (MY_STAT *) my_malloc(sizeof(MY_STAT), my_flags)))
+    if (!(stat_area = (MY_STAT *) ma_malloc(sizeof(MY_STAT), ma_flags)))
       goto error;
-  if ( ! stat((my_string) path, (struct stat *) stat_area) )
+  if ( ! stat((ma_string) path, (struct stat *) stat_area) )
     DBUG_RETURN(stat_area);
-  my_errno=errno;
+  g_errno=errno;
   if (m_used)					/* Free if new area */
-    my_free(stat_area);
+    ma_free(stat_area);
 
 error:
-  if (my_flags & (MY_FAE+MY_WME))
+  if (ma_flags & (MY_FAE+MY_WME))
   {
-    my_error(EE_STAT, MYF(ME_BELL+ME_WAITTANG),path,my_errno);
+    ma_error(EE_STAT, MYF(ME_BELL+ME_WAITTANG),path,g_errno);
     DBUG_RETURN((MY_STAT *) NULL);
   }
   DBUG_RETURN((MY_STAT *) NULL);
-} /* my_stat */
+} /* ma_stat */
 

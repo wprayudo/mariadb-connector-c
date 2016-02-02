@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#include "my_test.h"
+#include "ma_test.h"
 
 /* Bug#15752 "Lost connection to MySQL server when calling a SP from C API" */
 
@@ -73,7 +73,7 @@ static int test_bug15752(MYSQL *mysql)
 
 
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"test_bug15752", test_bug15752, TEST_CONNECTION_NEW, 0, NULL , NULL},
   {NULL, NULL, 0, 0, NULL, NULL}
 };
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

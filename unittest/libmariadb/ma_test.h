@@ -21,13 +21,17 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <mysql.h>
 #include <tap.h>
 #include <getopt.h>
 #include <memory.h>
 #include <errmsg.h>
+
+#ifndef WIN32
+#include <pthread.h>
+#endif
 
 #ifndef OK
 # define OK 0
@@ -95,19 +99,19 @@ if (!(expr))\
 #define TEST_CONNECTION_NEW        4 /* create a separate connection */
 #define TEST_CONNECTION_DONT_CLOSE 8 /* don't close connection */
 
-struct my_option_st
+struct ma_option_st
 {
   enum mysql_option option;
   char              *value;
 };
 
-struct my_tests_st
+struct ma_tests_st
 {
   const char *name;
   int  (*function)(MYSQL *);
   int   connection;
   ulong connect_flags;
-  struct my_option_st *options;
+  struct ma_option_st *options;
   char *skipmsg;
 };
 
@@ -118,7 +122,7 @@ static unsigned int port = 0;
 static char *socketname = 0;
 static char *username = 0;
 /*
-static struct my_option test_options[] =
+static struct ma_option test_options[] =
 {
   {"schema", 'd', "database to use", (uchar **) &schema, (uchar **) &schema,
    0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
@@ -197,7 +201,7 @@ int do_verify_prepare_field(MYSQL_RES *result,
 
 /* Prepare statement, execute, and process result set for given query */
 
-int my_stmt_result(MYSQL *mysql, const char *buff)
+int ma_stmt_result(MYSQL *mysql, const char *buff)
 {
   MYSQL_STMT *stmt;
   int        row_count= 0;
@@ -219,14 +223,14 @@ int my_stmt_result(MYSQL *mysql, const char *buff)
   return row_count;
 }
 /*
-static my_bool
-get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
+static ma_bool
+get_one_option(int optid, const struct ma_option *opt __attribute__((unused)),
                char *argument)
 {
   switch (optid) {
   case '?':
   case 'I':                           
-    my_print_help(test_options);
+    ma_print_help(test_options);
     exit(0);
     break;
   }
@@ -269,14 +273,14 @@ error:
   return FAIL;
 }
 
-my_bool query_int_variable(MYSQL *con, const char *var_name, int *var_value)
+ma_bool query_int_variable(MYSQL *con, const char *var_name, int *var_value)
 {
   MYSQL_RES *rs;
   MYSQL_ROW row;
 
   char query_buffer[MAX_TEST_QUERY_LENGTH];
 
-  my_bool is_null;
+  ma_bool is_null;
 
   sprintf(query_buffer,
           "SELECT %s",
@@ -372,9 +376,8 @@ int check_variable(MYSQL *mysql, char *variable, char *value)
  * returns a new connection. This function will be called, if the test doesn't
  * use default_connection.
  */
-MYSQL *test_connect(struct my_tests_st *test) {
+MYSQL *test_connect(struct ma_tests_st *test) {
   MYSQL *mysql;
-  char query[255];
   int i= 0;
   int timeout= 10;
   int truncation_report= 1;
@@ -401,30 +404,12 @@ MYSQL *test_connect(struct my_tests_st *test) {
     }
   }
   if (!(mysql_real_connect(mysql, hostname, username, password,
-                           NULL, port, socketname, (test) ? test->connect_flags:0)))
+                           schema, port, socketname, (test) ? test->connect_flags:0)))
   {
     diag("Couldn't establish connection to server %s. Error (%d): %s", 
                    hostname, mysql_errno(mysql), mysql_error(mysql));
     mysql_close(mysql);
     return(NULL);
-  }
-
-  /* change database or create if it doesn't exist */
-  if (mysql_select_db(mysql, schema)) {
-    diag("Error number: %d", mysql_errno(mysql));
-
-    if(mysql_errno(mysql) == 1049) {
-      sprintf(query, "CREATE DATABASE %s", schema);
-      if (mysql_query(mysql, query)) {
-        diag("Can't create database %s", schema);
-        mysql_close(mysql);
-        return NULL;
-      }
-    } else {
-      diag("Error (%d): %s", mysql_errno(mysql), mysql_error(mysql));
-      mysql_close(mysql);
-      return NULL;
-    }
   }
 
   return(mysql);
@@ -465,7 +450,7 @@ void get_envvars() {
     socketname= envvar;
 }
 
-void run_tests(struct my_tests_st *test) {
+void run_tests(struct ma_tests_st *test) {
   int i, rc, total=0;
   MYSQL *mysql, *mysql_default= NULL;  /* default connection */
 
@@ -526,6 +511,7 @@ void run_tests(struct my_tests_st *test) {
     }
   }
   if (mysql_default) {
+    diag("close default");
     mysql_close(mysql_default);
   }
   mysql_server_end();

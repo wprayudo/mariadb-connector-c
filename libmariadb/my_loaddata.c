@@ -40,8 +40,8 @@
   +----------------------------------------------------------------------+
 */
 
-#include "my_global.h"
-#include <my_sys.h>
+#include "ma_global.h"
+#include <ma_sys.h>
 #include <mysys_err.h>
 #include <m_string.h>
 #include "errmsg.h"
@@ -68,7 +68,7 @@ int mysql_local_infile_init(void **ptr, const char *filename, void *userdata)
   MYSQL *mysql= (MYSQL *)userdata;
   DBUG_ENTER("mysql_local_infile_init");
 
-  info = (MYSQL_INFILE_INFO *)my_malloc(sizeof(MYSQL_INFILE_INFO), MYF(MY_ZEROFILL));
+  info = (MYSQL_INFILE_INFO *)ma_malloc(sizeof(MYSQL_INFILE_INFO), MYF(MY_ZEROFILL));
   if (!info) {
     DBUG_RETURN(1);
   }
@@ -89,8 +89,8 @@ int mysql_local_infile_init(void **ptr, const char *filename, void *userdata)
     }
     else
     {
-      info->error_no = my_errno;
-      my_snprintf((char *)info->error_msg, sizeof(info->error_msg), 
+      info->error_no = g_errno;
+      ma_snprintf((char *)info->error_msg, sizeof(info->error_msg), 
                   EE(EE_FILENOTFOUND), filename, info->error_no);
     }
     DBUG_RETURN(1);
@@ -153,7 +153,7 @@ void mysql_local_infile_end(void *ptr)
   {
     if (info->fp)
       ma_close(info->fp);
-    my_free(ptr);
+    ma_free(ptr);
   }		
   DBUG_VOID_RETURN;
 }
@@ -191,13 +191,13 @@ void STDCALL mysql_set_local_infile_handler(MYSQL *conn,
 /* }}} */
 
 /* {{{ mysql_handle_local_infile */
-my_bool mysql_handle_local_infile(MYSQL *conn, const char *filename)
+ma_bool mysql_handle_local_infile(MYSQL *conn, const char *filename)
 {
   unsigned int buflen= 4096;
   int bufread;
   unsigned char *buf= NULL;
   void *info= NULL;
-  my_bool result= 1;
+  ma_bool result= 1;
 
   DBUG_ENTER("mysql_handle_local_infile");
 
@@ -210,15 +210,15 @@ my_bool mysql_handle_local_infile(MYSQL *conn, const char *filename)
   }
 
   if (!(conn->options.client_flag & CLIENT_LOCAL_FILES)) {
-    my_set_error(conn, CR_UNKNOWN_ERROR, SQLSTATE_UNKNOWN, "Load data local infile forbidden");
+    ma_set_error(conn, CR_UNKNOWN_ERROR, SQLSTATE_UNKNOWN, "Load data local infile forbidden");
     /* write empty packet to server */
-    my_net_write(&conn->net, "", 0);
+    ma_net_write(&conn->net, "", 0);
     net_flush(&conn->net);
     goto infile_error;
   }
 
   /* allocate buffer for reading data */
-  buf = (uchar *)my_malloc(buflen, MYF(0));
+  buf = (uchar *)ma_malloc(buflen, MYF(0));
 
   /* init handler: allocate read buffer and open file */
   if (conn->options.local_infile_init(&info, filename,
@@ -228,8 +228,8 @@ my_bool mysql_handle_local_infile(MYSQL *conn, const char *filename)
     int tmp_errno;
 
     tmp_errno= conn->options.local_infile_error(info, tmp_buf, sizeof(tmp_buf));
-    my_set_error(conn, tmp_errno, SQLSTATE_UNKNOWN, tmp_buf);
-    my_net_write(&conn->net, "", 0);
+    ma_set_error(conn, tmp_errno, SQLSTATE_UNKNOWN, tmp_buf);
+    ma_net_write(&conn->net, "", 0);
     net_flush(&conn->net);
     goto infile_error;
   }
@@ -237,17 +237,17 @@ my_bool mysql_handle_local_infile(MYSQL *conn, const char *filename)
   /* read data */
   while ((bufread= conn->options.local_infile_read(info, (char *)buf, buflen)) > 0)
   {
-    if (my_net_write(&conn->net, (char *)buf, bufread))
+    if (ma_net_write(&conn->net, (char *)buf, bufread))
     {
-      my_set_error(conn, CR_SERVER_LOST, SQLSTATE_UNKNOWN, NULL);
+      ma_set_error(conn, CR_SERVER_LOST, SQLSTATE_UNKNOWN, NULL);
       goto infile_error;
     }
   }
 
   /* send empty packet for eof */
-  if (my_net_write(&conn->net, "", 0) || net_flush(&conn->net))
+  if (ma_net_write(&conn->net, "", 0) || net_flush(&conn->net))
   {
-    my_set_error(conn, CR_SERVER_LOST, SQLSTATE_UNKNOWN, NULL);
+    ma_set_error(conn, CR_SERVER_LOST, SQLSTATE_UNKNOWN, NULL);
     goto infile_error;
   }
 
@@ -256,7 +256,7 @@ my_bool mysql_handle_local_infile(MYSQL *conn, const char *filename)
   {
     char tmp_buf[MYSQL_ERRMSG_SIZE];
     int tmp_errno= conn->options.local_infile_error(info, tmp_buf, sizeof(tmp_buf));
-    my_set_error(conn, tmp_errno, SQLSTATE_UNKNOWN, tmp_buf);
+    ma_set_error(conn, tmp_errno, SQLSTATE_UNKNOWN, tmp_buf);
     goto infile_error;
   }
 
@@ -264,7 +264,7 @@ my_bool mysql_handle_local_infile(MYSQL *conn, const char *filename)
 
 infile_error:
   conn->options.local_infile_end(info);
-  my_free(buf);
+  ma_free(buf);
   DBUG_RETURN(result);
 }
 /* }}} */

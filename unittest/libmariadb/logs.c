@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#include "my_test.h"
+#include "ma_test.h"
 
 #ifdef ENABLE_IF_IN_USE
 static int enable_general_log(MYSQL *mysql, int truncate)
@@ -59,7 +59,7 @@ static int restore_general_log(MYSQL *mysql)
 static int test_logs(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   char       data[255];
   size_t     length;
   int        rc;
@@ -81,21 +81,21 @@ static int test_logs(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, data, strlen(data));
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
 
-  my_bind[0].buffer_type= MYSQL_TYPE_SHORT;
-  my_bind[0].buffer= (void *)&id;
+  ma_bind[0].buffer_type= MYSQL_TYPE_SHORT;
+  ma_bind[0].buffer= (void *)&id;
 
-  my_bind[1].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[1].buffer= (void *)&data;
-  my_bind[1].buffer_length= 255;
-  my_bind[1].length= (unsigned long *)&length;
+  ma_bind[1].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[1].buffer= (void *)&data;
+  ma_bind[1].buffer_length= 255;
+  ma_bind[1].length= (unsigned long *)&length;
 
   id= 9876;
   strcpy((char *)data, "MySQL - Open Source Database");
   length= strlen(data);
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -147,14 +147,14 @@ static int test_logs(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, data, strlen(data));
   check_stmt_rc(rc, stmt);
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
 
-  my_bind[1].buffer_length= 255;
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  ma_bind[1].buffer_length= 255;
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_fetch(stmt);
@@ -199,7 +199,7 @@ static int test_logs(MYSQL *mysql)
 }
 
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"test_logs", test_logs, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
   {NULL, NULL, 0, 0, NULL, NULL}
 };
@@ -211,7 +211,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

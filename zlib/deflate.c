@@ -220,14 +220,14 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
 {
     deflate_state *s;
     int wrap = 1;
-    static const char my_version[] = ZLIB_VERSION;
+    static const char ma_version[] = ZLIB_VERSION;
 
     ushf *overlay;
     /* We overlay pending_buf and d_buf+l_buf. This works since the average
      * output size for (length,distance) codes is <= 24 bits.
      */
 
-    if (version == Z_NULL || version[0] != my_version[0] ||
+    if (version == Z_NULL || version[0] != ma_version[0] ||
         stream_size != sizeof(z_stream)) {
         return Z_VERSION_ERROR;
     }

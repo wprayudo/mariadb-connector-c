@@ -15,18 +15,18 @@
    Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA */
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 
 #ifdef USE_SYSTEM_WRAPPERS
 #include "system_wrappers.h"
 #endif
 
 #ifdef THREAD
-#include <my_pthread.h>
+#include <ma_pthread.h>
 extern pthread_mutex_t THR_LOCK_malloc,THR_LOCK_open,THR_LOCK_keycache,
   THR_LOCK_lock,THR_LOCK_isam,THR_LOCK_net,THR_LOCK_charset;
 extern pthread_mutex_t LOCK_bitmap;
 #else
-#include <my_no_pthread.h>
+#include <ma_no_pthread.h>
 #endif

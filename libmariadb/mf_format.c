@@ -43,7 +43,7 @@
 #endif
 #endif
 
-my_string fn_format(my_string to, const char *name, const char *dsk,
+ma_string fn_format(ma_string to, const char *name, const char *dsk,
 		    const char *form, int flag)
 {
   reg1 uint length;
@@ -54,7 +54,7 @@ my_string fn_format(my_string to, const char *name, const char *dsk,
 		       name,dsk,form,flag));
 
 	/* Kopiera & skippa enheten */
-  name+=(length=dirname_part(dev,(startpos=(my_string) name)));
+  name+=(length=dirname_part(dev,(startpos=(ma_string) name)));
   if (length == 0 || flag & 1)
   {
     (void) strmake(dev,dsk, sizeof(dev) - 2);
@@ -132,8 +132,8 @@ my_string fn_format(my_string to, const char *name, const char *dsk,
 
 size_s strlength(const char *str)
 {
-  reg1 my_string pos;
-  reg2 my_string found;
+  reg1 ma_string pos;
+  reg2 ma_string found;
   DBUG_ENTER("strlength");
 
   pos=found=(char*) str;

@@ -23,10 +23,10 @@
 */
 
 
-#include <my_global.h>
+#include <ma_global.h>
 #include <mysql.h>
 #include <ma_pvio.h>
-#include <my_sys.h>
+#include <ma_sys.h>
 #include <m_string.h>
 #include "mysql.h"
 #include "mysqld_error.h"
@@ -66,7 +66,7 @@ ulong net_buffer_length= 8192;	/* Default length. Enlarged if necessary */
 #endif
 #include "mysqld_error.h"
 #ifdef MYSQL_SERVER
-#include "my_pthread.h"
+#include "ma_pthread.h"
 #include "thr_alarm.h"
 void sql_print_error(const char *format,...);
 #define RETRY_COUNT mysqld_net_retry_count
@@ -78,13 +78,13 @@ extern ulong mysqld_net_retry_count;
 #define ALARM        ALARM_net
 #endif
 
-typedef my_bool thr_alarm_t;
-typedef my_bool ALARM;
+typedef ma_bool thr_alarm_t;
+typedef ma_bool ALARM;
 #define thr_alarm_init(A) (*(A))=0
 #define thr_alarm_in_use(A) (*(A))
 #define thr_end_alarm(A)
 #define thr_alarm(A,B,C) local_thr_alarm((A),(B),(C))
-static inline int local_thr_alarm(my_bool *A,int B __attribute__((unused)),ALARM *C __attribute__((unused)))
+static inline int local_thr_alarm(ma_bool *A,int B __attribute__((unused)),ALARM *C __attribute__((unused)))
 {
   *A=1;
   return 0;
@@ -112,9 +112,9 @@ static int net_write_buff(NET *net,const char *packet, size_t len);
 
 	/* Init with packet info */
 
-int my_net_init(NET *net, MARIADB_PVIO* pvio)
+int ma_net_init(NET *net, MARIADB_PVIO* pvio)
 {
-  if (!(net->buff=(uchar*) my_malloc(net_buffer_length,MYF(MY_WME | MY_ZEROFILL))))
+  if (!(net->buff=(uchar*) ma_malloc(net_buffer_length,MYF(MY_WME | MY_ZEROFILL))))
     return 1;
 
   /* We don't allocate memory for multi buffer, since we don't know in advance if the server
@@ -144,15 +144,15 @@ int my_net_init(NET *net, MARIADB_PVIO* pvio)
 
 void net_end(NET *net)
 {
-  my_free(net->buff);
-  my_free(net->mbuff);
+  ma_free(net->buff);
+  ma_free(net->mbuff);
   net->buff=0;
   net->mbuff= 0;
 }
 
 /* Realloc the packet buffer */
 
-static my_bool net_realloc(NET *net, my_bool is_multi, size_t length)
+static ma_bool net_realloc(NET *net, ma_bool is_multi, size_t length)
 {
   uchar *buff;
   size_t pkt_length;
@@ -171,7 +171,7 @@ static my_bool net_realloc(NET *net, my_bool is_multi, size_t length)
   pkt_length = (length+IO_SIZE-1) & ~(IO_SIZE-1);
   /* reallocate buffer:
      size= pkt_length + NET_HEADER_SIZE + COMP_HEADER_SIZE */
-  if (!(buff=(uchar*) my_realloc(is_multi ? net->mbuff : net->buff, 
+  if (!(buff=(uchar*) ma_realloc(is_multi ? net->mbuff : net->buff, 
                                  pkt_length + NET_HEADER_SIZE + COMP_HEADER_SIZE,
                                  MYF(MY_WME))))
   {
@@ -234,7 +234,7 @@ int net_flush(NET *net)
 */
 
 int
-my_net_write(NET *net, const char *packet, size_t len)
+ma_net_write(NET *net, const char *packet, size_t len)
 {
   uchar buff[NET_HEADER_SIZE];
   while (len >= MAX_PACKET_LENGTH)
@@ -347,12 +347,12 @@ int net_add_multi_command(NET *net, uchar command, const uchar *packet,
   size_t required_length, current_length;
   required_length= length + 1 + NET_HEADER_SIZE;
 
-  /* We didn't allocate memory in my_net_init since it was to early to
+  /* We didn't allocate memory in ma_net_init since it was to early to
    * detect if the server supports COM_MULTI command */
   if (!net->mbuff)
   {
     size_t alloc_size= (required_length + IO_SIZE - 1) & ~(IO_SIZE - 1);
-    if (!(net->mbuff= (char *)my_malloc(alloc_size, MYF(MY_WME))))
+    if (!(net->mbuff= (char *)ma_malloc(alloc_size, MYF(MY_WME))))
     {
       net->last_errno=ER_OUT_OF_RESOURCES;
       net->error=2;
@@ -383,7 +383,7 @@ int net_add_multi_command(NET *net, uchar command, const uchar *packet,
 error:
  if (net->mbuff)
  {
-   my_free(net->mbuff);
+   ma_free(net->mbuff);
    net->mbuff= net->mbuff_pos= net->mbuff_end= 0;
  }
  return 1; 
@@ -408,7 +408,7 @@ net_real_write(NET *net,const char *packet,size_t  len)
     size_t complen;
     uchar *b;
     uint header_length=NET_HEADER_SIZE+COMP_HEADER_SIZE;
-    if (!(b=(uchar*) my_malloc(len + NET_HEADER_SIZE + COMP_HEADER_SIZE + 1,
+    if (!(b=(uchar*) ma_malloc(len + NET_HEADER_SIZE + COMP_HEADER_SIZE + 1,
 				    MYF(MY_WME))))
     {
       net->last_errno=ER_OUT_OF_RESOURCES;
@@ -418,7 +418,7 @@ net_real_write(NET *net,const char *packet,size_t  len)
     }
     memcpy(b+header_length,packet,len);
 
-    if (my_compress((unsigned char*) b+header_length,&len,&complen))
+    if (ma_compress((unsigned char*) b+header_length,&len,&complen))
     {
       DBUG_PRINT("warning",
 		 ("Compression error; Continuing without compression"));
@@ -447,7 +447,7 @@ net_real_write(NET *net,const char *packet,size_t  len)
   }
 #ifdef HAVE_COMPRESS
   if (net->compress)
-    my_free((char*) packet);
+    ma_free((char*) packet);
 #endif
   net->reading_or_writing=0;
   DBUG_RETURN(((int) (pos != end)));
@@ -457,7 +457,7 @@ net_real_write(NET *net,const char *packet,size_t  len)
 ** Read something from server/clinet
 *****************************************************************************/
 static ulong
-my_real_read(NET *net, size_t *complen)
+ma_real_read(NET *net, size_t *complen)
 {
   uchar *pos;
   size_t length;
@@ -537,7 +537,7 @@ end:
   return(len);
 }
 
-ulong my_net_read(NET *net)
+ulong ma_net_read(NET *net)
 {
   size_t len,complen;
 
@@ -545,7 +545,7 @@ ulong my_net_read(NET *net)
   if (!net->compress)
   {
 #endif
-    len = my_real_read (net,(size_t *)&complen);
+    len = ma_real_read (net,(size_t *)&complen);
     if (len == MAX_PACKET_LENGTH)
     {
       /* multi packet read */
@@ -556,7 +556,7 @@ ulong my_net_read(NET *net)
       {
         length+= len;
         net->where_b+= (unsigned long)len;
-        len= my_real_read(net, &complen);
+        len= ma_real_read(net, &complen);
       } while (len == MAX_PACKET_LENGTH);
       net->where_b= last_pos;
       if (len != packet_error)
@@ -592,7 +592,7 @@ ulong my_net_read(NET *net)
     size_t packet_length,
            buffer_length;
     size_t current= 0, start= 0;
-    my_bool is_multi_packet= 0;
+    ma_bool is_multi_packet= 0;
 
     /* check if buffer is empty */
     if (!net->remain_in_buf)
@@ -666,9 +666,9 @@ ulong my_net_read(NET *net)
 
       net->where_b=(unsigned long)buffer_length;
 
-      if ((packet_length = my_real_read(net,(size_t *)&complen)) == packet_error)
+      if ((packet_length = ma_real_read(net,(size_t *)&complen)) == packet_error)
         return packet_error;
-      if (my_uncompress((unsigned char*) net->buff + net->where_b, &packet_length, &complen))
+      if (ma_uncompress((unsigned char*) net->buff + net->where_b, &packet_length, &complen))
       {
         len= packet_error;
         net->error=2;			/* caller will close socket */

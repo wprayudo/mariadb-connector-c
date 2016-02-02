@@ -15,8 +15,8 @@
    Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA */
 
-#ifndef _my_dir_h
-#define _my_dir_h
+#ifndef _ma_dir_h
+#define _ma_dir_h
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -26,7 +26,7 @@ extern "C" {
 
 #include <sys/stat.h>
 
-	/* Defines for my_dir and my_stat */
+	/* Defines for ma_dir and ma_stat */
 
 #define MY_S_IFMT	S_IFMT	/* type of file */
 #define MY_S_IFDIR	S_IFDIR /* directory */
@@ -47,14 +47,14 @@ extern "C" {
 #define MY_S_ISREG(m)	(((m) & MY_S_IFMT) == MY_S_IFREG)
 #define MY_S_ISFIFO(m)	(((m) & MY_S_IFMT) == MY_S_IFIFO)
 
-#define MY_DONT_SORT	512	/* my_lib; Don't sort files */
-#define MY_WANT_STAT	1024	/* my_lib; stat files */
+#define MY_DONT_SORT	512	/* ma_lib; Don't sort files */
+#define MY_WANT_STAT	1024	/* ma_lib; stat files */
 
-	/* typedefs for my_dir & my_stat */
+	/* typedefs for ma_dir & ma_stat */
 
 #ifdef USE_MY_STAT_STRUCT
 
-typedef struct my_stat
+typedef struct ma_stat
 {
   dev_t		st_dev;		/* major & minor device numbers */
   ino_t		st_ino;		/* inode number */
@@ -75,22 +75,22 @@ typedef struct my_stat
 
 #endif /* USE_MY_STAT_STRUCT */
 
-typedef struct fileinfo		/* Struct returned from my_dir & my_stat */
+typedef struct fileinfo		/* Struct returned from ma_dir & ma_stat */
 {
   char			*name;
   MY_STAT		mystat;
 } FILEINFO;
 
-typedef struct st_my_dir	/* Struct returned from my_dir */
+typedef struct st_ma_dir	/* Struct returned from ma_dir */
 {
   struct fileinfo	*dir_entry;
   uint			number_off_files;
 } MY_DIR;
 
-extern MY_DIR *my_dir(const char *path,myf MyFlags);
-extern void my_dirend(MY_DIR *buffer);
-extern MY_STAT *my_stat(const char *path, MY_STAT *stat_area, myf my_flags);
-extern int my_fstat(int filenr, MY_STAT *stat_area, myf MyFlags);
+extern MY_DIR *ma_dir(const char *path,myf MyFlags);
+extern void ma_dirend(MY_DIR *buffer);
+extern MY_STAT *ma_stat(const char *path, MY_STAT *stat_area, myf ma_flags);
+extern int ma_fstat(int filenr, MY_STAT *stat_area, myf MyFlags);
 
 #endif /* MY_DIR_H */
 

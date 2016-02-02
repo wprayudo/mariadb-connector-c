@@ -17,14 +17,14 @@
 
 /* This makes a wrapper for mutex handling to make it easier to debug mutex */
 
-#include <my_global.h>
+#include <ma_global.h>
 #if defined(HAVE_LINUXTHREADS) && !defined (__USE_UNIX98)
 #define __USE_UNIX98			/* To get rw locks under Linux */
 #endif
 #include <m_string.h>
 #if defined(THREAD) && defined(SAFE_MUTEX)
 #undef SAFE_MUTEX			/* Avoid safe_mutex redefinitions */
-#include <my_pthread.h>
+#include <ma_pthread.h>
 
 #ifndef DO_NOT_REMOVE_THREAD_WRAPPERS
 /* Remove wrappers */
@@ -35,7 +35,7 @@
 #undef pthread_cond_wait
 #undef pthread_cond_timedwait
 #ifdef HAVE_NONPOSIX_PTHREAD_MUTEX_INIT
-#define pthread_mutex_init(a,b) my_pthread_mutex_init((a),(b))
+#define pthread_mutex_init(a,b) ma_pthread_mutex_init((a),(b))
 #endif
 #endif /* DO_NOT_REMOVE_THREAD_WRAPPERS */
 
@@ -157,7 +157,7 @@ int safe_cond_wait(pthread_cond_t *cond, safe_mutex_t *mp, const char *file,
   {
     fprintf(stderr,
 	    "safe_mutex:  Count was %d in thread %lx when locking mutex at %s, line %d\n",
-	    mp->count-1, my_thread_id(), file, line);
+	    mp->count-1, ma_thread_id(), file, line);
     fflush(stderr);
     abort();
   }
@@ -195,7 +195,7 @@ int safe_cond_timedwait(pthread_cond_t *cond, safe_mutex_t *mp,
   {
     fprintf(stderr,
 	    "safe_mutex:  Count was %d in thread %lx when locking mutex at %s, line %d (error: %d)\n",
-	    mp->count-1, my_thread_id(), file, line, error);
+	    mp->count-1, ma_thread_id(), file, line, error);
     fflush(stderr);
     abort();
   }

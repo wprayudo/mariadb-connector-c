@@ -35,8 +35,8 @@
   This saves a hashed number as a string in the password field.
 *****************************************************************************/
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <m_string.h>
 #include <sha1.h>
 #include "mysql.h"
@@ -104,7 +104,7 @@ static inline unsigned int char_val(char X)
  * written by Andrey Hristov (andrey@php.net)
  * License: PHP License 3.0
  */
-void my_crypt(unsigned char *buffer, const unsigned char *s1, const unsigned char *s2, size_t len)
+void ma_crypt(unsigned char *buffer, const unsigned char *s1, const unsigned char *s2, size_t len)
 {
 	const unsigned char *s1_end= s1 + len;
 	while (s1 < s1_end) {
@@ -112,7 +112,7 @@ void my_crypt(unsigned char *buffer, const unsigned char *s1, const unsigned cha
 	}
 }
 
-void my_scramble_41(const unsigned char *buffer, const char *scramble, const char *password)
+void ma_scramble_41(const unsigned char *buffer, const char *scramble, const char *password)
 {
 	MYSQL_SHA1_CTX context;
 	unsigned char sha1[SHA1_MAX_LENGTH];
@@ -136,7 +136,7 @@ void my_scramble_41(const unsigned char *buffer, const char *scramble, const cha
 	MYSQL_SHA1Final((unsigned char *)buffer, &context);
 
 	/* let's crypt buffer now */
-	my_crypt((uchar *)buffer, (const unsigned char *)buffer, (const unsigned  char *)sha1, SHA1_MAX_LENGTH);
+	ma_crypt((uchar *)buffer, (const unsigned char *)buffer, (const unsigned  char *)sha1, SHA1_MAX_LENGTH);
 }
 /* }}} */
 
@@ -203,8 +203,8 @@ char *scramble_323(char *to, const char *message, const char *password)
   return to;
 }
 
-my_bool check_scramble(const char *scrambled, const char *message,
-		       ulong *hash_pass, my_bool old_ver)
+ma_bool check_scramble(const char *scrambled, const char *message,
+		       ulong *hash_pass, ma_bool old_ver)
 {
   struct rand_struct rand_st;
   ulong hash_message[2];

@@ -29,13 +29,13 @@ static char *find_file_in_path(char *to,const char *name);
 	   If filename doesn't contain a path append MY_BASEDIR_VERSION or
 	   MY_BASEDIR if defined, else append "/my/running".
 	   own_path_name_part is concatinated to result.
-	   my_path puts result in to and returns to */
+	   ma_path puts result in to and returns to */
 
-my_string my_path(my_string to, const char *progname,
+ma_string ma_path(ma_string to, const char *progname,
 		  const char *own_pathname_part)
 {
-  my_string start,end,prog;
-  DBUG_ENTER("my_path");
+  ma_string start,end,prog;
+  DBUG_ENTER("ma_path");
 
   start=to;					/* Return this */
   if (progname && (dirname_part(to, progname) ||
@@ -45,7 +45,7 @@ my_string my_path(my_string to, const char *progname,
     VOID(intern_filename(to,to));
     if (!test_if_hard_path(to))
     {
-      if (!my_getwd(curr_dir,FN_REFLEN,MYF(0)))
+      if (!ma_getwd(curr_dir,FN_REFLEN,MYF(0)))
 	bchange(to,0,curr_dir, (uint) strlen(curr_dir), (uint) strlen(to)+1);
     }
   }
@@ -68,7 +68,7 @@ my_string my_path(my_string to, const char *progname,
   }
   DBUG_PRINT("exit",("to: '%s'",start));
   DBUG_RETURN(start);
-} /* my_path */
+} /* ma_path */
 
 
 	/* test if file without filename is found in path */

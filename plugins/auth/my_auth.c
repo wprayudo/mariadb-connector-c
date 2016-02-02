@@ -1,5 +1,5 @@
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <m_string.h>
 #include <errmsg.h>
 #include <ma_common.h>
@@ -24,7 +24,7 @@ typedef struct {
     uint pkt_len;
   } cached_server_reply;
   uint packets_read, packets_written; /**< counters for send/received packets */
-  my_bool mysql_change_user;          /**< if it's mysql_change_user() */
+  ma_bool mysql_change_user;          /**< if it's mysql_change_user() */
   int last_read_packet_len;           /**< the length of the last *read* packet */
 } MCPVIO_EXT;
 /*
@@ -80,7 +80,7 @@ static int native_password_auth_client(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
   if (mysql && mysql->passwd[0])
   {
     char scrambled[SCRAMBLE_LENGTH + 1];
-    my_scramble_41((uchar *)scrambled, (char*)pkt, mysql->passwd);
+    ma_scramble_41((uchar *)scrambled, (char*)pkt, mysql->passwd);
     if (vio->write_packet(vio, (uchar*)scrambled, SCRAMBLE_LENGTH))
       return CR_ERROR;
   }
@@ -102,7 +102,7 @@ static int send_change_user_packet(MCPVIO_EXT *mpvio,
   size_t conn_attr_len= (mysql->options.extension) ? 
                          mysql->options.extension->connect_attrs_len : 0;
 
-  buff= my_alloca(USERNAME_LENGTH+1 + data_len+1 + NAME_LEN+1 + 2 + NAME_LEN+1 + 9 + conn_attr_len);
+  buff= ma_alloca(USERNAME_LENGTH+1 + data_len+1 + NAME_LEN+1 + 2 + NAME_LEN+1 + 9 + conn_attr_len);
 
   end= strmake(buff, mysql->user, USERNAME_LENGTH) + 1;
 
@@ -115,7 +115,7 @@ static int send_change_user_packet(MCPVIO_EXT *mpvio,
       DBUG_ASSERT(data_len <= 255);
       if (data_len > 255)
       {
-        my_set_error(mysql, CR_MALFORMED_PACKET, SQLSTATE_UNKNOWN, 0);
+        ma_set_error(mysql, CR_MALFORMED_PACKET, SQLSTATE_UNKNOWN, 0);
         goto error;
       }
       *end++= data_len;
@@ -145,7 +145,7 @@ static int send_change_user_packet(MCPVIO_EXT *mpvio,
                       buff, (ulong)(end-buff), 1, NULL);
 
 error:
-  my_afree(buff);
+  ma_afree(buff);
   return res;
 }
 
@@ -161,7 +161,7 @@ static int send_client_reply_packet(MCPVIO_EXT *mpvio,
                          mysql->options.extension->connect_attrs_len : 0;
 
   /* see end= buff+32 below, fixed size of the packet is 32 bytes */
-  buff= my_alloca(33 + USERNAME_LENGTH + data_len + NAME_LEN + NAME_LEN + conn_attr_len + 9);
+  buff= ma_alloca(33 + USERNAME_LENGTH + data_len + NAME_LEN + NAME_LEN + conn_attr_len + 9);
   
   mysql->client_flag|= mysql->options.client_flag;
   mysql->client_flag|= CLIENT_CAPABILITIES;
@@ -194,7 +194,7 @@ static int send_client_reply_packet(MCPVIO_EXT *mpvio,
         (mysql->options.extension && (mysql->options.extension->ssl_fp || 
                                       mysql->options.extension->ssl_fp_list)))
     {
-      my_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
+      ma_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
                           ER(CR_SSL_CONNECTION_ERROR), 
                           "Server doesn't support SSL");
       goto error;
@@ -251,9 +251,9 @@ static int send_client_reply_packet(MCPVIO_EXT *mpvio,
       Send mysql->client_flag, max_packet_size - unencrypted otherwise
       the server does not know we want to do SSL
     */
-    if (my_net_write(net, (char*)buff, (size_t) (end-buff)) || net_flush(net))
+    if (ma_net_write(net, (char*)buff, (size_t) (end-buff)) || net_flush(net))
     {
-      my_set_error(mysql, CR_SERVER_LOST, SQLSTATE_UNKNOWN,
+      ma_set_error(mysql, CR_SERVER_LOST, SQLSTATE_UNKNOWN,
                           ER(CR_SERVER_LOST_EXTENDED),
                           "sending connection information to server",
                           errno);
@@ -299,7 +299,7 @@ static int send_client_reply_packet(MCPVIO_EXT *mpvio,
   if (mpvio->db && (mysql->server_capabilities & CLIENT_CONNECT_WITH_DB))
   {
     end= strmake(end, mpvio->db, NAME_LEN) + 1;
-    mysql->db= my_strdup(mpvio->db, MYF(MY_WME));
+    mysql->db= ma_strdup(mpvio->db, MYF(MY_WME));
   }
 
   if (mysql->server_capabilities & CLIENT_PLUGIN_AUTH)
@@ -308,19 +308,19 @@ static int send_client_reply_packet(MCPVIO_EXT *mpvio,
   end= ma_send_connect_attr(mysql, end);
 
   /* Write authentication package */
-  if (my_net_write(net, buff, (size_t) (end-buff)) || net_flush(net))
+  if (ma_net_write(net, buff, (size_t) (end-buff)) || net_flush(net))
   {
-    my_set_error(mysql, CR_SERVER_LOST, SQLSTATE_UNKNOWN,
+    ma_set_error(mysql, CR_SERVER_LOST, SQLSTATE_UNKNOWN,
                         ER(CR_SERVER_LOST_EXTENDED),
                         "sending authentication information",
                         errno);
     goto error;
   }
-  my_afree(buff);
+  ma_afree(buff);
   return 0;
   
 error:
-  my_afree(buff);
+  ma_afree(buff);
   return 1;
 }
 
@@ -412,9 +412,9 @@ static int client_mpvio_write_packet(struct st_plugin_vio *mpv,
     if (mpvio->mysql->thd)
       res= 1; /* no chit-chat in embedded */
     else
-      res= my_net_write(net, (char *)pkt, pkt_len) || net_flush(net);
+      res= ma_net_write(net, (char *)pkt, pkt_len) || net_flush(net);
     if (res)
-      my_set_error(mpvio->mysql, CR_SERVER_LOST, SQLSTATE_UNKNOWN,
+      ma_set_error(mpvio->mysql, CR_SERVER_LOST, SQLSTATE_UNKNOWN,
                                  ER(CR_SERVER_LOST_EXTENDED),
                                  "sending authentication information",
                                  errno);
@@ -556,10 +556,10 @@ int run_plugin_auth(MYSQL *mysql, char *data, uint data_len,
       is already set (the plugin has done it)
     */
     if (res > CR_ERROR)
-      my_set_error(mysql, res, SQLSTATE_UNKNOWN, 0);
+      ma_set_error(mysql, res, SQLSTATE_UNKNOWN, 0);
     else
       if (!mysql->net.last_errno)
-        my_set_error(mysql, CR_UNKNOWN_ERROR, SQLSTATE_UNKNOWN, 0);
+        ma_set_error(mysql, CR_UNKNOWN_ERROR, SQLSTATE_UNKNOWN, 0);
     return 1;
   }
 
@@ -572,7 +572,7 @@ int run_plugin_auth(MYSQL *mysql, char *data, uint data_len,
   if (pkt_length == packet_error)
   {
     if (mysql->net.last_errno == CR_SERVER_LOST)
-      my_set_error(mysql, CR_SERVER_LOST, SQLSTATE_UNKNOWN,
+      ma_set_error(mysql, CR_SERVER_LOST, SQLSTATE_UNKNOWN,
                           ER(CR_SERVER_LOST_EXTENDED),
                           "reading authorization packet",
                           errno);
@@ -594,7 +594,7 @@ int run_plugin_auth(MYSQL *mysql, char *data, uint data_len,
       /* new "use different plugin" packet */
       uint len;
       auth_plugin_name= (char*)mysql->net.read_pos + 1;
-      len= (uint)strlen(auth_plugin_name); /* safe as my_net_read always appends \0 */
+      len= (uint)strlen(auth_plugin_name); /* safe as ma_net_read always appends \0 */
       mpvio.cached_server_reply.pkt_len= pkt_length - len - 2;
       mpvio.cached_server_reply.pkt= mysql->net.read_pos + len + 2;
     }
@@ -609,10 +609,10 @@ int run_plugin_auth(MYSQL *mysql, char *data, uint data_len,
     if (res > CR_OK)
     {
       if (res > CR_ERROR)
-        my_set_error(mysql, res, SQLSTATE_UNKNOWN, 0);
+        ma_set_error(mysql, res, SQLSTATE_UNKNOWN, 0);
       else
         if (!mysql->net.last_errno)
-          my_set_error(mysql, CR_UNKNOWN_ERROR, SQLSTATE_UNKNOWN, 0);
+          ma_set_error(mysql, CR_UNKNOWN_ERROR, SQLSTATE_UNKNOWN, 0);
       return 1;
     }
 
@@ -622,7 +622,7 @@ int run_plugin_auth(MYSQL *mysql, char *data, uint data_len,
       if (net_safe_read(mysql) == packet_error)
       {
         if (mysql->net.last_errno == CR_SERVER_LOST)
-          my_set_error(mysql, CR_SERVER_LOST, SQLSTATE_UNKNOWN,
+          ma_set_error(mysql, CR_SERVER_LOST, SQLSTATE_UNKNOWN,
                               ER(CR_SERVER_LOST_EXTENDED),
                               "reading final connect information",
                               errno);

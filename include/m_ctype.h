@@ -17,7 +17,7 @@
 
 /*
   A better inplementation of the UNIX ctype(3) library.
-  Notes:   my_global.h should be included before ctype.h
+  Notes:   ma_global.h should be included before ctype.h
 */
 
 #ifndef _m_ctype_h
@@ -53,10 +53,10 @@ typedef struct charset_info_st
 
 extern const CHARSET_INFO  compiled_charsets[];
 extern CHARSET_INFO *default_charset_info;
-extern CHARSET_INFO *my_charset_bin;
-extern CHARSET_INFO *my_charset_latin1;
-extern CHARSET_INFO *my_charset_utf8_general_ci;
-extern CHARSET_INFO *my_charset_utf16le_general_ci;
+extern CHARSET_INFO *ma_charset_bin;
+extern CHARSET_INFO *ma_charset_latin1;
+extern CHARSET_INFO *ma_charset_utf8_general_ci;
+extern CHARSET_INFO *ma_charset_utf16le_general_ci;
 
 CHARSET_INFO *find_compiled_charset(unsigned int cs_number);
 CHARSET_INFO *find_compiled_charset_by_name(const char *name);

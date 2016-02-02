@@ -14,7 +14,7 @@
   You should have received a copy of the GNU General Public License
   along with this.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "my_test.h"
+#include "ma_test.h"
 #include "ma_common.h"
 
 
@@ -30,7 +30,7 @@
 
 #define SL(s) (s), sizeof(s)
 
-my_bool skip_async= 0;
+ma_bool skip_async= 0;
 
 static int test_async(MYSQL *mysql)
 {
@@ -51,7 +51,7 @@ wait_for_mysql(MYSQL *mysql, int status)
   fd_set rs, ws, es;
   int res;
   struct timeval tv, *timeout;
-  my_socket s= mysql_get_socket(mysql);
+  ma_socket s= mysql_get_socket(mysql);
   FD_ZERO(&rs);
   FD_ZERO(&ws);
   FD_ZERO(&es);
@@ -238,7 +238,7 @@ static int test_conc129(MYSQL *my)
 }
 
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"test_async", test_async, TEST_CONNECTION_DEFAULT, 0,  NULL,  NULL},
   {"async1", async1, TEST_CONNECTION_DEFAULT, 0,  NULL,  NULL},
   {"test_conc131", test_conc131, TEST_CONNECTION_NONE, 0,  NULL,  NULL},
@@ -254,7 +254,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

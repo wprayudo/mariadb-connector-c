@@ -17,8 +17,8 @@
   51 Franklin St., Fifth Floor, Boston, MA 02110, USA
  *************************************************************************************/
 
-#include "my_test.h"
-#include <my_pthread.h>
+#include "ma_test.h"
+#include <ma_pthread.h>
 
 static int skip_ssl= 1;
 
@@ -67,7 +67,7 @@ static int check_cipher(MYSQL *mysql)
   return 1;
 }
 
-static int create_ssl_user(const char *ssluser, my_bool is_X509)
+static int create_ssl_user(const char *ssluser, ma_bool is_X509)
 {
   int rc;
   char query[1024];
@@ -388,7 +388,7 @@ static int test_password_protected(MYSQL *my)
                        "@CMAKE_SOURCE_DIR@/unittest/libmariadb/certs/client-cert.pem",
                        "@CMAKE_SOURCE_DIR@/unittest/libmariadb/certs/ca-cert.pem", 0, 0);
 
-  mysql_options(mysql, MARIADB_OPT_SSL_PASSWORD, "qwerty");
+//  mysql_options(mysql, MARIADB_OPT_SSL_PASSWORD, "qwerty");
 
   FAIL_IF(!mysql_real_connect(mysql, hostname, ssluser, sslpw, schema,
            port, socketname, 0), mysql_error(mysql));
@@ -409,7 +409,7 @@ static int test_conc50(MYSQL *my)
   mysql= mysql_init(NULL);
   FAIL_IF(!mysql, "Can't allocate memory");
 
-  mysql_ssl_set(mysql, NULL, NULL, "@CMAKE_SOURCE_DIR@/unittest/libmariadb/certs/my_cert.pem", NULL, NULL);
+  mysql_ssl_set(mysql, NULL, NULL, "@CMAKE_SOURCE_DIR@/unittest/libmariadb/certs/ma_cert.pem", NULL, NULL);
 
   mysql_real_connect(mysql, hostname, ssluser, sslpw, schema,
            port, socketname, 0);
@@ -800,7 +800,7 @@ static int test_ssl_version(MYSQL *mysql)
 }
   
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"test_ssl", test_ssl, TEST_CONNECTION_NEW, 0,  NULL,  NULL},
   {"test_conc127", test_conc127, TEST_CONNECTION_NEW, 0,  NULL,  NULL},
   {"test_ssl_fp", test_ssl_fp, TEST_CONNECTION_NEW, 0,  NULL,  NULL},
@@ -833,7 +833,7 @@ int main(int argc, char **argv)
   if (argc > 1)
     get_options(argc, argv);
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   mysql_server_end();
   return(exit_status());

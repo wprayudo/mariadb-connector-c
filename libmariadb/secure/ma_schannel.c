@@ -265,7 +265,7 @@ end:
 }
 /* }}} */
 
-/* {{{ my_bool ma_schannel_load_private_key(MARIADB_PVIO *pvio, CERT_CONTEXT *ctx, char *key_file) */
+/* {{{ ma_bool ma_schannel_load_private_key(MARIADB_PVIO *pvio, CERT_CONTEXT *ctx, char *key_file) */
 /*
   Load privte key into context
 
@@ -285,7 +285,7 @@ end:
     PCCRL_CONTEXT          A pointer to a certification context structure
 */
 
-my_bool ma_schannel_load_private_key(MARIADB_PVIO *pvio, CERT_CONTEXT *ctx, char *key_file)
+ma_bool ma_schannel_load_private_key(MARIADB_PVIO *pvio, CERT_CONTEXT *ctx, char *key_file)
 {
    DWORD der_buffer_len= 0;
    LPBYTE der_buffer= NULL;
@@ -294,7 +294,7 @@ my_bool ma_schannel_load_private_key(MARIADB_PVIO *pvio, CERT_CONTEXT *ctx, char
    HCRYPTPROV  crypt_prov= 0;
    HCRYPTKEY  crypt_key= 0;
    CERT_KEY_CONTEXT kpi;
-   my_bool rc= 0;
+   ma_bool rc= 0;
 
    /* load private key into der binary object */
    if (!(der_buffer= ma_schannel_load_pem(pvio, key_file, &der_buffer_len)))
@@ -371,7 +371,7 @@ end:
 }
 /* }}} */
 
-/* {{{ SECURITY_STATUS ma_schannel_handshake_loop(MARIADB_PVIO *pvio, my_bool InitialRead, SecBuffer *pExtraData) */
+/* {{{ SECURITY_STATUS ma_schannel_handshake_loop(MARIADB_PVIO *pvio, ma_bool InitialRead, SecBuffer *pExtraData) */
 /*
   perform handshake loop
 
@@ -384,7 +384,7 @@ end:
     
 */
 
-SECURITY_STATUS ma_schannel_handshake_loop(MARIADB_PVIO *pvio, my_bool InitialRead, SecBuffer *pExtraData)
+SECURITY_STATUS ma_schannel_handshake_loop(MARIADB_PVIO *pvio, ma_bool InitialRead, SecBuffer *pExtraData)
 {
   SecBufferDesc   OutBuffer, InBuffer;
   SecBuffer       InBuffers[2], OutBuffers[1];
@@ -776,7 +776,7 @@ SECURITY_STATUS ma_schannel_read_decrypt(MARIADB_PVIO *pvio,
 }
 /* }}} */
 
-my_bool ma_schannel_verify_certs(SC_CTX *sctx, DWORD dwCertFlags)
+ma_bool ma_schannel_verify_certs(SC_CTX *sctx, DWORD dwCertFlags)
 {
   SECURITY_STATUS sRet;
   DWORD flags;
@@ -904,7 +904,7 @@ size_t ma_schannel_write_encrypt(MARIADB_PVIO *pvio,
 extern char *ssl_protocol_version[5];
 
 /* {{{ ma_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version) */
-my_bool ma_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version)
+ma_bool ma_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version)
 {
   SC_CTX *sctx;
   SecPkgContext_ConnectionInfo ConnectionInfo;

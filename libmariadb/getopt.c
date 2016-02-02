@@ -46,7 +46,7 @@ Cambridge, MA 02139, USA.  */
 #endif
 #endif
 
-#include <my_global.h>				/* Changes for mysys */
+#include <ma_global.h>				/* Changes for mysys */
 #include <m_string.h>
 
 /* Comment out all this code if we are using the GNU C Library, and are not
@@ -170,14 +170,14 @@ static char *posixly_correct;
    On some systems, it contains special magic macros that don't work
    in GCC.  */
 #include <string.h>
-#define my_index	strchr
+#define ma_index	strchr
 #else
 
 /* Avoid depending on library functions or files
    whose names are inconsistent.  */
 
 static char *
-my_index (const char *str, int chr)
+ma_index (const char *str, int chr)
 {
   while (*str)
     {
@@ -462,7 +462,7 @@ _getopt_internal (int argc, char *const *argv, const char *optstring, const stru
 
   if (longopts != NULL
       && (argv[optind][1] == '-'
-	  || (long_only && (argv[optind][2] || !my_index (optstring, argv[optind][1])))))
+	  || (long_only && (argv[optind][2] || !ma_index (optstring, argv[optind][1])))))
     {
       char *nameend;
       const struct option *p;
@@ -567,7 +567,7 @@ _getopt_internal (int argc, char *const *argv, const char *optstring, const stru
 	 option, then it's an error.
 	 Otherwise interpret it as a short option.  */
       if (!long_only || argv[optind][1] == '-'
-	  || my_index (optstring, *nextchar) == NULL)
+	  || ma_index (optstring, *nextchar) == NULL)
 	{
 	  if (opterr)
 	    {
@@ -590,7 +590,7 @@ _getopt_internal (int argc, char *const *argv, const char *optstring, const stru
 
   {
     char c = *nextchar++;
-    char *temp = my_index (optstring, c);
+    char *temp = ma_index (optstring, c);
 
     /* Increment `optind' when we start to process its last character.	*/
     if (*nextchar == '\0')

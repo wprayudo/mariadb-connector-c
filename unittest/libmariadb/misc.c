@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#include "my_test.h"
+#include "ma_test.h"
 #include "ma_common.h"
 
 #include <mysql/client_plugin.h>
@@ -51,7 +51,7 @@ static int test_bug28075(MYSQL *mysql)
 
 static int test_bug28505(MYSQL *mysql)
 {
-  my_ulonglong res;
+  ma_ulonglong res;
   int rc;
 
   rc= mysql_query(mysql, "drop table if exists t1");
@@ -91,7 +91,7 @@ static int test_bug29692(MYSQL *mysql)
 
 static int bug31418_impl()
 {
-  my_bool is_null;
+  ma_bool is_null;
   MYSQL *mysql;
   int rc;
 
@@ -223,7 +223,7 @@ static int test_debug_example(MYSQL *mysql)
 static int test_frm_bug(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   MYSQL_RES  *result;
   MYSQL_ROW  row;
   FILE       *test_file;
@@ -248,13 +248,13 @@ static int test_frm_bug(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= data_dir;
-  my_bind[0].buffer_length= FN_REFLEN;
-  my_bind[1]= my_bind[0];
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= data_dir;
+  ma_bind[0].buffer_length= FN_REFLEN;
+  ma_bind[1]= ma_bind[0];
 
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_fetch(stmt);
@@ -310,8 +310,8 @@ static int test_wl4166_1(MYSQL *mysql)
   float      real_data;
   double     double_data;
   ulong      length[7];
-  my_bool    is_null[7];
-  MYSQL_BIND my_bind[7];
+  ma_bool    is_null[7];
+  MYSQL_BIND ma_bind[7];
   static char *query;
   int rc;
   int i;
@@ -339,38 +339,38 @@ static int test_wl4166_1(MYSQL *mysql)
 
   FAIL_IF(mysql_stmt_param_count(stmt) != 7, "param_count != 7");
 
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
   /* tinyint */
-  my_bind[0].buffer_type= MYSQL_TYPE_TINY;
-  my_bind[0].buffer= (void *)&tiny_data;
+  ma_bind[0].buffer_type= MYSQL_TYPE_TINY;
+  ma_bind[0].buffer= (void *)&tiny_data;
   /* string */
-  my_bind[1].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[1].buffer= (void *)str_data;
-  my_bind[1].buffer_length= 1000;                  /* Max string length */
+  ma_bind[1].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[1].buffer= (void *)str_data;
+  ma_bind[1].buffer_length= 1000;                  /* Max string length */
   /* integer */
-  my_bind[2].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[2].buffer= (void *)&int_data;
+  ma_bind[2].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[2].buffer= (void *)&int_data;
   /* short */
-  my_bind[3].buffer_type= MYSQL_TYPE_SHORT;
-  my_bind[3].buffer= (void *)&small_data;
+  ma_bind[3].buffer_type= MYSQL_TYPE_SHORT;
+  ma_bind[3].buffer= (void *)&small_data;
   /* bigint */
-  my_bind[4].buffer_type= MYSQL_TYPE_LONGLONG;
-  my_bind[4].buffer= (void *)&big_data;
+  ma_bind[4].buffer_type= MYSQL_TYPE_LONGLONG;
+  ma_bind[4].buffer= (void *)&big_data;
   /* float */
-  my_bind[5].buffer_type= MYSQL_TYPE_FLOAT;
-  my_bind[5].buffer= (void *)&real_data;
+  ma_bind[5].buffer_type= MYSQL_TYPE_FLOAT;
+  ma_bind[5].buffer= (void *)&real_data;
   /* double */
-  my_bind[6].buffer_type= MYSQL_TYPE_DOUBLE;
-  my_bind[6].buffer= (void *)&double_data;
+  ma_bind[6].buffer_type= MYSQL_TYPE_DOUBLE;
+  ma_bind[6].buffer= (void *)&double_data;
 
-  for (i= 0; i < (int) array_elements(my_bind); i++)
+  for (i= 0; i < (int) array_elements(ma_bind); i++)
   {
-    my_bind[i].length= &length[i];
-    my_bind[i].is_null= &is_null[i];
+    ma_bind[i].length= &length[i];
+    ma_bind[i].is_null= &is_null[i];
     is_null[i]= 0;
   }
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   int_data= 320;
@@ -529,7 +529,7 @@ static int test_wl4166_3(MYSQL *mysql)
 {
   int rc;
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   MYSQL_TIME tm[1];
 
   if (mysql_get_server_version(mysql) < 50100) {
@@ -550,11 +550,11 @@ static int test_wl4166_3(MYSQL *mysql)
 
   FAIL_IF(mysql_stmt_param_count(stmt) != 1, "param_count != 1");
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_DATETIME;
-  my_bind[0].buffer= &tm[0];
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_DATETIME;
+  ma_bind[0].buffer= &tm[0];
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   tm[0].year= 2014;
@@ -957,6 +957,7 @@ static int test_conc_114(MYSQL *mysql)
 /* run with valgrind */
 static int test_conc117(MYSQL *mysql)
 {
+  ma_bool reconnect= 1;
   MYSQL *my= mysql_init(NULL);
   FAIL_IF(!mysql_real_connect(my, hostname, username, password, schema,
                          port, socketname, 0), mysql_error(my));
@@ -964,7 +965,7 @@ static int test_conc117(MYSQL *mysql)
   mysql_kill(my, mysql_thread_id(my));
   sleep(5);
 
-  my->reconnect= 1;
+  mysql_options(my, MYSQL_OPT_RECONNECT, &reconnect);
 
   mysql_query(my, "SET @a:=1");
   mysql_close(my);
@@ -982,6 +983,7 @@ static int test_remote1(MYSQL *mysql)
   if (!remote_plugin)
   {
     diag("skip - no remote io plugin available");
+    diag("error: %s", mysql_error(mysql));
     return SKIP;
   }
 
@@ -1030,7 +1032,7 @@ static int test_get_info(MYSQL *mysql)
   MY_CHARSET_INFO cs;
   CHARSET_INFO *ci;
   char **errors;
-   
+  /* 
   rc= mariadb_get_infov(mysql, MARIADB_MAX_ALLOWED_PACKET, &sval);
   FAIL_IF(rc, "mysql_get_info failed");
   diag("max_allowed_packet: %d", sval);
@@ -1043,7 +1045,7 @@ static int test_get_info(MYSQL *mysql)
   rc= mariadb_get_infov(mysql, MARIADB_CONNECTION_SERVER_VERSION_ID, &sval);
   FAIL_IF(rc, "mysql_get_info failed");
   diag("server_version_id: %d", sval);
-  rc= mariadb_get_infov(mysql, MARIADB_CHARSET_INFO, &cs);
+  rc= mariadb_get_infov(mysql, MARIADB_CONNECTION_CHARSET_INFO, &cs);
   FAIL_IF(rc, "mysql_get_info failed");
   diag("charset name: %s", cs.csname);
   rc= mariadb_get_infov(mysql, MARIADB_CONNECTION_PVIO_TYPE, &ival);
@@ -1080,10 +1082,11 @@ static int test_get_info(MYSQL *mysql)
   rc= mariadb_get_infov(mysql, MARIADB_CONNECTION_INFO, &cval);
   FAIL_IF(rc, "mysql_get_info failed");
   diag("mariadb_info: %s", cval);
+  */
   return OK;
 }
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
 #ifdef HAVE_REMOTEIO
   {"test_remote1", test_remote1, TEST_CONNECTION_NEW, 0, NULL, NULL},
   {"test_remote2", test_remote2, TEST_CONNECTION_NEW, 0, NULL, NULL},
@@ -1120,7 +1123,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

@@ -240,8 +240,8 @@ typedef struct st_connection_handler
 {
   struct st_ma_connection_plugin *plugin;
   void *data;
-  my_bool active;
-  my_bool free_data;
+  ma_bool active;
+  ma_bool free_data;
 } MA_CONNECTION_HANDLER;
 
 typedef struct st_net {
@@ -249,7 +249,7 @@ typedef struct st_net {
   unsigned char *buff;
   unsigned char *buff_end,*write_pos,*read_pos;
   unsigned char *mbuff, *mbuff_end, *mbuff_pos;
-  my_socket fd;					/* For Perl DBI/dbd */
+  ma_socket fd;					/* For Perl DBI/dbd */
   unsigned long remain_in_buf,length;
   unsigned long buf_length, where_b;
   unsigned long max_packet, max_packet_size;
@@ -259,14 +259,14 @@ typedef struct st_net {
   unsigned int *return_status;
   unsigned char reading_or_writing;
   char save_char;
-  my_bool unused_1, unused_2;
-  my_bool compress;
-  my_bool unused_3;
+  ma_bool unused_1, unused_2;
+  ma_bool compress;
+  ma_bool unused_3;
   MA_CONNECTION_HANDLER *conn_hdlr;
   unsigned int last_errno;
   unsigned char error;
-  my_bool unused_4;
-  my_bool unused_5;
+  ma_bool unused_4;
+  ma_bool unused_5;
   
   char last_error[MYSQL_ERRMSG_SIZE];
   char sqlstate[SQLSTATE_LENGTH+1];
@@ -337,15 +337,15 @@ extern unsigned long net_buffer_length;
 
 #define net_new_transaction(net) ((net)->pkt_nr=0)
 
-int	my_net_init(NET *net, MARIADB_PVIO *pvio);
+int	ma_net_init(NET *net, MARIADB_PVIO *pvio);
 void	net_end(NET *net);
 void	net_clear(NET *net);
 int	net_flush(NET *net);
-int	my_net_write(NET *net,const char *packet, size_t len);
+int	ma_net_write(NET *net,const char *packet, size_t len);
 int	net_write_command(NET *net,unsigned char command,const char *packet,
 			  size_t len);
 int	net_real_write(NET *net,const char *packet, size_t len);
-unsigned long	my_net_read(NET *net);
+unsigned long	ma_net_read(NET *net);
 
 struct rand_struct {
   unsigned long seed1,seed2,max_value;
@@ -369,11 +369,11 @@ typedef struct st_udf_args
 
 typedef struct st_udf_init
 {
-  my_bool maybe_null;			/* 1 if function can return NULL */
+  ma_bool maybe_null;			/* 1 if function can return NULL */
   unsigned int decimals;		/* for real functions */
   unsigned int max_length;		/* For string functions */
   char	  *ptr;				/* free pointer for function data */
-  my_bool const_item;			/* 0 if result is independent of arguments */
+  ma_bool const_item;			/* 0 if result is independent of arguments */
 } UDF_INIT;
 
 /* Connection types */
@@ -401,17 +401,17 @@ void make_scrambled_password(char *to,const char *password);
 void get_salt_from_password(unsigned long *res,const char *password);
 void make_password_from_salt(char *to, unsigned long *hash_res);
 char *scramble_323(char *to,const char *message,const char *password);
-void my_scramble_41(const unsigned char *buffer, const char *scramble, const char *password);
-my_bool check_scramble(const char *, const char *message,
-		       unsigned long *salt,my_bool old_ver);
+void ma_scramble_41(const unsigned char *buffer, const char *scramble, const char *password);
+ma_bool check_scramble(const char *, const char *message,
+		       unsigned long *salt,ma_bool old_ver);
 void hash_password(unsigned long *result, const char *password, size_t len);
 
 /* Some other useful functions */
 
 void load_defaults(const char *conf_file, const char **groups,
 		   int *argc, char ***argv);
-my_bool my_thread_init(void);
-void my_thread_end(void);
+ma_bool ma_thread_init(void);
+void ma_thread_end(void);
 
 #ifdef __cplusplus
 }

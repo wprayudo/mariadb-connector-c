@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   if (mysql_real_query(mysql, query, strlen(query)))
     show_error(mysql);
  
-  query= "CREATE TABLE debug_example (id int not null, my_name varchar(50),"
+  query= "CREATE TABLE debug_example (id int not null, ma_name varchar(50),"
          "PRIMARY KEY(id))";
   if (mysql_real_query(mysql, query, strlen(query)))
     show_error(mysql);

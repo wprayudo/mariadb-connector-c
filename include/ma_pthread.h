@@ -17,8 +17,8 @@
 
 /* Defines to make different thread packages compatible */
 
-#ifndef _my_pthread_h
-#define _my_pthread_h
+#ifndef _ma_pthread_h
+#define _ma_pthread_h
 
 #include <errno.h>
 #ifndef ETIME
@@ -106,9 +106,9 @@ void pthread_exit(void *a);	 /* was #define pthread_exit(A) ExitThread(A)*/
 #define pthread_key(T,V)  DWORD V
 #define pthread_key_create(A,B) ((*A=TlsAlloc())==0xFFFFFFFF)
 #define pthread_getspecific(A) (TlsGetValue(A))
-#define my_pthread_getspecific(T,A) ((T) TlsGetValue(A))
-#define my_pthread_getspecific_ptr(T,V) ((T) TlsGetValue(V))
-#define my_pthread_setspecific_ptr(T,V) (!TlsSetValue((T),(V)))
+#define ma_pthread_getspecific(T,A) ((T) TlsGetValue(A))
+#define ma_pthread_getspecific_ptr(T,V) ((T) TlsGetValue(V))
+#define ma_pthread_setspecific_ptr(T,V) (!TlsSetValue((T),(V)))
 #define pthread_setspecific(A,B) (!TlsSetValue((A),(B)))
 
 
@@ -119,21 +119,21 @@ void pthread_exit(void *a);	 /* was #define pthread_exit(A) ExitThread(A)*/
 #define pthread_mutex_trylock(A) (WaitForSingleObject((A), 0) == WAIT_TIMEOUT)
 #define pthread_mutex_unlock(A)  LeaveCriticalSection(A)
 #define pthread_mutex_destroy(A) DeleteCriticalSection(A)
-#define my_pthread_setprio(A,B)  SetThreadPriority(GetCurrentThread(), (B))
+#define ma_pthread_setprio(A,B)  SetThreadPriority(GetCurrentThread(), (B))
 #define pthread_kill(A,B) pthread_dummy(0)
 
 
 /* Dummy defines for easier code */
 #define pthread_attr_setdetachstate(A,B) pthread_dummy(0)
-#define my_pthread_attr_setprio(A,B) pthread_attr_setprio(A,B)
+#define ma_pthread_attr_setprio(A,B) pthread_attr_setprio(A,B)
 #define pthread_attr_setscope(A,B)
 #define pthread_detach_this_thread()
 #define pthread_condattr_init(A)
 #define pthread_condattr_destroy(A)
 
 /*Irena: compiler does not like this: */
-/*#define my_pthread_getprio(pthread_t thread_id) pthread_dummy(0) */
-#define my_pthread_getprio(thread_id) pthread_dummy(0)
+/*#define ma_pthread_getprio(pthread_t thread_id) pthread_dummy(0) */
+#define ma_pthread_getprio(thread_id) pthread_dummy(0)
 
 #elif defined(HAVE_UNIXWARE7_THREADS)
 
@@ -156,12 +156,12 @@ typedef int pthread_attr_t;			/* Needed by Unixware 7.0.0 */
 #define pthread_handler_decl(A,B) void *A(void *B)
 #define pthread_key(T,V) pthread_key_t V
 
-void *	my_pthread_getspecific_imp(pthread_key_t key);
-#define my_pthread_getspecific(A,B) ((A) my_pthread_getspecific_imp(B))
-#define my_pthread_getspecific_ptr(T,V) my_pthread_getspecific(T,V)
+void *	ma_pthread_getspecific_imp(pthread_key_t key);
+#define ma_pthread_getspecific(A,B) ((A) ma_pthread_getspecific_imp(B))
+#define ma_pthread_getspecific_ptr(T,V) ma_pthread_getspecific(T,V)
 
 #define pthread_setspecific(A,B) thr_setspecific(A,B)
-#define my_pthread_setspecific_ptr(T,V) pthread_setspecific(T,V)
+#define ma_pthread_setspecific_ptr(T,V) pthread_setspecific(T,V)
 
 #define pthread_create(A,B,C,D) thr_create(NULL,65536L,(C),(D),THR_DETACHED,(A))
 #define pthread_cond_init(a,b) cond_init((a),USYNC_THREAD,NULL)
@@ -184,7 +184,7 @@ void *	my_pthread_getspecific_imp(pthread_key_t key);
 
 #define pthread_sigmask(A,B,C) thr_sigsetmask((A),(B),(C))
 
-extern int my_sigwait(const sigset_t *set,int *sig);
+extern int ma_sigwait(const sigset_t *set,int *sig);
 
 #define pthread_detach_this_thread() pthread_dummy(0)
 
@@ -192,9 +192,9 @@ extern int my_sigwait(const sigset_t *set,int *sig);
 #define pthread_attr_destroy(A) pthread_dummy(0)
 #define pthread_attr_setscope(A,B) pthread_dummy(0)
 #define pthread_attr_setdetachstate(A,B) pthread_dummy(0)
-#define my_pthread_setprio(A,B) pthread_dummy (0)
-#define my_pthread_getprio(A) pthread_dummy (0)
-#define my_pthread_attr_setprio(A,B) pthread_dummy(0)
+#define ma_pthread_setprio(A,B) pthread_dummy (0)
+#define ma_pthread_getprio(A) pthread_dummy (0)
+#define ma_pthread_attr_setprio(A,B) pthread_dummy(0)
 
 #else /* Normal threads */
 
@@ -221,11 +221,11 @@ extern int my_sigwait(const sigset_t *set,int *sig);
 #error Requires at least rev 2 of EMX pthreads library.
 #endif
 
-extern int my_pthread_getprio(pthread_t thread_id);
+extern int ma_pthread_getprio(pthread_t thread_id);
 
 #define pthread_key(T,V) pthread_key_t V
-#define my_pthread_getspecific_ptr(T,V) my_pthread_getspecific(T,(V))
-#define my_pthread_setspecific_ptr(T,V) pthread_setspecific(T,(void*) (V))
+#define ma_pthread_getspecific_ptr(T,V) ma_pthread_getspecific(T,(V))
+#define ma_pthread_setspecific_ptr(T,V) pthread_setspecific(T,(void*) (V))
 #define pthread_detach_this_thread()
 #define pthread_handler_decl(A,B) void *A(void *B)
 typedef void *(* pthread_handler)(void *);
@@ -234,9 +234,9 @@ typedef void *(* pthread_handler)(void *);
 
 #if defined(PTHREAD_SCOPE_GLOBAL) && !defined(PTHREAD_SCOPE_SYSTEM)
 #define HAVE_rts_threads
-extern int my_pthread_create_detached;
+extern int ma_pthread_create_detached;
 #define pthread_sigmask(A,B,C) sigprocmask((A),(B),(C))
-#define PTHREAD_CREATE_DETACHED &my_pthread_create_detached
+#define PTHREAD_CREATE_DETACHED &ma_pthread_create_detached
 #define PTHREAD_SCOPE_SYSTEM  PTHREAD_SCOPE_GLOBAL
 #define PTHREAD_SCOPE_PROCESS PTHREAD_SCOPE_LOCAL
 #define USE_ALARM_THREAD
@@ -248,19 +248,19 @@ extern int my_pthread_create_detached;
 #endif
 
 #ifndef HAVE_NONPOSIX_SIGWAIT
-#define my_sigwait(A,B) sigwait((A),(B))
+#define ma_sigwait(A,B) sigwait((A),(B))
 #else
-int my_sigwait(const sigset_t *set,int *sig);
+int ma_sigwait(const sigset_t *set,int *sig);
 #endif
 
 #ifdef HAVE_NONPOSIX_PTHREAD_MUTEX_INIT
 #ifndef SAFE_MUTEX
-#define pthread_mutex_init(a,b) my_pthread_mutex_init((a),(b))
-extern int my_pthread_mutex_init(pthread_mutex_t *mp,
+#define pthread_mutex_init(a,b) ma_pthread_mutex_init((a),(b))
+extern int ma_pthread_mutex_init(pthread_mutex_t *mp,
 				 const pthread_mutexattr_t *attr);
 #endif /* SAFE_MUTEX */
-#define pthread_cond_init(a,b) my_pthread_cond_init((a),(b))
-extern int my_pthread_cond_init(pthread_cond_t *mp,
+#define pthread_cond_init(a,b) ma_pthread_cond_init((a),(b))
+extern int ma_pthread_cond_init(pthread_cond_t *mp,
 				const pthread_condattr_t *attr);
 #endif /* HAVE_NONPOSIX_PTHREAD_MUTEX_INIT */
 
@@ -271,33 +271,33 @@ extern int my_pthread_cond_init(pthread_cond_t *mp,
 #if !defined(HAVE_SIGWAIT) && !defined(HAVE_mit_thread) && !defined(HAVE_rts_threads) && !defined(sigwait) && !defined(alpha_linux_port) && !defined(HAVE_NONPOSIX_SIGWAIT) && !defined(HAVE_DEC_3_2_THREADS) && !defined(_AIX)
 int sigwait(sigset_t *setp, int *sigp);		/* Use our implemention */
 #endif
-#if !defined(HAVE_SIGSET) && !defined(my_sigset)
-#define my_sigset(A,B) do { struct sigaction s; sigset_t set;           \
+#if !defined(HAVE_SIGSET) && !defined(ma_sigset)
+#define ma_sigset(A,B) do { struct sigaction s; sigset_t set;           \
                          sigemptyset(&set);                             \
                          s.sa_handler = (B);                            \
                          s.sa_mask    = set;                            \
                          s.sa_flags   = 0;                              \
                          sigaction((A), &s, (struct sigaction *) NULL); \
                        } while (0)
-#elif !defined(my_sigset)
-  #define my_sigset(A,B) signal((A),(B))
+#elif !defined(ma_sigset)
+  #define ma_sigset(A,B) signal((A),(B))
 #endif
 
-#ifndef my_pthread_setprio
+#ifndef ma_pthread_setprio
 #if defined(HAVE_PTHREAD_SETPRIO_NP)		/* FSU threads */
-#define my_pthread_setprio(A,B) pthread_setprio_np((A),(B))
+#define ma_pthread_setprio(A,B) pthread_setprio_np((A),(B))
 #elif defined(HAVE_PTHREAD_SETPRIO)
-#define my_pthread_setprio(A,B) pthread_setprio((A),(B))
+#define ma_pthread_setprio(A,B) pthread_setprio((A),(B))
 #else
-extern void my_pthread_setprio(pthread_t thread_id,int prior);
+extern void ma_pthread_setprio(pthread_t thread_id,int prior);
 #endif
 #endif
 
-#ifndef my_pthread_attr_setprio
+#ifndef ma_pthread_attr_setprio
 #ifdef HAVE_PTHREAD_ATTR_SETPRIO
-#define my_pthread_attr_setprio(A,B) pthread_attr_setprio((A),(B))
+#define ma_pthread_attr_setprio(A,B) pthread_attr_setprio((A),(B))
 #else
-extern void my_pthread_attr_setprio(pthread_attr_t *attr, int priority);
+extern void ma_pthread_attr_setprio(pthread_attr_t *attr, int priority);
 #endif
 #endif
 
@@ -307,17 +307,17 @@ extern void my_pthread_attr_setprio(pthread_attr_t *attr, int priority);
 #endif
 
 #if defined(HAVE_BROKEN_PTHREAD_COND_TIMEDWAIT) && !defined(SAFE_MUTEX)
-extern int my_pthread_cond_timedwait(pthread_cond_t *cond,
+extern int ma_pthread_cond_timedwait(pthread_cond_t *cond,
 				     pthread_mutex_t *mutex,
 				     struct timespec *abstime);
-#define pthread_cond_timedwait(A,B,C) my_pthread_cond_timedwait((A),(B),(C))
+#define pthread_cond_timedwait(A,B,C) ma_pthread_cond_timedwait((A),(B),(C))
 #endif
 
 #if !defined( HAVE_NONPOSIX_PTHREAD_GETSPECIFIC)
-#define my_pthread_getspecific(A,B) ((A) pthread_getspecific(B))
+#define ma_pthread_getspecific(A,B) ((A) pthread_getspecific(B))
 #else
-#define my_pthread_getspecific(A,B) ((A) my_pthread_getspecific_imp(B))
-void *my_pthread_getspecific_imp(pthread_key_t key);
+#define ma_pthread_getspecific(A,B) ((A) ma_pthread_getspecific_imp(B))
+void *ma_pthread_getspecific_imp(pthread_key_t key);
 #endif
 
 #ifndef HAVE_LOCALTIME_R
@@ -384,15 +384,15 @@ struct tm *localtime_r(const time_t *clock, struct tm *res);
 
 #if defined(HPUX) && !defined(DONT_REMAP_PTHREAD_FUNCTIONS)
 #undef pthread_cond_timedwait
-#define pthread_cond_timedwait(a,b,c) my_pthread_cond_timedwait((a),(b),(c))
-int my_pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
+#define pthread_cond_timedwait(a,b,c) ma_pthread_cond_timedwait((a),(b),(c))
+int ma_pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 			      struct timespec *abstime);
 #endif
 
 #if defined(HAVE_POSIX1003_4a_MUTEX) && !defined(DONT_REMAP_PTHREAD_FUNCTIONS)
 #undef pthread_mutex_trylock
-#define pthread_mutex_trylock(a) my_pthread_mutex_trylock((a))
-int my_pthread_mutex_trylock(pthread_mutex_t *mutex);
+#define pthread_mutex_trylock(a) ma_pthread_mutex_trylock((a))
+int ma_pthread_mutex_trylock(pthread_mutex_t *mutex);
 #endif
 
 	/* safe_mutex adds checking to mutex for easier debugging */
@@ -444,7 +444,7 @@ int safe_cond_timedwait(pthread_cond_t *cond, safe_mutex_t *mp,
 #if defined(USE_MUTEX_INSTEAD_OF_RW_LOCKS)
 /* use these defs for simple mutex locking */
 #define rw_lock_t pthread_mutex_t
-#define my_rwlock_init(A,B) pthread_mutex_init((A),(B))
+#define ma_rwlock_init(A,B) pthread_mutex_init((A),(B))
 #define rw_rdlock(A) pthread_mutex_lock((A))
 #define rw_wrlock(A) pthread_mutex_lock((A))
 #define rw_tryrdlock(A) pthread_mutex_trylock((A))
@@ -453,7 +453,7 @@ int safe_cond_timedwait(pthread_cond_t *cond, safe_mutex_t *mp,
 #define rwlock_destroy(A) pthread_mutex_destroy((A))
 #elif defined(HAVE_PTHREAD_RWLOCK_RDLOCK)
 #define rw_lock_t pthread_rwlock_t
-#define my_rwlock_init(A,B) pthread_rwlock_init((A),(B))
+#define ma_rwlock_init(A,B) pthread_rwlock_init((A),(B))
 #define rw_rdlock(A) pthread_rwlock_rdlock(A)
 #define rw_wrlock(A) pthread_rwlock_wrlock(A)
 #define rw_tryrdlock(A) pthread_rwlock_tryrdlock((A))
@@ -464,32 +464,32 @@ int safe_cond_timedwait(pthread_cond_t *cond, safe_mutex_t *mp,
 #ifdef HAVE_RWLOCK_T				/* For example Solaris 2.6-> */
 #define rw_lock_t rwlock_t
 #endif
-#define my_rwlock_init(A,B) rwlock_init((A),USYNC_THREAD,0)
+#define ma_rwlock_init(A,B) rwlock_init((A),USYNC_THREAD,0)
 #else
 /* Use our own version of read/write locks */
-typedef struct _my_rw_lock_t {
+typedef struct _ma_rw_lock_t {
 	pthread_mutex_t lock;		/* lock for structure		*/
 	pthread_cond_t	readers;	/* waiting readers		*/
 	pthread_cond_t	writers;	/* waiting writers		*/
 	int		state;		/* -1:writer,0:free,>0:readers	*/
 	int		waiters;	/* number of waiting writers	*/
-} my_rw_lock_t;
+} ma_rw_lock_t;
 
-#define rw_lock_t my_rw_lock_t
-#define rw_rdlock(A) my_rw_rdlock((A))
-#define rw_wrlock(A) my_rw_wrlock((A))
-#define rw_tryrdlock(A) my_rw_tryrdlock((A))
-#define rw_trywrlock(A) my_rw_trywrlock((A))
-#define rw_unlock(A) my_rw_unlock((A))
-#define rwlock_destroy(A) my_rwlock_destroy((A))
+#define rw_lock_t ma_rw_lock_t
+#define rw_rdlock(A) ma_rw_rdlock((A))
+#define rw_wrlock(A) ma_rw_wrlock((A))
+#define rw_tryrdlock(A) ma_rw_tryrdlock((A))
+#define rw_trywrlock(A) ma_rw_trywrlock((A))
+#define rw_unlock(A) ma_rw_unlock((A))
+#define rwlock_destroy(A) ma_rwlock_destroy((A))
 
-extern int my_rwlock_init(my_rw_lock_t *, void *);
-extern int my_rwlock_destroy(my_rw_lock_t *);
-extern int my_rw_rdlock(my_rw_lock_t *);
-extern int my_rw_wrlock(my_rw_lock_t *);
-extern int my_rw_unlock(my_rw_lock_t *);
-extern int my_rw_tryrdlock(my_rw_lock_t *);
-extern int my_rw_trywrlock(my_rw_lock_t *);
+extern int ma_rwlock_init(ma_rw_lock_t *, void *);
+extern int ma_rwlock_destroy(ma_rw_lock_t *);
+extern int ma_rw_rdlock(ma_rw_lock_t *);
+extern int ma_rw_wrlock(ma_rw_lock_t *);
+extern int ma_rw_unlock(ma_rw_lock_t *);
+extern int ma_rw_tryrdlock(ma_rw_lock_t *);
+extern int ma_rw_trywrlock(ma_rw_lock_t *);
 #endif /* USE_MUTEX_INSTEAD_OF_RW_LOCKS */
 
 #define GETHOSTBYADDR_BUFF_SIZE 2048
@@ -506,22 +506,22 @@ extern int my_rw_trywrlock(my_rw_lock_t *);
 #define MY_MUTEX_INIT_FAST   NULL
 #define MY_MUTEX_INIT_ERRCHK NULL
 #ifdef PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP
-extern pthread_mutexattr_t my_fast_mutexattr;
+extern pthread_mutexattr_t ma_fast_mutexattr;
 #undef  MY_MUTEX_INIT_FAST
-#define MY_MUTEX_INIT_FAST &my_fast_mutexattr
+#define MY_MUTEX_INIT_FAST &ma_fast_mutexattr
 #endif
 #ifdef PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
-extern pthread_mutexattr_t my_errchk_mutexattr;
+extern pthread_mutexattr_t ma_errchk_mutexattr;
 #undef MY_INIT_MUTEX_ERRCHK
-#define MY_INIT_MUTEX_ERRCHK &my_errchk_mutexattr
+#define MY_INIT_MUTEX_ERRCHK &ma_errchk_mutexattr
 #endif
 
-extern my_bool my_thread_global_init(void);
-extern void my_thread_global_end(void);
-extern my_bool my_thread_init(void);
-extern void my_thread_end(void);
-extern const char *my_thread_name(void);
-extern long my_thread_id(void);
+extern ma_bool ma_thread_global_init(void);
+extern void ma_thread_global_end(void);
+extern ma_bool ma_thread_init(void);
+extern void ma_thread_end(void);
+extern const char *ma_thread_name(void);
+extern long ma_thread_id(void);
 extern int pthread_no_free(void *);
 extern int pthread_dummy(int);
 
@@ -534,7 +534,7 @@ extern int pthread_dummy(int);
 #define DEFAULT_THREAD_STACK	(64*1024)
 #endif
 
-struct st_my_thread_var
+struct st_ma_thread_var
 {
   int thr_errno;
   pthread_cond_t suspend;
@@ -549,13 +549,13 @@ struct st_my_thread_var
   gptr dbug;
   char name[THREAD_NAME_SIZE+1];
 #endif
-  my_bool initialized;
+  ma_bool initialized;
 };
 
-extern struct st_my_thread_var *_my_thread_var(void) __attribute__ ((const));
-extern void **my_thread_var_dbug();
-#define my_thread_var (_my_thread_var())
-#define my_errno my_thread_var->thr_errno
+extern struct st_ma_thread_var *_ma_thread_var(void) __attribute__ ((const));
+extern void **ma_thread_var_dbug();
+#define ma_thread_var (_ma_thread_var())
+#define g_errno ma_thread_var->thr_errno
 
 	/* statistics_xxx functions are for not essential statistic */
 
@@ -587,4 +587,4 @@ extern void **my_thread_var_dbug();
 }
 #endif
 
-#endif /* _my_ptread_h */
+#endif /* _ma_ptread_h */

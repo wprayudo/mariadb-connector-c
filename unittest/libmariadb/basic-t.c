@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   Some basic tests of the client API.
 */
 
-#include "my_test.h"
+#include "ma_test.h"
 #include "ma_common.h"
 
 static int test_conc75(MYSQL *my)
@@ -35,11 +35,11 @@ static int test_conc75(MYSQL *my)
   int rc;
   MYSQL *mysql;
   int i;
+  ma_bool reconnect= 1;
 
   mysql= mysql_init(NULL);
 
-
-  mysql->reconnect= 1;
+  mysql_options(mysql, MYSQL_OPT_RECONNECT, &reconnect);
   mysql_real_connect(mysql, hostname, username, password, schema, port, socketname, 0| CLIENT_MULTI_RESULTS | CLIENT_REMEMBER_OPTIONS);
 
   rc= mysql_query(mysql, "DROP TABLE IF EXISTS a");
@@ -55,7 +55,7 @@ static int test_conc75(MYSQL *my)
   {
     ulong thread_id= mysql_thread_id(mysql);
     /* force reconnect */
-    mysql->reconnect= 1;
+    mysql_options(mysql, MYSQL_OPT_RECONNECT, &reconnect);
     diag("killing connection");
     mysql_kill(my, thread_id);
     sleep(2);
@@ -370,7 +370,7 @@ static int test_bug12001(MYSQL *mysql)
 
 
 /* connection options */
-struct my_option_st opt_utf8[] = {
+struct ma_option_st opt_utf8[] = {
   {MYSQL_SET_CHARSET_NAME, "utf8"},
   {0, NULL}
 };
@@ -395,7 +395,7 @@ static int test_bad_union(MYSQL *mysql)
 */
 static int test_mysql_insert_id(MYSQL *mysql)
 {
-  my_ulonglong res;
+  ma_ulonglong res;
   int rc;
 
   if (mysql_get_server_version(mysql) < 50100) {
@@ -700,6 +700,7 @@ static int test_reconnect_maxpackage(MYSQL *my)
   MYSQL_RES *res;
   MYSQL_ROW row;
   char *query;
+  ma_bool reconnect= 1;
 
   SKIP_CONNECTION_HANDLER;
   mysql= mysql_init(NULL);
@@ -707,7 +708,7 @@ static int test_reconnect_maxpackage(MYSQL *my)
   FAIL_IF(!mysql_real_connect(mysql, hostname, username, password, schema,
                               port, socketname, 
                               CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS), mysql_error(mysql));
-  mysql->reconnect= 1;
+  mysql_options(mysql, MYSQL_OPT_RECONNECT, &reconnect);
 
   rc= mysql_query(mysql, "SELECT @@max_allowed_packet");
   check_mysql_rc(rc, mysql);
@@ -753,12 +754,13 @@ static int test_compressed(MYSQL *my)
   int rc;
   MYSQL *mysql= mysql_init(NULL);
   MYSQL_RES *res;
+  ma_bool reconnect= 1;
 
   mysql_options(mysql, MYSQL_OPT_COMPRESS, (void *)1);
   FAIL_IF(!mysql_real_connect(mysql, hostname, username, password, schema,
                               port, socketname, 
                               CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS), mysql_error(mysql));
-  mysql->reconnect= 1;
+  mysql_options(mysql, MYSQL_OPT_RECONNECT, &reconnect);
 
   rc= mysql_query(mysql, "SHOW VARIABLES");
   check_mysql_rc(rc, mysql);
@@ -771,7 +773,7 @@ static int test_compressed(MYSQL *my)
   return OK;
 }
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"test_conc75", test_conc75, TEST_CONNECTION_DEFAULT, 0,  NULL,  NULL},
   {"test_conc74", test_conc74, TEST_CONNECTION_DEFAULT, 0,  NULL,  NULL},
   {"test_conc71", test_conc71, TEST_CONNECTION_DEFAULT, 0,  NULL,  NULL},
@@ -803,7 +805,7 @@ int main(int argc, char **argv)
 
   diag("user: %s", username);
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

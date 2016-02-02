@@ -26,16 +26,16 @@
 	   NULL of the filename
 	*/
 
-my_string fn_ext(const char *name)
+ma_string fn_ext(const char *name)
 {
-  register my_string pos,gpos;
+  register ma_string pos,gpos;
   DBUG_ENTER("fn_ext");
   DBUG_PRINT("mfunkt",("name: '%s'",name));
 
 #if defined(FN_DEVCHAR) || defined(FN_C_AFTER_DIR)
   {
     char buff[FN_REFLEN];
-    gpos=(my_string) name+dirname_part(buff,(char*) name);
+    gpos=(ma_string) name+dirname_part(buff,(char*) name);
   }
 #else
   if (!(gpos=strrchr(name,FNLIBCHAR)))

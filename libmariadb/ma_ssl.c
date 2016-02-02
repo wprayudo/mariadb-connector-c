@@ -32,8 +32,8 @@
 
 #ifdef HAVE_SSL
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <ma_common.h>
 #include <string.h>
 //#include <ma_secure.h>
@@ -44,11 +44,11 @@
 
 /*
 #include <mysql_async.h>
-#include <my_context.h>
+#include <ma_context.h>
 */
 
 /* Errors should be handled via pvio callback function */
-my_bool ma_ssl_initialized= FALSE;
+ma_bool ma_ssl_initialized= FALSE;
 unsigned int mariadb_deinitialize_ssl= 1;
 
 char *ssl_protocol_version[5]= {"unknown", "SSL3", "TLS1.0", "TLS1.1", "TLS1.2"};
@@ -60,7 +60,7 @@ MARIADB_SSL *ma_pvio_ssl_init(MYSQL *mysql)
   if (!ma_ssl_initialized)
     ma_ssl_start(mysql->net.last_error, MYSQL_ERRMSG_SIZE);
 
-  if (!(cssl= (MARIADB_SSL *)my_malloc(sizeof(MARIADB_SSL), 
+  if (!(cssl= (MARIADB_SSL *)ma_malloc(sizeof(MARIADB_SSL), 
                                       MYF(MY_WME | MY_ZEROFILL))))
   {
     return NULL;
@@ -70,13 +70,13 @@ MARIADB_SSL *ma_pvio_ssl_init(MYSQL *mysql)
   cssl->pvio= mysql->net.pvio;
   if (!(cssl->ssl= ma_ssl_init(mysql)))
   {
-    my_free(cssl);
+    ma_free(cssl);
     cssl= NULL;
   }
   return cssl;
 }
 
-my_bool ma_pvio_ssl_connect(MARIADB_SSL *cssl)
+ma_bool ma_pvio_ssl_connect(MARIADB_SSL *cssl)
 {
   return ma_ssl_connect(cssl);
 }
@@ -91,7 +91,7 @@ size_t ma_pvio_ssl_write(MARIADB_SSL *cssl, const uchar* buffer, size_t length)
   return ma_ssl_write(cssl, buffer, length);
 }
 
-my_bool ma_pvio_ssl_close(MARIADB_SSL *cssl)
+ma_bool ma_pvio_ssl_close(MARIADB_SSL *cssl)
 {
   return ma_ssl_close(cssl);
 }
@@ -106,12 +106,12 @@ const char *ma_pvio_ssl_cipher(MARIADB_SSL *cssl)
   return ma_ssl_get_cipher(cssl);
 }
 
-my_bool ma_pvio_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version)
+ma_bool ma_pvio_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version)
 {
   return ma_ssl_get_protocol_version(cssl, version);
 }
 
-static my_bool ma_pvio_ssl_compare_fp(char *fp1, unsigned int fp1_len,
+static ma_bool ma_pvio_ssl_compare_fp(char *fp1, unsigned int fp1_len,
                                    char *fp2, unsigned int fp2_len)
 {
   char hexstr[64];
@@ -126,11 +126,11 @@ static my_bool ma_pvio_ssl_compare_fp(char *fp1, unsigned int fp1_len,
   return 0;
 }
 
-my_bool ma_pvio_ssl_check_fp(MARIADB_SSL *cssl, const char *fp, const char *fp_list)
+ma_bool ma_pvio_ssl_check_fp(MARIADB_SSL *cssl, const char *fp, const char *fp_list)
 {
   unsigned int cert_fp_len= 64;
   unsigned char cert_fp[64];
-  my_bool rc=1;
+  ma_bool rc=1;
 
   if ((cert_fp_len= ma_ssl_get_finger_print(cssl, cert_fp, cert_fp_len)) < 1)
     goto end;
@@ -144,7 +144,7 @@ my_bool ma_pvio_ssl_check_fp(MARIADB_SSL *cssl, const char *fp, const char *fp_l
     if (!(fp = fopen(fp_list, "r")))
     {
 /*      
-      my_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
+      ma_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
                           ER(CR_SSL_CONNECTION_ERROR), 
                           "Can't open finger print list");
                           */

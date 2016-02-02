@@ -18,20 +18,20 @@
 #ifndef MYSQL_ASYNC_H
 #define MYSQL_ASYNC_H
 
-extern int my_connect_async(MARIADB_PVIO *pvio, 
+extern int ma_connect_async(MARIADB_PVIO *pvio, 
                             const struct sockaddr *name, uint namelen,
                             int vio_timeout);
-extern ssize_t my_recv_async(MARIADB_PVIO *pvio,
+extern ssize_t ma_recv_async(MARIADB_PVIO *pvio,
                              unsigned char *buf, size_t size, int timeout);
-extern ssize_t my_send_async(MARIADB_PVIO *pvio,
+extern ssize_t ma_send_async(MARIADB_PVIO *pvio,
                              const unsigned char *buf, size_t size,
                              int timeout);
-extern my_bool my_io_wait_async(struct mysql_async_context *b,
+extern ma_bool ma_io_wait_async(struct mysql_async_context *b,
                                 enum enum_pvio_io_event event, int timeout);
 #ifdef HAVE_SSL
-extern int my_ssl_read_async(struct mysql_async_context *b, MARIADB_SSL *ssl,
+extern int ma_ssl_read_async(struct mysql_async_context *b, MARIADB_SSL *ssl,
                              void *buf, int size);
-extern int my_ssl_write_async(struct mysql_async_context *b, MARIADB_SSL *ssl,
+extern int ma_ssl_write_async(struct mysql_async_context *b, MARIADB_SSL *ssl,
                               const void *buf, int size);
 #endif
 

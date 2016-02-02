@@ -17,7 +17,7 @@
 
 /* This is defines strtoll() if neaded */
 
-#include <my_global.h>
+#include <ma_global.h>
 #include <m_string.h>
 #if !defined(HAVE_STRTOLL) && defined(HAVE_LONG_LONG)
 #define USE_LONGLONG
@@ -26,7 +26,7 @@
 
 #include "m_string.h"
 #include "m_ctype.h"
-#include "my_sys.h"			/* defines errno */
+#include "ma_sys.h"			/* defines errno */
 #include <errno.h>
 
 #undef strtoull
@@ -175,7 +175,7 @@ function (const char *nptr,char **endptr,int base)
 
   if (overflow)
   {
-    my_errno=ERANGE;
+    g_errno=ERANGE;
 #ifdef USE_UNSIGNED
     return UTYPE_MAX;
 #else
@@ -188,7 +188,7 @@ function (const char *nptr,char **endptr,int base)
 
 noconv:
   /* There was no number to convert.  */
-  my_errno=EDOM;
+  g_errno=EDOM;
   if (endptr != NULL)
     *endptr = (char *) nptr;
   return 0L;

@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#include "my_test.h"
+#include "ma_test.h"
 
 /* helper functions */
 enum { MAX_COLUMN_LENGTH= 255 };
@@ -31,7 +31,7 @@ typedef struct st_stmt_fetch
   const char *query;
   unsigned stmt_no;
   MYSQL_STMT *handle;
-  my_bool is_open;
+  ma_bool is_open;
   MYSQL_BIND *bind_array;
   char **out_data;
   unsigned long *out_data_length;
@@ -337,7 +337,7 @@ static int test_bug21206(MYSQL *mysql)
 static int test_bug10729(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   char a[21];
   int rc;
   const char *stmt_text;
@@ -362,11 +362,11 @@ static int test_bug10729(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void*) a;
-  my_bind[0].buffer_length= sizeof(a);
-  mysql_stmt_bind_result(stmt, my_bind);
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void*) a;
+  ma_bind[0].buffer_length= sizeof(a);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   for (i= 0; i < 3; i++)
   {
@@ -393,7 +393,7 @@ static int test_bug10729(MYSQL *mysql)
 static int test_bug10736(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   char a[21];
   int rc;
   const char *stmt_text;
@@ -418,11 +418,11 @@ static int test_bug10736(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void*) a;
-  my_bind[0].buffer_length= sizeof(a);
-  mysql_stmt_bind_result(stmt, my_bind);
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void*) a;
+  ma_bind[0].buffer_length= sizeof(a);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   for (i= 0; i < 3; i++)
   {
@@ -446,7 +446,7 @@ static int test_bug10736(MYSQL *mysql)
 static int test_bug10794(MYSQL *mysql)
 {
   MYSQL_STMT *stmt, *stmt1;
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   char a[21];
   int id_val;
   ulong a_len;
@@ -466,13 +466,13 @@ static int test_bug10794(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= (void*) &id_val;
-  my_bind[1].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[1].buffer= (void*) a;
-  my_bind[1].length= &a_len;
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= (void*) &id_val;
+  ma_bind[1].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[1].buffer= (void*) a;
+  ma_bind[1].length= &a_len;
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
   for (i= 0; i < 42; i++)
   {
@@ -488,12 +488,12 @@ static int test_bug10794(MYSQL *mysql)
   mysql_stmt_attr_set(stmt, STMT_ATTR_CURSOR_TYPE, (const void*) &type);
   stmt1= mysql_stmt_init(mysql);
   mysql_stmt_attr_set(stmt1, STMT_ATTR_CURSOR_TYPE, (const void*) &type);
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (void*) a;
-  my_bind[0].buffer_length= sizeof(a);
-  my_bind[0].length= &a_len;
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (void*) a;
+  ma_bind[0].buffer_length= sizeof(a);
+  ma_bind[0].length= &a_len;
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
@@ -505,7 +505,7 @@ static int test_bug10794(MYSQL *mysql)
   stmt_text= "select name from t1 where id=10";
   rc= mysql_stmt_prepare(stmt1, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt1);
-  rc= mysql_stmt_bind_result(stmt1, my_bind);
+  rc= mysql_stmt_bind_result(stmt1, ma_bind);
   check_stmt_rc(rc, stmt1);
   rc= mysql_stmt_execute(stmt1);
   check_stmt_rc(rc, stmt1);
@@ -532,7 +532,7 @@ static int test_bug10794(MYSQL *mysql)
 static int test_bug10760(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   int rc;
   const char *stmt_text;
   char id_buf[20];
@@ -598,15 +598,15 @@ static int test_bug10760(MYSQL *mysql)
     check_stmt_rc(rc, stmt);;
 
     rc= mysql_query(mysql, "alter table t1 engine=InnoDB");
-    check_mysql_rc(rc, mysql);;
+    check_mysql_rc(rc, mysql);
 
-    memset(my_bind, '\0', sizeof(my_bind));
-    my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-    my_bind[0].buffer= (void*) id_buf;
-    my_bind[0].buffer_length= sizeof(id_buf);
-    my_bind[0].length= &id_len;
+    memset(ma_bind, '\0', sizeof(ma_bind));
+    ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+    ma_bind[0].buffer= (void*) id_buf;
+    ma_bind[0].buffer_length= sizeof(id_buf);
+    ma_bind[0].length= &id_len;
     check_stmt_rc(rc, stmt);;
-    mysql_stmt_bind_result(stmt, my_bind);
+    mysql_stmt_bind_result(stmt, ma_bind);
 
     rc= mysql_stmt_execute(stmt);
     rc= mysql_stmt_fetch(stmt);
@@ -695,7 +695,7 @@ static int test_bug11172(MYSQL *mysql)
 static int test_bug11656(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   int rc;
   const char *stmt_text;
   char buf[2][20];
@@ -721,16 +721,16 @@ static int test_bug11656(MYSQL *mysql)
   type= (ulong) CURSOR_TYPE_READ_ONLY;
   mysql_stmt_attr_set(stmt, STMT_ATTR_CURSOR_TYPE, (const void*) &type);
 
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
   strcpy(buf[0], "pcint502_MY2");
   strcpy(buf[1], "*");
   for (i=0; i < 2; i++)
   {
-    my_bind[i].buffer_type= MYSQL_TYPE_STRING;
-    my_bind[i].buffer= (uchar* *)&buf[i];
-    my_bind[i].buffer_length= (unsigned long)strlen(buf[i]);
+    ma_bind[i].buffer_type= MYSQL_TYPE_STRING;
+    ma_bind[i].buffer= (uchar* *)&buf[i];
+    ma_bind[i].buffer_length= (unsigned long)strlen(buf[i]);
   }
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -751,7 +751,7 @@ static int test_bug11656(MYSQL *mysql)
 static int test_bug11901(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   int rc;
   char workdept[20];
   ulong workdept_len; 
@@ -848,19 +848,19 @@ static int test_bug11901(MYSQL *mysql)
   check_stmt_rc(rc, stmt);
 
 
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
 
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= &empno;
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= &empno;
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
-  my_bind[1].buffer_type= MYSQL_TYPE_VAR_STRING;
-  my_bind[1].buffer= (void*) workdept;
-  my_bind[1].buffer_length= sizeof(workdept);
-  my_bind[1].length= &workdept_len;
+  ma_bind[1].buffer_type= MYSQL_TYPE_VAR_STRING;
+  ma_bind[1].buffer= (void*) workdept;
+  ma_bind[1].buffer_length= sizeof(workdept);
+  ma_bind[1].length= &workdept_len;
 
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   empno= 10;
@@ -885,7 +885,7 @@ static int test_bug11904(MYSQL *mysql)
   int rc;
   const char *stmt_text;
   const ulong type= (ulong)CURSOR_TYPE_READ_ONLY;
-  MYSQL_BIND my_bind[2];
+  MYSQL_BIND ma_bind[2];
   int country_id=0;
   char row_data[11]= {0};
 
@@ -910,18 +910,18 @@ static int test_bug11904(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt1, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt1);
 
-  memset(my_bind, 0, sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer=& country_id;
-  my_bind[0].buffer_length= 0;
-  my_bind[0].length= 0;
+  memset(ma_bind, 0, sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer=& country_id;
+  ma_bind[0].buffer_length= 0;
+  ma_bind[0].length= 0;
 
-  my_bind[1].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[1].buffer=& row_data;
-  my_bind[1].buffer_length= sizeof(row_data) - 1;
-  my_bind[1].length= 0;
+  ma_bind[1].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[1].buffer=& row_data;
+  ma_bind[1].buffer_length= sizeof(row_data) - 1;
+  ma_bind[1].length= 0;
 
-  rc= mysql_stmt_bind_result(stmt1, my_bind);
+  rc= mysql_stmt_bind_result(stmt1, ma_bind);
   check_stmt_rc(rc, stmt1);
 
   rc= mysql_stmt_execute(stmt1);
@@ -1020,7 +1020,7 @@ static int test_bug12243(MYSQL *mysql)
 static int test_bug11909(MYSQL *mysql)
 {
   MYSQL_STMT *stmt1, *stmt2;
-  MYSQL_BIND my_bind[7];
+  MYSQL_BIND ma_bind[7];
   int rc;
   char firstname[20], midinit[20], lastname[20], workdept[20];
   ulong firstname_len, midinit_len, lastname_len, workdept_len;
@@ -1064,36 +1064,36 @@ static int test_bug11909(MYSQL *mysql)
   mysql_stmt_attr_set(stmt1, STMT_ATTR_CURSOR_TYPE,
                       (const void*) &type);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= (void*) &empno;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= (void*) &empno;
 
-  my_bind[1].buffer_type= MYSQL_TYPE_VAR_STRING;
-  my_bind[1].buffer= (void*) firstname;
-  my_bind[1].buffer_length= sizeof(firstname);
-  my_bind[1].length= &firstname_len;
+  ma_bind[1].buffer_type= MYSQL_TYPE_VAR_STRING;
+  ma_bind[1].buffer= (void*) firstname;
+  ma_bind[1].buffer_length= sizeof(firstname);
+  ma_bind[1].length= &firstname_len;
 
-  my_bind[2].buffer_type= MYSQL_TYPE_VAR_STRING;
-  my_bind[2].buffer= (void*) midinit;
-  my_bind[2].buffer_length= sizeof(midinit);
-  my_bind[2].length= &midinit_len;
+  ma_bind[2].buffer_type= MYSQL_TYPE_VAR_STRING;
+  ma_bind[2].buffer= (void*) midinit;
+  ma_bind[2].buffer_length= sizeof(midinit);
+  ma_bind[2].length= &midinit_len;
 
-  my_bind[3].buffer_type= MYSQL_TYPE_VAR_STRING;
-  my_bind[3].buffer= (void*) lastname;
-  my_bind[3].buffer_length= sizeof(lastname);
-  my_bind[3].length= &lastname_len;
+  ma_bind[3].buffer_type= MYSQL_TYPE_VAR_STRING;
+  ma_bind[3].buffer= (void*) lastname;
+  ma_bind[3].buffer_length= sizeof(lastname);
+  ma_bind[3].length= &lastname_len;
 
-  my_bind[4].buffer_type= MYSQL_TYPE_VAR_STRING;
-  my_bind[4].buffer= (void*) workdept;
-  my_bind[4].buffer_length= sizeof(workdept);
-  my_bind[4].length= &workdept_len;
+  ma_bind[4].buffer_type= MYSQL_TYPE_VAR_STRING;
+  ma_bind[4].buffer= (void*) workdept;
+  ma_bind[4].buffer_length= sizeof(workdept);
+  ma_bind[4].length= &workdept_len;
 
-  my_bind[5].buffer_type= MYSQL_TYPE_DOUBLE;
-  my_bind[5].buffer= (void*) &salary;
+  ma_bind[5].buffer_type= MYSQL_TYPE_DOUBLE;
+  ma_bind[5].buffer= (void*) &salary;
 
-  my_bind[6].buffer_type= MYSQL_TYPE_FLOAT;
-  my_bind[6].buffer= (void*) &bonus;
-  rc= mysql_stmt_bind_result(stmt1, my_bind);
+  ma_bind[6].buffer_type= MYSQL_TYPE_FLOAT;
+  ma_bind[6].buffer= (void*) &bonus;
+  rc= mysql_stmt_bind_result(stmt1, ma_bind);
   check_stmt_rc(rc, stmt1);
 
   rc= mysql_stmt_execute(stmt1);
@@ -1116,7 +1116,7 @@ static int test_bug11909(MYSQL *mysql)
   check_stmt_rc(rc, stmt2);
   mysql_stmt_attr_set(stmt2, STMT_ATTR_CURSOR_TYPE,
                       (const void*) &type);
-  rc= mysql_stmt_bind_result(stmt2, my_bind);
+  rc= mysql_stmt_bind_result(stmt2, ma_bind);
   check_stmt_rc(rc, stmt2);
 
   rc= mysql_stmt_execute(stmt2);
@@ -1151,7 +1151,7 @@ static int test_bug11909(MYSQL *mysql)
 
 static int test_bug13488(MYSQL *mysql)
 {
-  MYSQL_BIND my_bind[3];
+  MYSQL_BIND ma_bind[3];
   MYSQL_STMT *stmt1;
   int rc, f1, f2, f3, i;
   const ulong type= CURSOR_TYPE_READ_ONLY;
@@ -1170,16 +1170,16 @@ static int test_bug13488(MYSQL *mysql)
   rc= mysql_query(mysql, "insert into t2 values (1,2), (2,4)");
   check_mysql_rc(rc, mysql);
 
-  memset(my_bind, 0, sizeof(my_bind));
+  memset(ma_bind, 0, sizeof(ma_bind));
   for (i= 0; i < 3; i++)
   {
-    my_bind[i].buffer_type= MYSQL_TYPE_LONG;
-    my_bind[i].buffer_length= 4;
-    my_bind[i].length= 0;
+    ma_bind[i].buffer_type= MYSQL_TYPE_LONG;
+    ma_bind[i].buffer_length= 4;
+    ma_bind[i].length= 0;
   }
-  my_bind[0].buffer=&f1;
-  my_bind[1].buffer=&f2;
-  my_bind[2].buffer=&f3;
+  ma_bind[0].buffer=&f1;
+  ma_bind[1].buffer=&f2;
+  ma_bind[2].buffer=&f3;
 
   stmt1= mysql_stmt_init(mysql);
   rc= mysql_stmt_attr_set(stmt1,STMT_ATTR_CURSOR_TYPE, (const void *)&type);
@@ -1191,7 +1191,7 @@ static int test_bug13488(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt1);
   check_stmt_rc(rc, stmt1);
 
-  rc= mysql_stmt_bind_result(stmt1, my_bind);
+  rc= mysql_stmt_bind_result(stmt1, ma_bind);
   check_stmt_rc(rc, stmt1);
 
   rc= mysql_stmt_fetch(stmt1);
@@ -1577,7 +1577,7 @@ static int test_bug9159(MYSQL *mysql)
 static int test_bug9478(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   char a[6];
   ulong a_len;
   int rc, i;
@@ -1591,12 +1591,12 @@ static int test_bug9478(MYSQL *mysql)
 
   stmt= open_cursor(mysql, "select name from t1 where id=2");
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (char*) a;
-  my_bind[0].buffer_length= sizeof(a);
-  my_bind[0].length= &a_len;
-  mysql_stmt_bind_result(stmt, my_bind);
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (char*) a;
+  ma_bind[0].buffer_length= sizeof(a);
+  ma_bind[0].length= &a_len;
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   for (i= 0; i < 5; i++)
   {
@@ -1655,7 +1655,7 @@ static int test_bug9478(MYSQL *mysql)
   /* Test the case with a server side cursor */
   stmt= open_cursor(mysql, "select name from t1");
 
-  mysql_stmt_bind_result(stmt, my_bind);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   for (i= 0; i < 5; i++)
   {
@@ -1694,7 +1694,7 @@ static int test_bug9478(MYSQL *mysql)
 static int test_bug9520(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   char a[6];
   ulong a_len;
   int rc, row_count= 0;
@@ -1717,13 +1717,13 @@ static int test_bug9520(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (char*) a;
-  my_bind[0].buffer_length= sizeof(a);
-  my_bind[0].length= &a_len;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (char*) a;
+  ma_bind[0].buffer_length= sizeof(a);
+  ma_bind[0].length= &a_len;
 
-  mysql_stmt_bind_result(stmt, my_bind);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   while (!(rc= mysql_stmt_fetch(stmt)))
     row_count++;
@@ -1747,7 +1747,7 @@ static int test_bug9520(MYSQL *mysql)
 static int test_bug9643(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   int32 a;
   int rc;
   const char *stmt_text;
@@ -1778,11 +1778,11 @@ static int test_bug9643(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer_type= MYSQL_TYPE_LONG;
-  my_bind[0].buffer= (void*) &a;
-  my_bind[0].buffer_length= sizeof(a);
-  mysql_stmt_bind_result(stmt, my_bind);
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer_type= MYSQL_TYPE_LONG;
+  ma_bind[0].buffer= (void*) &a;
+  ma_bind[0].buffer_length= sizeof(a);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
@@ -1800,7 +1800,7 @@ static int test_bug9643(MYSQL *mysql)
 }
 
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"test_basic_cursors", test_basic_cursors, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
   {"test_cursors_with_union", test_cursors_with_union, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
   {"test_cursors_with_procedure", test_cursors_with_procedure, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
@@ -1837,7 +1837,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

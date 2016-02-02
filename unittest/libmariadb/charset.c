@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "my_test.h"
+#include "ma_test.h"
 
 /*
  test gbk charset escaping
@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define TEST_BUG8378_OUT "\xef\xbb\x5c\xbf\x5c\x27\x5c\xbf\x10"
 
 /* set connection options */
-struct my_option_st opt_bug8378[] = {
+struct ma_option_st opt_bug8378[] = {
   {MYSQL_SET_CHARSET_NAME, "gbk"},
   {0, NULL}
 };
@@ -164,7 +164,7 @@ static int test_conversion(MYSQL *mysql)
   MYSQL_STMT *stmt;
   const char *stmt_text;
   int rc;
-  MYSQL_BIND my_bind[1];
+  MYSQL_BIND ma_bind[1];
   uchar buff[4];
   ulong length;
 
@@ -185,12 +185,12 @@ static int test_conversion(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, stmt_text, strlen(stmt_text));
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
-  my_bind[0].buffer= (char*) buff;
-  my_bind[0].length= &length;
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  memset(ma_bind, '\0', sizeof(ma_bind));
+  ma_bind[0].buffer= (char*) buff;
+  ma_bind[0].length= &length;
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
 
-  mysql_stmt_bind_param(stmt, my_bind);
+  mysql_stmt_bind_param(stmt, ma_bind);
 
   buff[0]= (uchar) 0xC3;
   buff[1]= (uchar) 0xA0;
@@ -205,8 +205,8 @@ static int test_conversion(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
 
-  my_bind[0].buffer_length= sizeof(buff);
-  mysql_stmt_bind_result(stmt, my_bind);
+  ma_bind[0].buffer_length= sizeof(buff);
+  mysql_stmt_bind_result(stmt, ma_bind);
 
   rc= mysql_stmt_fetch(stmt);
   check_stmt_rc(rc, stmt);
@@ -726,7 +726,7 @@ static int test_utf16_utf32_noboms(MYSQL *mysql)
   return OK;
 }
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"bug_8378: mysql_real_escape with gbk", bug_8378, TEST_CONNECTION_NEW, 0,  opt_bug8378,  NULL},
   {"test_client_character_set", test_client_character_set, TEST_CONNECTION_DEFAULT, 0,  NULL,  NULL},
   {"bug_10214: mysql_real_escape with NO_BACKSLASH_ESCAPES", bug_10214, TEST_CONNECTION_DEFAULT, 0,  NULL, NULL},
@@ -749,7 +749,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

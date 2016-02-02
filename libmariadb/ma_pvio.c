@@ -43,8 +43,8 @@
                         register callback functions for read and write
  */
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <mysql.h>
 #include <errmsg.h>
 #include <mysql/client_plugin.h>
@@ -52,7 +52,7 @@
 #include <ma_common.h>
 #include <ma_pvio.h>
 #include <mysql_async.h>
-#include <my_context.h>
+#include <ma_context.h>
 
 extern pthread_mutex_t THR_LOCK_lock;
 
@@ -103,7 +103,7 @@ MARIADB_PVIO *ma_pvio_init(MA_PVIO_CINFO *cinfo)
   }
 
 
-  if (!(pvio= (MARIADB_PVIO *)my_malloc(sizeof(MARIADB_PVIO), 
+  if (!(pvio= (MARIADB_PVIO *)ma_malloc(sizeof(MARIADB_PVIO), 
                                       MYF(MY_WME | MY_ZEROFILL))))
   {
     PVIO_SET_ERROR(cinfo->mysql, CR_OUT_OF_MEMORY, unknown_sqlstate, 0);
@@ -112,7 +112,7 @@ MARIADB_PVIO *ma_pvio_init(MA_PVIO_CINFO *cinfo)
 
   /* register error routine and methods */
   pvio->methods= pvio_plugin->methods;
-  pvio->set_error= my_set_error;
+  pvio->set_error= ma_set_error;
   pvio->type= cinfo->type;
 
   /* set tineouts */
@@ -123,7 +123,7 @@ MARIADB_PVIO *ma_pvio_init(MA_PVIO_CINFO *cinfo)
     pvio->methods->set_timeout(pvio, PVIO_WRITE_TIMEOUT, cinfo->mysql->options.write_timeout);
   }
 
-  if (!(pvio->cache= my_malloc(PVIO_READ_AHEAD_CACHE_SIZE, MYF(MY_ZEROFILL))))
+  if (!(pvio->cache= ma_malloc(PVIO_READ_AHEAD_CACHE_SIZE, MYF(MY_ZEROFILL))))
   {
     PVIO_SET_ERROR(cinfo->mysql, CR_OUT_OF_MEMORY, unknown_sqlstate, 0);
     return NULL;
@@ -135,8 +135,8 @@ MARIADB_PVIO *ma_pvio_init(MA_PVIO_CINFO *cinfo)
 }
 /* }}} */
 
-/* {{{ my_bool ma_pvio_is_alive */
-my_bool ma_pvio_is_alive(MARIADB_PVIO *pvio)
+/* {{{ ma_bool ma_pvio_is_alive */
+ma_bool ma_pvio_is_alive(MARIADB_PVIO *pvio)
 {
   if (pvio->methods->is_alive)
     return pvio->methods->is_alive(pvio);
@@ -162,8 +162,8 @@ int ma_pvio_keepalive(MARIADB_PVIO *pvio)
 }
 /* }}} */
 
-/* {{{ my_bool ma_pvio_set_timeout */
-my_bool ma_pvio_set_timeout(MARIADB_PVIO *pvio, 
+/* {{{ ma_bool ma_pvio_set_timeout */
+ma_bool ma_pvio_set_timeout(MARIADB_PVIO *pvio, 
                            enum enum_pvio_timeout type,
                            int timeout)
 {
@@ -203,7 +203,7 @@ static size_t ma_pvio_read_async(MARIADB_PVIO *pvio, uchar *buffer, size_t lengt
     }
     if (b->suspend_resume_hook)
       (*b->suspend_resume_hook)(TRUE, b->suspend_resume_hook_user_data);
-    my_context_yield(&b->async_context);
+    ma_context_yield(&b->async_context);
     if (b->suspend_resume_hook)
       (*b->suspend_resume_hook)(FALSE, b->suspend_resume_hook_user_data);
     if (b->events_occured & MYSQL_WAIT_TIMEOUT)
@@ -232,7 +232,7 @@ size_t ma_pvio_read(MARIADB_PVIO *pvio, uchar *buffer, size_t length)
         If switching from non-blocking to blocking API usage, set the socket
         back to blocking mode.
       */
-      my_bool old_mode;
+      ma_bool old_mode;
       ma_pvio_blocking(pvio, TRUE, &old_mode);
     }
   }
@@ -323,7 +323,7 @@ static size_t ma_pvio_write_async(MARIADB_PVIO *pvio, const uchar *buffer, size_
     }
     if (b->suspend_resume_hook)
       (*b->suspend_resume_hook)(TRUE, b->suspend_resume_hook_user_data);
-    my_context_yield(&b->async_context);
+    ma_context_yield(&b->async_context);
     if (b->suspend_resume_hook)
       (*b->suspend_resume_hook)(FALSE, b->suspend_resume_hook_user_data);
     if (b->events_occured & MYSQL_WAIT_TIMEOUT)
@@ -363,7 +363,7 @@ size_t ma_pvio_write(MARIADB_PVIO *pvio, const uchar *buffer, size_t length)
         If switching from non-blocking to blocking API usage, set the socket
         back to blocking mode.
       */
-      my_bool old_mode;
+      ma_bool old_mode;
       ma_pvio_blocking(pvio, TRUE, &old_mode);
     }
   }
@@ -385,24 +385,24 @@ void ma_pvio_close(MARIADB_PVIO *pvio)
   if (pvio && pvio->cssl)
   {
     ma_pvio_ssl_close(pvio->cssl);
-    my_free((gptr)pvio->cssl);
+    ma_free((gptr)pvio->cssl);
   }
 #endif
   if (pvio && pvio->methods->close)
     pvio->methods->close(pvio);
 
   if (pvio->cache)
-    my_free((gptr)pvio->cache);
+    ma_free((gptr)pvio->cache);
 
   if (pvio->fp)
-    my_fclose(pvio->fp, MYF(0));
+    ma_fclose(pvio->fp, MYF(0));
 
-  my_free((gptr)pvio);
+  ma_free((gptr)pvio);
 }
 /* }}} */
 
-/* {{{ my_bool ma_pvio_get_handle */
-my_bool ma_pvio_get_handle(MARIADB_PVIO *pvio, void *handle)
+/* {{{ ma_bool ma_pvio_get_handle */
+ma_bool ma_pvio_get_handle(MARIADB_PVIO *pvio, void *handle)
 {
   if (pvio && pvio->methods->get_handle)
     return pvio->methods->get_handle(pvio, handle);
@@ -411,7 +411,7 @@ my_bool ma_pvio_get_handle(MARIADB_PVIO *pvio, void *handle)
 /* }}} */
 
 /* {{{ ma_pvio_wait_async */
-static my_bool
+static ma_bool
 ma_pvio_wait_async(struct mysql_async_context *b, enum enum_pvio_io_event event,
                  int timeout)
 {
@@ -435,7 +435,7 @@ ma_pvio_wait_async(struct mysql_async_context *b, enum enum_pvio_io_event event,
   }
   if (b->suspend_resume_hook)
     (*b->suspend_resume_hook)(TRUE, b->suspend_resume_hook_user_data);
-  my_context_yield(&b->async_context);
+  ma_context_yield(&b->async_context);
   if (b->suspend_resume_hook)
     (*b->suspend_resume_hook)(FALSE, b->suspend_resume_hook_user_data);
   return (b->events_occured & MYSQL_WAIT_TIMEOUT) ? 0 : 1;
@@ -443,7 +443,7 @@ ma_pvio_wait_async(struct mysql_async_context *b, enum enum_pvio_io_event event,
 /* }}} */
 
 /* {{{ ma_pvio_wait_io_or_timeout */
-int ma_pvio_wait_io_or_timeout(MARIADB_PVIO *pvio, my_bool is_read, int timeout)
+int ma_pvio_wait_io_or_timeout(MARIADB_PVIO *pvio, ma_bool is_read, int timeout)
 {
   if (IS_PVIO_ASYNC_ACTIVE(pvio))
     return ma_pvio_wait_async(pvio->mysql->options.extension->async_context, 
@@ -457,8 +457,8 @@ int ma_pvio_wait_io_or_timeout(MARIADB_PVIO *pvio, my_bool is_read, int timeout)
 }
 /* }}} */
 
-/* {{{ my_bool ma_pvio_connect */
-my_bool ma_pvio_connect(MARIADB_PVIO *pvio,  MA_PVIO_CINFO *cinfo)
+/* {{{ ma_bool ma_pvio_connect */
+ma_bool ma_pvio_connect(MARIADB_PVIO *pvio,  MA_PVIO_CINFO *cinfo)
 {
   if (pvio && pvio->methods->connect)
     return pvio->methods->connect(pvio, cinfo);
@@ -466,8 +466,8 @@ my_bool ma_pvio_connect(MARIADB_PVIO *pvio,  MA_PVIO_CINFO *cinfo)
 }
 /* }}} */
 
-/* {{{ my_bool ma_pvio_blocking */
-my_bool ma_pvio_blocking(MARIADB_PVIO *pvio, my_bool block, my_bool *previous_mode)
+/* {{{ ma_bool ma_pvio_blocking */
+ma_bool ma_pvio_blocking(MARIADB_PVIO *pvio, ma_bool block, ma_bool *previous_mode)
 {
   if (pvio && pvio->methods->blocking)
     return pvio->methods->blocking(pvio, block, previous_mode);
@@ -475,8 +475,8 @@ my_bool ma_pvio_blocking(MARIADB_PVIO *pvio, my_bool block, my_bool *previous_mo
 }
 /* }}} */
 
-/* {{{ my_bool ma_pvio_is_blocking */ 
-my_bool ma_pvio_is_blocking(MARIADB_PVIO *pvio) 
+/* {{{ ma_bool ma_pvio_is_blocking */ 
+ma_bool ma_pvio_is_blocking(MARIADB_PVIO *pvio) 
 {
   if (pvio && pvio->methods->is_blocking)
     return pvio->methods->is_blocking(pvio);
@@ -485,7 +485,7 @@ my_bool ma_pvio_is_blocking(MARIADB_PVIO *pvio)
 /* }}} */
 
 /* {{{ ma_pvio_has_data */
-my_bool ma_pvio_has_data(MARIADB_PVIO *pvio, ssize_t *data_len)
+ma_bool ma_pvio_has_data(MARIADB_PVIO *pvio, ssize_t *data_len)
 {
   /* check if we still have unread data in cache */
   if (pvio->cache)
@@ -498,8 +498,8 @@ my_bool ma_pvio_has_data(MARIADB_PVIO *pvio, ssize_t *data_len)
 /* }}} */
 
 #ifdef HAVE_SSL
-/* {{{ my_bool ma_pvio_start_ssl */
-my_bool ma_pvio_start_ssl(MARIADB_PVIO *pvio)
+/* {{{ ma_bool ma_pvio_start_ssl */
+ma_bool ma_pvio_start_ssl(MARIADB_PVIO *pvio)
 {
   if (!pvio || !pvio->mysql)
     return 1;
@@ -510,7 +510,7 @@ my_bool ma_pvio_start_ssl(MARIADB_PVIO *pvio)
   }
   if (ma_pvio_ssl_connect(pvio->cssl))
   {
-    my_free(pvio->cssl);
+    ma_free(pvio->cssl);
     pvio->cssl= NULL;
     return 1;
   }
@@ -535,7 +535,7 @@ my_bool ma_pvio_start_ssl(MARIADB_PVIO *pvio)
 #endif
 
 /* {{{ ma_pvio_register_callback */
-int ma_pvio_register_callback(my_bool register_callback,
+int ma_pvio_register_callback(ma_bool register_callback,
                              void (*callback_function)(int mode, MYSQL *mysql, const uchar *buffer, size_t length))
 {
   LIST *list;

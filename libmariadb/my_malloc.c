@@ -25,21 +25,21 @@
 
 	/* My memory allocator */
 
-gptr my_malloc(size_t Size, myf MyFlags)
+gptr ma_malloc(size_t Size, myf MyFlags)
 {
   gptr point;
-  DBUG_ENTER("my_malloc");
+  DBUG_ENTER("ma_malloc");
   DBUG_PRINT("my",("Size: %u  MyFlags: %d",Size, MyFlags));
 
   if (!Size)
     Size=1;					/* Safety */
   if ((point = (char*)malloc(Size)) == NULL)
   {
-    my_errno=errno;
+    g_errno=errno;
     if (MyFlags & MY_FAE)
       error_handler_hook=fatal_error_handler_hook;
     if (MyFlags & (MY_FAE+MY_WME))
-      my_error(EE_OUTOFMEMORY, MYF(ME_BELL+ME_WAITTANG),Size);
+      ma_error(EE_OUTOFMEMORY, MYF(ME_BELL+ME_WAITTANG),Size);
     if (MyFlags & MY_FAE)
       exit(1);
   }
@@ -47,55 +47,54 @@ gptr my_malloc(size_t Size, myf MyFlags)
     bzero(point,Size);
   DBUG_PRINT("exit",("ptr: %lx",point));
   DBUG_RETURN(point);
-} /* my_malloc */
+} /* ma_malloc */
 
 
-	/* Free memory allocated with my_malloc */
+	/* Free memory allocated with ma_malloc */
 	/*ARGSUSED*/
 
-void my_no_flags_free(void *ptr)
+void ma_no_flags_free(void *ptr)
 {
-  DBUG_ENTER("my_free");
+  DBUG_ENTER("ma_free");
   DBUG_PRINT("my",("ptr: %lx",ptr));
   if (ptr)
     free(ptr);
   DBUG_VOID_RETURN;
-} /* my_free */
+} /* ma_free */
 
 
 	/* malloc and copy */
 
-gptr my_memdup(const unsigned char *from, size_t length, myf MyFlags)
+gptr ma_memdup(const unsigned char *from, size_t length, myf MyFlags)
 {
   gptr ptr;
-  if ((ptr=my_malloc(length,MyFlags)) != 0)
+  if ((ptr=ma_malloc(length,MyFlags)) != 0)
     memcpy((unsigned char*) ptr, (unsigned char*) from,(size_t) length);
   return(ptr);
 }
 
-
-my_string my_strdup(const char *from, myf MyFlags)
+char * ma_strdup(const char *from, myf MyFlags)
 {
   gptr ptr;
-  uint length;
+  size_t length;
   
   if ((MyFlags & MY_ALLOW_ZERO_PTR) && !from)
     return NULL;
 
-  length=(uint) strlen(from)+1;
-  if ((ptr=my_malloc(length,MyFlags)) != 0)
+  length= strlen(from)+1;
+  if ((ptr=ma_malloc(length,MyFlags)) != 0)
     memcpy((unsigned char*) ptr, (unsigned char*) from,(size_t) length);
-  return((my_string) ptr);
+  return((char *) ptr);
 }
 
-my_string my_strndup(const char *src, size_t length, myf MyFlags)
+char * ma_strndup(const char *src, size_t length, myf MyFlags)
 {
   gptr ptr;
 
-  if ((ptr= my_malloc(length+1, MyFlags))) {
+  if ((ptr= ma_malloc(length+1, MyFlags))) {
     memcpy(ptr, src, length);
     ptr[length] = 0;
   }
-  return ptr;
+  return (char *)ptr;
 }
 /* }}} */

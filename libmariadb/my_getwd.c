@@ -15,7 +15,7 @@
    Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA */
 
-/* my_setwd() and my_getwd() works with intern_filenames !! */
+/* ma_setwd() and ma_getwd() works with intern_filenames !! */
 
 #include "mysys_priv.h"
 #include <m_string.h>
@@ -39,13 +39,13 @@
 
 	/* Gets current working directory in buff. Directory is allways ended
 	   with FN_LIBCHAR */
-	/* One must pass a buffer to my_getwd. One can allways use
+	/* One must pass a buffer to ma_getwd. One can allways use
 	   curr_dir[] */
 
-int my_getwd(my_string buf, uint size, myf MyFlags)
+int ma_getwd(ma_string buf, uint size, myf MyFlags)
 {
-  my_string pos;
-  DBUG_ENTER("my_getwd");
+  ma_string pos;
+  DBUG_ENTER("ma_getwd");
   DBUG_PRINT("my",("buf: %lx  size: %d  MyFlags %d", buf,size,MyFlags));
 
 #if ! defined(MSDOS)
@@ -61,8 +61,8 @@ int my_getwd(my_string buf, uint size, myf MyFlags)
     if (!(getcwd(buf,size-2)) && MyFlags & MY_WME)
 #endif
     {
-      my_errno=errno;
-      my_error(EE_GETWD,MYF(ME_BELL+ME_WAITTANG),errno);
+      g_errno=errno;
+      ma_error(EE_GETWD,MYF(ME_BELL+ME_WAITTANG),errno);
       return(-1);
     }
 #elif defined(HAVE_GETWD)
@@ -74,8 +74,8 @@ int my_getwd(my_string buf, uint size, myf MyFlags)
 #elif defined(VMS)
     if (!getcwd(buf,size-2,1) && MyFlags & MY_WME)
     {
-      my_errno=errno;
-      my_error(EE_GETWD,MYF(ME_BELL+ME_WAITTANG),errno);
+      g_errno=errno;
+      ma_error(EE_GETWD,MYF(ME_BELL+ME_WAITTANG),errno);
       return(-1);
     }
     intern_filename(buf,buf);
@@ -90,23 +90,23 @@ int my_getwd(my_string buf, uint size, myf MyFlags)
     (void) strmake(&curr_dir[0],buf,(size_s) (FN_REFLEN-1));
   }
   DBUG_RETURN(0);
-} /* my_getwd */
+} /* ma_getwd */
 
 
 	/* Set new working directory */
 
-int my_setwd(const char *dir, myf MyFlags)
+int ma_setwd(const char *dir, myf MyFlags)
 {
   int res;
   size_s length;
-  my_string start,pos;
+  ma_string start,pos;
 #if defined(VMS) || defined(MSDOS) || defined(OS2)
   char buff[FN_REFLEN];
 #endif
-  DBUG_ENTER("my_setwd");
+  DBUG_ENTER("ma_setwd");
   DBUG_PRINT("my",("dir: '%s'  MyFlags %d", dir, MyFlags));
 
-  start=(my_string) dir;
+  start=(ma_string) dir;
 #if defined(MSDOS) || defined(OS2) /* OS2/MSDOS chdir can't change drive */
 #if !defined(_DDL) && !defined(WIN32)
   if ((pos=(char*) strchr(dir,FN_DEVCHAR)) != 0)
@@ -128,8 +128,8 @@ int my_setwd(const char *dir, myf MyFlags)
     if (drive != drives)
     {
       *pos='\0';			/* Dir is now only drive */
-      my_errno=errno;
-      my_error(EE_SETWD,MYF(ME_BELL+ME_WAITTANG),dir,ENOENT);
+      g_errno=errno;
+      ma_error(EE_SETWD,MYF(ME_BELL+ME_WAITTANG),dir,ENOENT);
       DBUG_RETURN(-1);
     }
     dir=pos;				/* drive changed, change now path */
@@ -161,9 +161,9 @@ int my_setwd(const char *dir, myf MyFlags)
   if ((res=chdir((char*) dir)) != 0)
 #endif
   {
-    my_errno=errno;
+    g_errno=errno;
     if (MyFlags & MY_WME)
-      my_error(EE_SETWD,MYF(ME_BELL+ME_WAITTANG),start,errno);
+      ma_error(EE_SETWD,MYF(ME_BELL+ME_WAITTANG),start,errno);
   }
   else
   {
@@ -181,7 +181,7 @@ int my_setwd(const char *dir, myf MyFlags)
       curr_dir[0]='\0';				/* Don't save name */
   }
   DBUG_RETURN(res);
-} /* my_setwd */
+} /* ma_setwd */
 
 
 

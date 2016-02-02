@@ -43,8 +43,8 @@
   +----------------------------------------------------------------------+
 */
 
-#include "my_global.h"
-#include <my_sys.h>
+#include "ma_global.h"
+#include <ma_sys.h>
 #include <mysys_err.h>
 #include <m_string.h>
 #include <m_ctype.h>
@@ -79,7 +79,7 @@
 #define YY_PART_YEAR 70
 
 MYSQL_PS_CONVERSION mysql_ps_fetch_functions[MYSQL_TYPE_GEOMETRY + 1];
-my_bool mysql_ps_subsystem_initialized= 0;
+ma_bool mysql_ps_subsystem_initialized= 0;
 
 
 #define NUMERIC_TRUNCATION(val,min_range, max_range)\
@@ -90,7 +90,7 @@ my_bool mysql_ps_subsystem_initialized= 0;
 void ps_fetch_from_1_to_8_bytes(MYSQL_BIND *r_param, const MYSQL_FIELD * const field,
                 unsigned char **row, unsigned int byte_count)
 {
-  my_bool is_unsigned= test(field->flags & UNSIGNED_FLAG);
+  ma_bool is_unsigned= test(field->flags & UNSIGNED_FLAG);
   r_param->buffer_length= byte_count;
   switch (byte_count) {
     case 1:
@@ -122,7 +122,7 @@ void ps_fetch_from_1_to_8_bytes(MYSQL_BIND *r_param, const MYSQL_FIELD * const f
 }
 /* }}} */
 
-static longlong my_atoll(const char *number, const char *end, int *error)
+static longlong ma_atoll(const char *number, const char *end, int *error)
 {
   char buffer[255];
   longlong llval= 0;
@@ -161,7 +161,7 @@ static longlong my_atoll(const char *number, const char *end, int *error)
   return llval;
 }
 
-double my_atod(const char *number, const char *end, int *error)
+double ma_atod(const char *number, const char *end, int *error)
 {
   double val= 0.0;
   char buffer[255];
@@ -180,9 +180,9 @@ double my_atod(const char *number, const char *end, int *error)
   return val;
 }
 
-my_bool str_to_TIME(const char *str, size_t length, MYSQL_TIME *tm)
+ma_bool str_to_TIME(const char *str, size_t length, MYSQL_TIME *tm)
 {
-  my_bool is_time=0, is_date=0, has_time_frac=0;
+  ma_bool is_time=0, is_date=0, has_time_frac=0;
   char *p= (char *)str;
 
   if ((p= strchr(str, '-')) && p <= str + length)
@@ -229,7 +229,7 @@ static void convert_from_string(MYSQL_BIND *r_param, char *buffer, size_t len)
   {
     case MYSQL_TYPE_TINY:
     {
-      longlong val= my_atoll(buffer, buffer + len, &error);
+      longlong val= ma_atoll(buffer, buffer + len, &error);
       *r_param->error= error ? 1 : r_param->is_unsigned ? NUMERIC_TRUNCATION(val, 0, UINT_MAX8) : NUMERIC_TRUNCATION(val, INT_MIN8, INT_MAX8) || error > 0;
       int1store(r_param->buffer, (uchar) val);
       r_param->buffer_length= sizeof(uchar);
@@ -238,7 +238,7 @@ static void convert_from_string(MYSQL_BIND *r_param, char *buffer, size_t len)
     case MYSQL_TYPE_YEAR:
     case MYSQL_TYPE_SHORT:
     {
-      longlong val= my_atoll(buffer, buffer + len, &error);
+      longlong val= ma_atoll(buffer, buffer + len, &error);
       *r_param->error= error ? 1 : r_param->is_unsigned ? NUMERIC_TRUNCATION(val, 0, UINT_MAX16) : NUMERIC_TRUNCATION(val, INT_MIN16, INT_MAX16) || error > 0;
       shortstore(r_param->buffer, (short)val);
       r_param->buffer_length= sizeof(short);
@@ -246,7 +246,7 @@ static void convert_from_string(MYSQL_BIND *r_param, char *buffer, size_t len)
     break;
     case MYSQL_TYPE_LONG:
     {
-      longlong val= my_atoll(buffer, buffer + len, &error);
+      longlong val= ma_atoll(buffer, buffer + len, &error);
       *r_param->error=error ? 1 : r_param->is_unsigned ? NUMERIC_TRUNCATION(val, 0, UINT_MAX32) : NUMERIC_TRUNCATION(val, INT_MIN32, INT_MAX32) || error > 0;
       longstore(r_param->buffer, (int32)val);
       r_param->buffer_length= sizeof(uint32);
@@ -254,7 +254,7 @@ static void convert_from_string(MYSQL_BIND *r_param, char *buffer, size_t len)
     break;
     case MYSQL_TYPE_LONGLONG:
     {
-      longlong val= my_atoll(buffer, buffer + len, &error);
+      longlong val= ma_atoll(buffer, buffer + len, &error);
       *r_param->error= error > 0; /* no need to check for truncation */
       longlongstore(r_param->buffer, val);
       r_param->buffer_length= sizeof(longlong);
@@ -262,7 +262,7 @@ static void convert_from_string(MYSQL_BIND *r_param, char *buffer, size_t len)
     break;
     case MYSQL_TYPE_DOUBLE:
     {
-      double val= my_atod(buffer, buffer + len, &error);
+      double val= ma_atod(buffer, buffer + len, &error);
       *r_param->error= error > 0; /* no need to check for truncation */
       float8store(r_param->buffer, val);
       r_param->buffer_length= sizeof(double);
@@ -270,7 +270,7 @@ static void convert_from_string(MYSQL_BIND *r_param, char *buffer, size_t len)
     break;
     case MYSQL_TYPE_FLOAT:
     {
-      float val= (float)my_atod(buffer, buffer + len, &error);
+      float val= (float)ma_atod(buffer, buffer + len, &error);
       *r_param->error= error > 0; /* no need to check for truncation */
       float4store(r_param->buffer, val);
       r_param->buffer_length= sizeof(float);
@@ -314,7 +314,7 @@ static void convert_from_string(MYSQL_BIND *r_param, char *buffer, size_t len)
   }
 }
 
-static void convert_from_long(MYSQL_BIND *r_param, const MYSQL_FIELD *field, longlong val, my_bool is_unsigned)
+static void convert_from_long(MYSQL_BIND *r_param, const MYSQL_FIELD *field, longlong val, ma_bool is_unsigned)
 {
   switch (r_param->buffer_type) {
     case MYSQL_TYPE_TINY:

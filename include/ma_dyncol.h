@@ -35,7 +35,7 @@ extern "C" {
 
 #ifndef LIBMARIADB
 #include <decimal.h>
-#include <my_decimal_limits.h>
+#include <ma_decimal_limits.h>
 #endif
 #include <mysql.h>
 
@@ -51,7 +51,7 @@ typedef long		longlong;
 #endif
 
 
-#ifndef _my_sys_h
+#ifndef _ma_sys_h
 typedef struct st_dynamic_string
 {
   char *str;
@@ -165,13 +165,13 @@ mariadb_dyncol_create_many_num(DYNAMIC_COLUMN *str,
                                uint column_count,
                                uint *column_numbers,
                                DYNAMIC_COLUMN_VALUE *values,
-                               my_bool new_string);
+                               ma_bool new_string);
 enum enum_dyncol_func_result
 mariadb_dyncol_create_many_named(DYNAMIC_COLUMN *str,
                                  uint column_count,
                                  MYSQL_LEX_STRING *column_keys,
                                  DYNAMIC_COLUMN_VALUE *values,
-                                 my_bool new_string);
+                                 ma_bool new_string);
 
 
 enum enum_dyncol_func_result
@@ -208,7 +208,7 @@ enum enum_dyncol_func_result
 mariadb_dyncol_get_named(DYNAMIC_COLUMN *str, MYSQL_LEX_STRING *name,
                          DYNAMIC_COLUMN_VALUE *store_it_here);
 
-my_bool mariadb_dyncol_has_names(DYNAMIC_COLUMN *str);
+ma_bool mariadb_dyncol_has_names(DYNAMIC_COLUMN *str);
 
 enum enum_dyncol_func_result
 mariadb_dyncol_check(DYNAMIC_COLUMN *str);
@@ -225,7 +225,7 @@ void mariadb_dyncol_free(DYNAMIC_COLUMN *str);
 /* conversion of values to 3 base types */
 enum enum_dyncol_func_result
 mariadb_dyncol_val_str(DYNAMIC_STRING *str, DYNAMIC_COLUMN_VALUE *val,
-                       CHARSET_INFO *cs, my_bool quote);
+                       CHARSET_INFO *cs, ma_bool quote);
 enum enum_dyncol_func_result
 mariadb_dyncol_val_long(longlong *ll, DYNAMIC_COLUMN_VALUE *val);
 enum enum_dyncol_func_result

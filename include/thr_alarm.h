@@ -87,7 +87,7 @@ typedef struct st_alarm {
   ulong expire_time;
   thr_alarm_entry alarmed;		/* set when alarm is due */
   pthread_t thread;
-  my_bool malloced;
+  ma_bool malloced;
 } ALARM;
 
 #define thr_alarm_init(A) (*(A))=0

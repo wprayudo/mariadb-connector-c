@@ -21,7 +21,7 @@
 	/* convert filename to unix style filename */
 	/* If MSDOS converts '\' to '/' */
 
-void to_unix_path(my_string to __attribute__((unused)))
+void to_unix_path(ma_string to __attribute__((unused)))
 {
 #if FN_LIBCHAR != '/'
   {

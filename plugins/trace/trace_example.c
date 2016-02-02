@@ -20,7 +20,7 @@
 #define _GNU_SOURCE 1
 #endif
 
-#include <my_global.h>
+#include <ma_global.h>
 #include <mysql.h>
 #include <mysql/client_plugin.h>
 #include <string.h>
@@ -40,7 +40,7 @@ static int trace_init(char *errormsg,
                       va_list unused1 __attribute__((unused)));
 static int trace_deinit(void);
 
-int (*register_callback)(my_bool register_callback, 
+int (*register_callback)(ma_bool register_callback, 
                          void (*callback_function)(int mode, MYSQL *mysql, const uchar *buffer, size_t length));
 void trace_callback(int mode, MYSQL *mysql, const uchar *buffer, size_t length);
 
@@ -239,17 +239,17 @@ void dump_buffer(uchar *buffer, size_t len)
   printf("\n");
 }
 
-static void dump_simple(TRACE_INFO *info, my_bool is_error)
+static void dump_simple(TRACE_INFO *info, ma_bool is_error)
 {
   printf("%8lu: %s %s\n", info->thread_id, commands[info->last_command], TRACE_STATUS(is_error));
 }
 
-static void dump_reference(TRACE_INFO *info, my_bool is_error)
+static void dump_reference(TRACE_INFO *info, ma_bool is_error)
 {
   printf("%8lu: %s(%lu) %s\n", info->thread_id, commands[info->last_command], info->refid, TRACE_STATUS(is_error));
 }
 
-static void dump_command(TRACE_INFO *info, my_bool is_error)
+static void dump_command(TRACE_INFO *info, ma_bool is_error)
 {
   size_t i;
   printf("%8d: %s(",  info->thread_id, commands[info->last_command]);
@@ -388,7 +388,7 @@ void trace_callback(int mode, MYSQL *mysql, const uchar *buffer, size_t length)
       }
       else
       {
-        my_bool is_error;
+        ma_bool is_error;
 
         len= uint3korr(p);
         p+= 4;

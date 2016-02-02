@@ -17,8 +17,8 @@
    MA 02111-1307, USA 
 */
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <mysys_err.h>
 #include <errmsg.h>
 #include <mysql.h>
@@ -54,9 +54,9 @@ MA_FILE *ma_open(const char *location, const char *mode, MYSQL *mysql)
     if (!(fp= fopen(location, mode)))
     {
 #ifdef _WIN32
-      my_errno= GetLastError();
+      g_errno= GetLastError();
 #else
-      my_errno= errno;
+      g_errno= errno;
 #endif
       return NULL;
     }
@@ -74,9 +74,9 @@ MA_FILE *ma_open(const char *location, const char *mode, MYSQL *mysql)
     len= MultiByteToWideChar(CodePage, 0, location, (int)strlen(location), NULL, 0);
     if (!len)
       return NULL;
-    if (!(w_filename= (wchar_t *)my_malloc((len + 1) * sizeof(wchar_t), MYF(MY_ZEROFILL))))
+    if (!(w_filename= (wchar_t *)ma_malloc((len + 1) * sizeof(wchar_t), MYF(MY_ZEROFILL))))
     {
-      my_set_error(mysql, CR_OUT_OF_MEMORY, SQLSTATE_UNKNOWN, 0);
+      ma_set_error(mysql, CR_OUT_OF_MEMORY, SQLSTATE_UNKNOWN, 0);
       return NULL;
     }
     Length= len;
@@ -84,14 +84,14 @@ MA_FILE *ma_open(const char *location, const char *mode, MYSQL *mysql)
     if (!len)
     {
       /* todo: error handling */
-      my_free(w_filename);
+      ma_free(w_filename);
       return NULL;
     }
     len= (int)strlen(mode);
-    if (!(w_mode= (wchar_t *)my_malloc((len + 1) * sizeof(wchar_t), MYF(MY_ZEROFILL))))
+    if (!(w_mode= (wchar_t *)ma_malloc((len + 1) * sizeof(wchar_t), MYF(MY_ZEROFILL))))
     {
-      my_set_error(mysql, CR_OUT_OF_MEMORY, SQLSTATE_UNKNOWN, 0);
-      my_free(w_filename);
+      ma_set_error(mysql, CR_OUT_OF_MEMORY, SQLSTATE_UNKNOWN, 0);
+      ma_free(w_filename);
       return NULL;
     }
     Length= len;
@@ -99,23 +99,23 @@ MA_FILE *ma_open(const char *location, const char *mode, MYSQL *mysql)
     if (!len)
     {
       /* todo: error handling */
-      my_free(w_filename);
-      my_free(w_mode);
+      ma_free(w_filename);
+      ma_free(w_mode);
       return NULL;
     }
     fp= _wfopen(w_filename, w_mode);
-    my_errno= GetLastError();
-    my_free(w_filename);
-    my_free(w_mode);
+    g_errno= GetLastError();
+    ma_free(w_filename);
+    ma_free(w_mode);
   }
 
 #endif
   if (fp)
   {
-    ma_file= (MA_FILE *)my_malloc(sizeof(MA_FILE), MYF(0));
+    ma_file= (MA_FILE *)ma_malloc(sizeof(MA_FILE), MYF(0));
     if (!ma_file)
     {
-      my_set_error(mysql, CR_OUT_OF_MEMORY, SQLSTATE_UNKNOWN, 0);
+      ma_set_error(mysql, CR_OUT_OF_MEMORY, SQLSTATE_UNKNOWN, 0);
       return NULL;
     }
     ma_file->type= MA_FILE_LOCAL;
@@ -147,7 +147,7 @@ int ma_close(MA_FILE *file)
   switch (file->type) {
   case MA_FILE_LOCAL:
     rc= fclose((FILE *)file->ptr);
-    my_free(file);
+    ma_free(file);
     break;
 #ifdef HAVE_REMOTEIO
   case MA_FILE_REMOTE:

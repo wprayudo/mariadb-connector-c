@@ -81,7 +81,7 @@ struct st_ma_pvio {
   PVIO_METHODS *methods;
   FILE *fp;
   void (*set_error)(MYSQL *mysql, unsigned int error_nr, const char *sqlstate, const char *format, ...);
-  void (*callback)(MARIADB_PVIO *pvio, my_bool is_read, const char *buffer, size_t length);
+  void (*callback)(MARIADB_PVIO *pvio, ma_bool is_read, const char *buffer, size_t length);
 };
 
 typedef struct st_ma_pvio_cinfo
@@ -95,22 +95,22 @@ typedef struct st_ma_pvio_cinfo
 
 struct st_ma_pvio_methods
 {
-  my_bool (*set_timeout)(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout);
+  ma_bool (*set_timeout)(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout);
   int (*get_timeout)(MARIADB_PVIO *pvio, enum enum_pvio_timeout type);
   size_t (*read)(MARIADB_PVIO *pvio, uchar *buffer, size_t length);
   size_t (*async_read)(MARIADB_PVIO *pvio, uchar *buffer, size_t length);
   size_t (*write)(MARIADB_PVIO *pvio, const uchar *buffer, size_t length);
   size_t (*async_write)(MARIADB_PVIO *pvio, const uchar *buffer, size_t length);
-  int (*wait_io_or_timeout)(MARIADB_PVIO *pvio, my_bool is_read, int timeout);
-  my_bool (*blocking)(MARIADB_PVIO *pvio, my_bool value, my_bool *old_value);
-  my_bool (*connect)(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo);
-  my_bool (*close)(MARIADB_PVIO *pvio);
+  int (*wait_io_or_timeout)(MARIADB_PVIO *pvio, ma_bool is_read, int timeout);
+  ma_bool (*blocking)(MARIADB_PVIO *pvio, ma_bool value, ma_bool *old_value);
+  ma_bool (*connect)(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo);
+  ma_bool (*close)(MARIADB_PVIO *pvio);
   int (*fast_send)(MARIADB_PVIO *pvio);
   int (*keepalive)(MARIADB_PVIO *pvio);
-  my_bool (*get_handle)(MARIADB_PVIO *pvio, void *handle);
-  my_bool (*is_blocking)(MARIADB_PVIO *pvio);
-  my_bool (*is_alive)(MARIADB_PVIO *pvio);
-  my_bool (*has_data)(MARIADB_PVIO *pvio, ssize_t *data_len);
+  ma_bool (*get_handle)(MARIADB_PVIO *pvio, void *handle);
+  ma_bool (*is_blocking)(MARIADB_PVIO *pvio);
+  ma_bool (*is_alive)(MARIADB_PVIO *pvio);
+  ma_bool (*has_data)(MARIADB_PVIO *pvio, ssize_t *data_len);
 };
 
 /* Function prototypes */
@@ -120,17 +120,17 @@ size_t ma_pvio_cache_read(MARIADB_PVIO *pvio, uchar *buffer, size_t length);
 size_t ma_pvio_read(MARIADB_PVIO *pvio, uchar *buffer, size_t length);
 size_t ma_pvio_write(MARIADB_PVIO *pvio, const uchar *buffer, size_t length);
 int ma_pvio_get_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type);
-my_bool ma_pvio_set_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout);
+ma_bool ma_pvio_set_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout);
 int ma_pvio_fast_send(MARIADB_PVIO *pvio);
 int ma_pvio_keepalive(MARIADB_PVIO *pvio);
-my_socket ma_pvio_get_socket(MARIADB_PVIO *pvio);
-my_bool ma_pvio_is_blocking(MARIADB_PVIO *pvio);
-my_bool ma_pvio_blocking(MARIADB_PVIO *pvio, my_bool block, my_bool *previous_mode);
-my_bool ma_pvio_is_blocking(MARIADB_PVIO *pvio);
-int ma_pvio_wait_io_or_timeout(MARIADB_PVIO *pvio, my_bool is_read, int timeout);
-my_bool ma_pvio_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo);
-my_bool ma_pvio_is_alive(MARIADB_PVIO *pvio);
-my_bool ma_pvio_get_handle(MARIADB_PVIO *pvio, void *handle);
-my_bool ma_pvio_has_data(MARIADB_PVIO *pvio, ssize_t *length);
+ma_socket ma_pvio_get_socket(MARIADB_PVIO *pvio);
+ma_bool ma_pvio_is_blocking(MARIADB_PVIO *pvio);
+ma_bool ma_pvio_blocking(MARIADB_PVIO *pvio, ma_bool block, ma_bool *previous_mode);
+ma_bool ma_pvio_is_blocking(MARIADB_PVIO *pvio);
+int ma_pvio_wait_io_or_timeout(MARIADB_PVIO *pvio, ma_bool is_read, int timeout);
+ma_bool ma_pvio_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo);
+ma_bool ma_pvio_is_alive(MARIADB_PVIO *pvio);
+ma_bool ma_pvio_get_handle(MARIADB_PVIO *pvio, void *handle);
+ma_bool ma_pvio_has_data(MARIADB_PVIO *pvio, ssize_t *length);
 
 #endif /* _ma_pvio_h_ */

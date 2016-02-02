@@ -20,7 +20,7 @@
    is freely available from http://www.php.net
 *****************************************************************************/
 #include "mysys_priv.h"
-#include <my_global.h>
+#include <ma_global.h>
 #include <mysql.h>
 #include <stdio.h>
 

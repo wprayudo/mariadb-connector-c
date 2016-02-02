@@ -18,25 +18,25 @@
 /* This file includes constants used with all databases */
 /* Author: Michael Widenius */
 
-#ifndef _my_base_h
-#define _my_base_h
+#ifndef _ma_base_h
+#define _ma_base_h
 
 #ifndef stdin				/* Included first in handler */
-#define USES_TYPES			/* my_dir with sys/types is included */
+#define USES_TYPES			/* ma_dir with sys/types is included */
 #define CHSIZE_USED
 #include <global.h>
-#include <my_dir.h>			/* This includes types */
-#include <my_sys.h>
+#include <ma_dir.h>			/* This includes types */
+#include <ma_sys.h>
 #include <m_string.h>
 #include <errno.h>
 #ifdef MSDOS
 #include <share.h>			/* Neaded for sopen() */
 #endif
 #if !defined(USE_MY_FUNC) && !defined(THREAD)
-#include <my_nosys.h>			/* For faster code, after test */
+#include <ma_nosys.h>			/* For faster code, after test */
 #endif	/* USE_MY_FUNC */
 #endif	/* stdin */
-#include <my_list.h>
+#include <ma_list.h>
 
 /* The following is bits in the flag parameter to ha_open() */
 
@@ -270,13 +270,13 @@ enum data_file_type {
 
 /* For number of records */
 #ifdef BIG_TABLES
-typedef my_off_t	ha_rows;
+typedef ma_off_t	ha_rows;
 #else
 typedef ulong		ha_rows;	
 #endif
 
 #define HA_POS_ERROR	(~ (ha_rows) 0)
-#define HA_OFFSET_ERROR	(~ (my_off_t) 0)
+#define HA_OFFSET_ERROR	(~ (ma_off_t) 0)
 
 #if SYSTEM_SIZEOF_OFF_T == 4
 #define MAX_FILE_SIZE	INT_MAX32
@@ -284,4 +284,4 @@ typedef ulong		ha_rows;
 #define MAX_FILE_SIZE	LONGLONG_MAX
 #endif
 
-#endif /* _my_base_h */
+#endif /* _ma_base_h */

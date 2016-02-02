@@ -20,7 +20,7 @@
 #define _GNU_SOURCE 1
 #endif
 
-#include <my_global.h>
+#include <ma_global.h>
 #include <mysql.h>
 #include <mysql/client_plugin.h>
 #include <string.h>
@@ -133,7 +133,7 @@ static int auth_dialog_open(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
   char dialog_buffer[1024];
   char *response;
   size_t packet_length;
-  my_bool first_loop= TRUE;
+  ma_bool first_loop= TRUE;
 
   do {
     if ((packet_length= vio->read_packet(vio, &packet)) < 0)

@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
   if (mysql_real_query(mysql, query, strlen(query)))
     show_error(mysql);
  
-  query= "CREATE TABLE affected_rows (id int not null, my_name varchar(50),"
+  query= "CREATE TABLE affected_rows (id int not null, ma_name varchar(50),"
          "PRIMARY KEY(id))";
   if (mysql_real_query(mysql, query, strlen(query)))
     show_error(mysql);
@@ -55,14 +55,14 @@ int main(int argc, char *argv[])
   printf("Affected_rows after UPDATE: %lu\n",
          (unsigned long) mysql_affected_rows(mysql));
 
-  query= "UPDATE affected_rows SET my_name=\"Monty\" WHERE id=1";
+  query= "UPDATE affected_rows SET ma_name=\"Monty\" WHERE id=1";
   if (mysql_real_query(mysql, query, strlen(query)))
     show_error(mysql);
   printf("Affected_rows after UPDATE: %lu\n",
          (unsigned long) mysql_affected_rows(mysql));
 
   /* Affected rows after select */
-  query= "SELECT id, my_name FROM affected_rows";
+  query= "SELECT id, ma_name FROM affected_rows";
   if (mysql_real_query(mysql, query, strlen(query)))
     show_error(mysql);
   result= mysql_store_result(mysql);

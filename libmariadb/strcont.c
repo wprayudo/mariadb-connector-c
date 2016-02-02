@@ -26,12 +26,12 @@
 
 */
 
-#include <my_global.h>
+#include <ma_global.h>
 #include "m_string.h"
 
-my_string strcont(reg1 const char *str,reg2 const char *set)
+ma_string strcont(reg1 const char *str,reg2 const char *set)
 {
-  reg3 my_string start = (my_string) set;
+  reg3 ma_string start = (ma_string) set;
 
   while (*str)
   {

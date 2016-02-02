@@ -21,8 +21,8 @@
 
 #ifdef _WIN32
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <errmsg.h>
 #include <mysql.h>
 #include <mysql/client_plugin.h>
@@ -32,14 +32,14 @@
 #define SHM_DEFAULT_NAME "MYSQL"
 #define PVIO_SHM_BUFFER_SIZE 16000 + 4
 
-my_bool pvio_shm_set_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout);
+ma_bool pvio_shm_set_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout);
 int pvio_shm_get_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type);
 size_t pvio_shm_read(MARIADB_PVIO *pvio, uchar *buffer, size_t length);
 size_t pvio_shm_write(MARIADB_PVIO *pvio, const uchar *buffer, size_t length);
-int pvio_shm_wait_io_or_timeout(MARIADB_PVIO *pvio, my_bool is_read, int timeout);
-my_bool pvio_shm_blocking(MARIADB_PVIO *pvio, my_bool value, my_bool *old_value);
-my_bool pvio_shm_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo);
-my_bool pvio_shm_close(MARIADB_PVIO *pvio);
+int pvio_shm_wait_io_or_timeout(MARIADB_PVIO *pvio, ma_bool is_read, int timeout);
+ma_bool pvio_shm_blocking(MARIADB_PVIO *pvio, ma_bool value, ma_bool *old_value);
+ma_bool pvio_shm_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo);
+ma_bool pvio_shm_close(MARIADB_PVIO *pvio);
 
 
 struct st_ma_pvio_methods pvio_shm_methods= {
@@ -102,7 +102,7 @@ struct st_pvio_shm {
   char *shm_name;
 };
 
-my_bool pvio_shm_set_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout)
+ma_bool pvio_shm_set_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout)
 {
   if (!pvio)
     return 1;
@@ -208,12 +208,12 @@ size_t pvio_shm_write(MARIADB_PVIO *pvio, const uchar *buffer, size_t length)
 }
 
 
-int pvio_shm_wait_io_or_timeout(MARIADB_PVIO *pvio, my_bool is_read, int timeout)
+int pvio_shm_wait_io_or_timeout(MARIADB_PVIO *pvio, ma_bool is_read, int timeout)
 {
   return 0;
 }
 
-my_bool pvio_shm_blocking(MARIADB_PVIO *pvio, my_bool block, my_bool *previous_mode)
+ma_bool pvio_shm_blocking(MARIADB_PVIO *pvio, ma_bool block, ma_bool *previous_mode)
 {
   /* not supported */
   return 0;
@@ -231,7 +231,7 @@ int pvio_shm_fast_send(MARIADB_PVIO *pvio)
   return 0;
 }
 
-my_bool pvio_shm_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo)
+ma_bool pvio_shm_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo)
 {
   char *base_memory_name;
   char *prefixes[]= {"", "Global\\", NULL};
@@ -404,7 +404,7 @@ error:
 
 }
 
-my_bool pvio_shm_close(MARIADB_PVIO *pvio)
+ma_bool pvio_shm_close(MARIADB_PVIO *pvio)
 {
   PVIO_SHM *pvio_shm= (PVIO_SHM *)pvio->data;
   int i;
@@ -426,12 +426,12 @@ my_bool pvio_shm_close(MARIADB_PVIO *pvio)
   return 0;
 }
 
-my_bool pvio_shm_get_socket(MARIADB_PVIO *pvio, void *handle)
+ma_bool pvio_shm_get_socket(MARIADB_PVIO *pvio, void *handle)
 {
   return 1;
 } 
 
-my_bool pvio_shm_is_blocking(MARIADB_PVIO *pvio)
+ma_bool pvio_shm_is_blocking(MARIADB_PVIO *pvio)
 {
   return 1;
 }

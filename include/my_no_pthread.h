@@ -21,8 +21,8 @@
   environment, easier to use.
 */
 
-#if !defined(_my_no_pthread_h) && !defined(THREAD)
-#define _my_no_pthread_h
+#if !defined(_ma_no_pthread_h) && !defined(THREAD)
+#define _ma_no_pthread_h
 
 #define pthread_mutex_init(A,B)
 #define pthread_mutex_lock(A)

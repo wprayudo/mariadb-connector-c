@@ -1,13 +1,13 @@
 /*
 */
 
-#include "my_test.h"
+#include "ma_test.h"
 
 static int com_multi_1(MYSQL *mysql)
 {
   int rc;
   MYSQL_RES *res;
-  my_bool is_multi= 1;
+  enum mariadb_com_multi status;
 
   /* TEST a simple query before COM_MULTI */
 
@@ -20,7 +20,8 @@ static int com_multi_1(MYSQL *mysql)
 
   /* TEST COM_MULTI */
 
-  if (mysql_options(mysql, MARIADB_OPT_COM_MULTI, &is_multi))
+  status= MARIADB_COM_MULTI_BEGIN;
+  if (mysql_options(mysql, MARIADB_OPT_COM_MULTI, &status))
   {
     diag("COM_MULT not supported");
     return SKIP;
@@ -30,7 +31,8 @@ static int com_multi_1(MYSQL *mysql)
 
   rc= mysql_query(mysql, "select 2");
 
-  rc= mariadb_flush_multi_command(mysql);
+  status= MARIADB_COM_MULTI_END;
+  rc= mysql_options(mysql, MARIADB_OPT_COM_MULTI, &status);
   check_mysql_rc(rc, mysql);
   /* 1 SELECT result */
   res= mysql_store_result(mysql);
@@ -69,8 +71,76 @@ static int com_multi_1(MYSQL *mysql)
   return OK;
 }
 
-struct my_tests_st my_tests[] = {
+static int com_multi_ps1(MYSQL *mysql)
+{
+  MYSQL_STMT *stmt= mysql_stmt_init(mysql);
+  int rc;
+  rc= mysql_query(mysql, "DROP TABLE IF EXISTS t1");
+  check_mysql_rc(rc, mysql);
+  rc= mysql_query(mysql, "CREATE TABLE t1 (a int, b varchar(20))");
+
+  rc= mysql_stmt_prepare(stmt, "INSERT INTO t1 values (2, 'execute_direct')", -1);
+  check_stmt_rc(rc, stmt);
+
+  rc= mysql_stmt_execute(stmt);
+  check_stmt_rc(rc, stmt);
+  diag("affected_rows: %d", mysql_stmt_affected_rows(stmt));
+  diag("stmt_id: %d", stmt->stmt_id);
+  mysql_stmt_close(stmt);
+
+  stmt= mysql_stmt_init(mysql);
+  rc= mariadb_stmt_execute_direct(stmt, "INSERT INTO t1 values (2, 'execute_direct')", -1);
+  check_stmt_rc(rc, stmt);
+
+  FAIL_IF(mysql_stmt_affected_rows(stmt) != 1, "expected affected_rows= 1");
+  FAIL_IF(stmt->stmt_id < 1, "expected statement id > 0");
+
+  rc= mysql_stmt_close(stmt);
+  check_mysql_rc(rc, mysql);
+
+  return OK;
+}
+
+static int com_multi_ps2(MYSQL *mysql)
+{
+  MYSQL_STMT *stmt;
+  MYSQL_BIND bind[3];
+  int intval= 3, rc;
+  char *varval= "com_multi_ps2";
+
+  return OK;
+
+  rc= mysql_query(mysql, "DROP TABLE IF EXISTS t1");
+  check_mysql_rc(rc, mysql);
+  rc= mysql_query(mysql, "CREATE TABLE t1 (a int, b varchar(20))");
+
+  memset(&bind, 0, sizeof(MYSQL_BIND) * 3);
+  bind[0].buffer_type= MYSQL_TYPE_SHORT;
+  bind[0].buffer= &intval;
+  bind[1].buffer_type= MYSQL_TYPE_STRING;
+  bind[1].buffer= varval;
+  bind[1].buffer_length= strlen(varval);
+  bind[2].buffer_type= MAX_NO_FIELD_TYPES;
+
+  stmt= mysql_stmt_init(mysql);
+  rc= mysql_stmt_bind_param(stmt, bind);
+  check_stmt_rc(rc, stmt);
+
+  rc= mariadb_stmt_execute_direct(stmt, "INSERT INTO t1 VALUES (?,?)", -1);
+  check_stmt_rc(rc, stmt);
+  FAIL_IF(mysql_stmt_affected_rows(stmt) != 1, "expected affected_rows= 1");
+  FAIL_IF(stmt->stmt_id < 1, "expected statement id > 0");
+
+  rc= mysql_stmt_close(stmt);
+  check_mysql_rc(rc, mysql);
+
+  return OK;
+}
+
+struct ma_tests_st ma_tests[] = {
   {"com_multi_1", com_multi_1, TEST_CONNECTION_NEW, 0,  NULL,  NULL},
+  {"com_multi_ps1", com_multi_ps1, TEST_CONNECTION_NEW, 0,  NULL,  NULL},
+  {"com_multi_ps2", com_multi_ps2, TEST_CONNECTION_NEW, 0,  NULL,  NULL},
   {NULL, NULL, 0, 0, NULL, NULL}
 };
 
@@ -85,7 +155,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   mysql_server_end();
   return(exit_status());

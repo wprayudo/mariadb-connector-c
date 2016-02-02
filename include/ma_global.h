@@ -25,7 +25,7 @@
 #ifdef _WIN32
 #include <config-win.h>
 #else
-#include <my_config.h>
+#include <ma_config.h>
 #if defined(__cplusplus) && defined(inline)
 #undef inline				/* fix configure problem */
 #endif
@@ -83,12 +83,12 @@
 #define _H_STRINGS
 #define _SYS_STREAM_H
 #define _AIX32_CURSES
-#define ulonglong2double(A) my_ulonglong2double(A)
-#define my_off_t2double(A)  my_ulonglong2double(A)
+#define ulonglong2double(A) ma_ulonglong2double(A)
+#define ma_off_t2double(A)  ma_ulonglong2double(A)
 #ifdef	__cplusplus
 extern "C" {
 #endif
-double my_ulonglong2double(unsigned long long A);
+double ma_ulonglong2double(unsigned long long A);
 #ifdef	__cplusplus
 }
 #endif
@@ -236,7 +236,7 @@ double my_ulonglong2double(unsigned long long A);
 #endif
 
 /* #define USE_some_charset 1 was deprecated by changes to configure */
-/* my_ctype my_to_upper, my_to_lower, my_sort_order gain theit right value */
+/* ma_ctype ma_to_upper, ma_to_lower, ma_sort_order gain theit right value */
 /* automagically during configuration */
 
 /* Does the system remember a signal handler after a signal ? */
@@ -297,13 +297,13 @@ typedef unsigned short ushort;
 
 #if defined(__GNUC__)
 #define function_volatile	volatile
-#ifndef my_reinterpret_cast
-#define my_reinterpret_cast(A) reinterpret_cast<A>
+#ifndef ma_reinterpret_cast
+#define ma_reinterpret_cast(A) reinterpret_cast<A>
 #endif
-#define my_const_cast(A) const_cast<A>
-#elif !defined(my_reinterpret_cast)
-#define my_reinterpret_cast(A) (A)
-#define my_const_cast(A) (A)
+#define ma_const_cast(A) const_cast<A>
+#elif !defined(ma_reinterpret_cast)
+#define ma_reinterpret_cast(A) (A)
+#define ma_const_cast(A) (A)
 #endif
 #if !defined(__attribute__) && (defined(__cplusplus) || !defined(__GNUC__)  || __GNUC__ == 2 && __GNUC_MINOR__ < 8)
 #define __attribute__(A)
@@ -334,9 +334,9 @@ typedef unsigned short ushort;
 /* Some types that is different between systems */
 
 typedef int	File;		/* File descriptor */
-#ifndef my_socket_defined
-typedef int	my_socket;	/* File descriptor for sockets */
-#define my_socket_defined
+#ifndef ma_socket_defined
+typedef int	ma_socket;	/* File descriptor for sockets */
+#define ma_socket_defined
 #define INVALID_SOCKET -1
 #endif
 /* Type for fuctions that handles signals */
@@ -376,11 +376,11 @@ typedef SOCKET_SIZE_TYPE size_socket;
 /* file create flags */
 
 #ifndef O_SHARE
-#define O_SHARE		0	/* Flag to my_open for shared files */
+#define O_SHARE		0	/* Flag to ma_open for shared files */
 #ifndef O_BINARY
-#define O_BINARY	0	/* Flag to my_open for binary files */
+#define O_BINARY	0	/* Flag to ma_open for binary files */
 #endif
-#define FILE_BINARY	0	/* Flag to my_fopen for binary streams */
+#define FILE_BINARY	0	/* Flag to ma_fopen for binary streams */
 #ifdef HAVE_FCNTL
 #define HAVE_FCNTL_LOCK
 #define F_TO_EOF	0L	/* Param to lockf() to lock rest of file */
@@ -453,7 +453,7 @@ typedef SOCKET_SIZE_TYPE size_socket;
 #define NO_HASH			/* Not needed anymore */
 #ifdef _WIN32
 #define NO_DIR_LIBRARY		/* Not standar dir-library */
-#define USE_MY_STAT_STRUCT	/* For my_lib */
+#define USE_MY_STAT_STRUCT	/* For ma_lib */
 #ifdef _MSC_VER
 typedef SSIZE_T ssize_t;
 #endif
@@ -471,9 +471,9 @@ typedef SSIZE_T ssize_t;
 #define atod		atof
 #endif
 #ifdef USE_MY_ATOF
-#define atof		my_atof
-extern void		init_my_atof(void);
-extern double		my_atof(const char*);
+#define atof		ma_atof
+extern void		init_ma_atof(void);
+extern double		ma_atof(const char*);
 #endif
 #undef remove		/* Crashes MySQL on SCO 5.0.0 */
 #ifndef _WIN32
@@ -481,7 +481,7 @@ extern double		my_atof(const char*);
 #endif
 #ifndef ulonglong2double
 #define ulonglong2double(A) ((double) (A))
-#define my_off_t2double(A)  ((double) (A))
+#define ma_off_t2double(A)  ((double) (A))
 #endif
 
 
@@ -576,7 +576,7 @@ extern double		my_atof(const char*);
   Max size that must be added to a so that we know Size to make
   adressable obj.
 */
-typedef long		my_ptrdiff_t;
+typedef long		ma_ptrdiff_t;
 #define MY_ALIGN(A,L)	(((A) + (L) - 1) & ~((L) - 1))
 #define ALIGN_SIZE(A)	MY_ALIGN((A),sizeof(double))
 /* Size to make adressable obj. */
@@ -584,7 +584,7 @@ typedef long		my_ptrdiff_t;
 			 /* Offset of filed f in structure t */
 #define OFFSET(t, f)	((size_t)(char *)&((t *)0)->f)
 #define ADD_TO_PTR(ptr,size,type) (type) ((unsigned char*) (ptr)+size)
-#define PTR_BYTE_DIFF(A,B) (my_ptrdiff_t) ((unsigned char*) (A) - (unsigned char*) (B))
+#define PTR_BYTE_DIFF(A,B) (ma_ptrdiff_t) ((unsigned char*) (A) - (unsigned char*) (B))
 
 #define NullS		(char *) 0
 /* Nowdays we do not support MessyDos */
@@ -670,11 +670,11 @@ typedef long		longlong;
 #endif /* USE_RAID */
 
 #if SIZEOF_OFF_T > 4
-typedef ulonglong my_off_t;
+typedef ulonglong ma_off_t;
 #else
-typedef unsigned long my_off_t;
+typedef unsigned long ma_off_t;
 #endif
-#define MY_FILEPOS_ERROR	(~(my_off_t) 0)
+#define MY_FILEPOS_ERROR	(~(ma_off_t) 0)
 #ifndef _WIN32
 typedef off_t os_off_t;
 #endif
@@ -698,10 +698,10 @@ typedef off_t os_off_t;
 
 typedef uint8		int7;	/* Most effective integer 0 <= x <= 127 */
 typedef short		int15;	/* Most effective integer 0 <= x <= 32767 */
-typedef char		*my_string; /* String of characters */
+typedef char		*ma_string; /* String of characters */
 typedef unsigned long	size_s; /* Size of strings (In string-funcs) */
-typedef int		myf;	/* Type of MyFlags in my_funcs */
-typedef char		my_bool; /* Small bool */
+typedef int		myf;	/* Type of MyFlags in ma_funcs */
+typedef char		ma_bool; /* Small bool */
 #if !defined(bool) && !defined(bool_defined) && (!defined(HAVE_BOOL) || !defined(__cplusplus))
 typedef char		bool;	/* Ordinary boolean values 0 1 */
 #endif

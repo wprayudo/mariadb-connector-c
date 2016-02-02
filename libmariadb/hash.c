@@ -43,7 +43,7 @@ static uint calc_hashnr_caseup(const uchar *key,uint length);
 static int hashcmp(HASH *hash,HASH_LINK *pos,const uchar *key,uint length);
 
 
-my_bool _hash_init(HASH *hash,uint size,uint key_offset,uint key_length,
+ma_bool _hash_init(HASH *hash,uint size,uint key_offset,uint key_length,
 		  hash_get_key get_key,
 		  void (*free_element)(void*),uint flags CALLER_INFO_PROTO)
 {
@@ -51,7 +51,7 @@ my_bool _hash_init(HASH *hash,uint size,uint key_offset,uint key_length,
   DBUG_PRINT("enter",("hash: %lx  size: %d",hash,size));
 
   hash->records=0;
-  if (my_init_dynamic_array_ci(&hash->array,sizeof(HASH_LINK),size,0))
+  if (ma_init_dynamic_array_ci(&hash->array,sizeof(HASH_LINK),size,0))
   {
     hash->free=0;				/* Allow call to hash_free */
     DBUG_RETURN(TRUE);
@@ -95,7 +95,7 @@ void hash_free(HASH *hash)
 */
 
 static inline char*
-hash_key(HASH *hash,const uchar *record,uint *length,my_bool first)
+hash_key(HASH *hash,const uchar *record,uint *length,ma_bool first)
 {
   if (hash->get_key)
     return (*hash->get_key)(record,(uint *)length,first);
@@ -292,7 +292,7 @@ static int hashcmp(HASH *hash,HASH_LINK *pos,const uchar *key,uint length)
 
 	/* Write a hash-key to the hash-index */
 
-my_bool hash_insert(HASH *info,const uchar *record)
+ma_bool hash_insert(HASH *info,const uchar *record)
 {
   int flag;
   uint halfbuff,hash_nr,first_index,idx;
@@ -426,7 +426,7 @@ my_bool hash_insert(HASH *info,const uchar *record)
 ** if there is a free-function it's called for record if found
 ******************************************************************************/
 
-my_bool hash_delete(HASH *hash,uchar *record)
+ma_bool hash_delete(HASH *hash,uchar *record)
 {
   uint blength,pos2,pos_hashnr,lastpos_hashnr,idx,empty_index;
   HASH_LINK *data,*lastpos,*gpos,*pos,*pos3,*empty;
@@ -514,7 +514,7 @@ exit:
 	  This is much more efficent than using a delete & insert.
 	  */
 
-my_bool hash_update(HASH *hash,uchar *record,uchar *old_key,uint old_key_length)
+ma_bool hash_update(HASH *hash,uchar *record,uchar *old_key,uint old_key_length)
 {
   uint idx,new_index,new_pos_index,blength,records,empty;
   HASH_LINK org_link,*data,*previous,*pos;
@@ -589,7 +589,7 @@ uchar *hash_element(HASH *hash,uint idx)
 
 #ifndef DBUG_OFF
 
-my_bool hash_check(HASH *hash)
+ma_bool hash_check(HASH *hash)
 {
   int error;
   uint i,rec_link,found,max_links,seek,links,idx;

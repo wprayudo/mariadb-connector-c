@@ -26,9 +26,9 @@
 
 #ifdef THREAD
 #ifdef USE_TLS
-pthread_key(struct st_my_thread_var*, THR_KEY_mysys);
+pthread_key(struct st_ma_thread_var*, THR_KEY_mysys);
 #else
-pthread_key(struct st_my_thread_var, THR_KEY_mysys);
+pthread_key(struct st_ma_thread_var, THR_KEY_mysys);
 #endif /* USE_TLS */
 pthread_mutex_t THR_LOCK_malloc,THR_LOCK_open,
 	        THR_LOCK_lock, THR_LOCK_net, THR_LOCK_mysys; 
@@ -39,18 +39,18 @@ pthread_mutex_t LOCK_ssl_config;
 pthread_mutex_t LOCK_localtime_r;
 #endif
 #ifdef PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP
-pthread_mutexattr_t my_fast_mutexattr;
+pthread_mutexattr_t ma_fast_mutexattr;
 #endif
 #ifdef PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
-pthread_mutexattr_t my_errchk_mutexattr;
+pthread_mutexattr_t ma_errchk_mutexattr;
 #endif
-my_bool THR_KEY_mysys_initialized= FALSE;
+ma_bool THR_KEY_mysys_initialized= FALSE;
 
 /* FIXME  Note.  TlsAlloc does not set an auto destructor, so
-	the function my_thread_global_free must be called from
+	the function ma_thread_global_free must be called from
 	somewhere before final exit of the library */
 
-my_bool my_thread_global_init(void)
+ma_bool ma_thread_global_init(void)
 {
   if (pthread_key_create(&THR_KEY_mysys,free))
   {
@@ -58,12 +58,12 @@ my_bool my_thread_global_init(void)
     exit(1);
   }
 #ifdef PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP
-  pthread_mutexattr_init(&my_fast_mutexattr);
-  pthread_mutexattr_setkind_np(&my_fast_mutexattr,PTHREAD_MUTEX_ADAPTIVE_NP);
+  pthread_mutexattr_init(&ma_fast_mutexattr);
+  pthread_mutexattr_setkind_np(&ma_fast_mutexattr,PTHREAD_MUTEX_ADAPTIVE_NP);
 #endif
 #ifdef PPTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
-  pthread_mutexattr_init(&my_errchk_mutexattr);
-  pthread_mutexattr_setkind_np(&my_errchk_mutexattr,
+  pthread_mutexattr_init(&ma_errchk_mutexattr);
+  pthread_mutexattr_setkind_np(&ma_errchk_mutexattr,
 			       PTHREAD_MUTEX_ERRORCHECK_NP);
 #endif
   THR_KEY_mysys_initialized= TRUE;
@@ -80,19 +80,19 @@ my_bool my_thread_global_init(void)
 #ifndef HAVE_LOCALTIME_R
   pthread_mutex_init(&LOCK_localtime_r,MY_MUTEX_INIT_SLOW);
 #endif
-  return my_thread_init();
+  return ma_thread_init();
 }
 
-void my_thread_global_end(void)
+void ma_thread_global_end(void)
 {
 #if defined(USE_TLS)
   (void) TlsFree(THR_KEY_mysys);
 #endif
 #ifdef PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP
-  pthread_mutexattr_destroy(&my_fast_mutexattr);
+  pthread_mutexattr_destroy(&ma_fast_mutexattr);
 #endif
 #ifdef PPTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
-  pthread_mutexattr_destroy(&my_errchk_mutexattr);
+  pthread_mutexattr_destroy(&ma_errchk_mutexattr);
 #endif
 #ifdef HAVE_OPENSSL
   pthread_mutex_destroy(&LOCK_ssl_config);
@@ -108,19 +108,19 @@ static long thread_id=0;
   the pthread_self thread specific variable is initialized.
 */
 
-my_bool my_thread_init(void)
+ma_bool ma_thread_init(void)
 {
-  struct st_my_thread_var *tmp;
-  if (my_pthread_getspecific(struct st_my_thread_var *,THR_KEY_mysys))
+  struct st_ma_thread_var *tmp;
+  if (ma_pthread_getspecific(struct st_ma_thread_var *,THR_KEY_mysys))
   {
-    DBUG_PRINT("info", ("my_thread_init was already called. Thread id: %lu",
+    DBUG_PRINT("info", ("ma_thread_init was already called. Thread id: %lu",
                        pthread_self()));
     return 0;						/* Safequard */
   }
   /* We must have many calloc() here because these are freed on
      pthread_exit */
-  if (!(tmp=(struct st_my_thread_var *)
-	calloc(1,sizeof(struct st_my_thread_var))))
+  if (!(tmp=(struct st_ma_thread_var *)
+	calloc(1,sizeof(struct st_ma_thread_var))))
   {
     return 1;
   }
@@ -140,10 +140,10 @@ my_bool my_thread_init(void)
   return 0;
 }
 
-void my_thread_end(void)
+void ma_thread_end(void)
 {
-  struct st_my_thread_var *tmp= 
-            my_pthread_getspecific(struct st_my_thread_var *, THR_KEY_mysys);
+  struct st_ma_thread_var *tmp= 
+            ma_pthread_getspecific(struct st_ma_thread_var *, THR_KEY_mysys);
 
   if (tmp && tmp->initialized)
   {
@@ -173,15 +173,15 @@ void my_thread_end(void)
     pthread_setspecific(THR_KEY_mysys,0); 
 }
 
-struct st_my_thread_var *_my_thread_var(void)
+struct st_ma_thread_var *_ma_thread_var(void)
 {
-  struct st_my_thread_var *tmp=
-    my_pthread_getspecific(struct st_my_thread_var*,THR_KEY_mysys);
+  struct st_ma_thread_var *tmp=
+    ma_pthread_getspecific(struct st_ma_thread_var*,THR_KEY_mysys);
 #if defined(USE_TLS)
   if (!tmp)
   {
-    my_thread_init();
-    tmp=my_pthread_getspecific(struct st_my_thread_var*,THR_KEY_mysys);
+    ma_thread_init();
+    tmp=ma_pthread_getspecific(struct st_ma_thread_var*,THR_KEY_mysys);
   }
 #endif
   return tmp;
@@ -193,41 +193,41 @@ struct st_my_thread_var *_my_thread_var(void)
 
 #define UNKNOWN_THREAD -1
 
-long my_thread_id()
+long ma_thread_id()
 {
 #if defined(HAVE_PTHREAD_GETSEQUENCE_NP)
   return pthread_getsequence_np(pthread_self());
 #elif (defined(__sun) || defined(__sgi) || defined(__linux__)) && !defined(HAVE_mit_thread)
   return pthread_self();
 #else
-  return my_thread_var->id;
+  return ma_thread_var->id;
 #endif
 }
 
 #ifdef DBUG_OFF
-const char *my_thread_name(void)
+const char *ma_thread_name(void)
 {
   return "no_name";
 }
 
 #else
 
-const char *my_thread_name(void)
+const char *ma_thread_name(void)
 {
   char name_buff[100];
-  struct st_my_thread_var *tmp=my_thread_var;
+  struct st_ma_thread_var *tmp=ma_thread_var;
   if (!tmp->name[0])
   {
-    long id=my_thread_id();
+    long id=ma_thread_id();
     sprintf(name_buff,"T@%ld", id);
     strmake(tmp->name,name_buff,THREAD_NAME_SIZE);
   }
   return tmp->name;
 }
 
-extern void **my_thread_var_dbug()
+extern void **ma_thread_var_dbug()
 {
-  struct st_my_thread_var *tmp;
+  struct st_ma_thread_var *tmp;
   /*
     Instead of enforcing DBUG_ASSERT(THR_KEY_mysys_initialized) here,
     which causes any DBUG_ENTER and related traces to fail when
@@ -237,7 +237,7 @@ extern void **my_thread_var_dbug()
   */
   if (! THR_KEY_mysys_initialized)
     return NULL;
-  tmp= _my_thread_var();
+  tmp= _ma_thread_var();
   return tmp && tmp->initialized ? (void **)&tmp->dbug : 0;
 }
 #endif /* DBUG_OFF */

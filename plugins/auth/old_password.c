@@ -16,7 +16,7 @@
    or write to the Free Software Foundation, Inc., 
    51 Franklin St., Fifth Floor, Boston, MA 02110, USA
 *************************************************************************************/
-#include <my_global.h>
+#include <ma_global.h>
 #include <mysql.h>
 #include <mysql/client_plugin.h>
 #include <string.h>
@@ -42,7 +42,7 @@ typedef struct {
     uint pkt_len;
   } cached_server_reply;
   uint packets_read, packets_written; /**< counters for send/received packets */
-  my_bool mysql_change_user;          /**< if it's mysql_change_user() */
+  ma_bool mysql_change_user;          /**< if it's mysql_change_user() */
   int last_read_packet_len;           /**< the length of the last *read* packet */
 } MCPVIO_EXT;
 

@@ -24,7 +24,7 @@
 
 //#define VOID void
 
-extern my_bool ma_ssl_initialized;
+extern ma_bool ma_ssl_initialized;
 
 static pthread_mutex_t LOCK_schannel_config;
 static pthread_mutex_t *LOCK_crypto= NULL;
@@ -232,13 +232,13 @@ void *ma_ssl_init(MYSQL *mysql)
 
 
 
-my_bool ma_ssl_connect(MARIADB_SSL *cssl)
+ma_bool ma_ssl_connect(MARIADB_SSL *cssl)
 {
-  my_bool blocking;
+  ma_bool blocking;
   MYSQL *mysql;
   SCHANNEL_CRED Cred;
   MARIADB_PVIO *pvio;
-  my_bool rc= 1;
+  ma_bool rc= 1;
   SC_CTX *sctx;
   SECURITY_STATUS sRet;
   PCCERT_CONTEXT pRemoteCertContext = NULL,
@@ -352,8 +352,8 @@ size_t ma_ssl_write(MARIADB_SSL *cssl, const uchar* buffer, size_t length)
   return length;
 }
 
-/* {{{ my_bool ma_ssl_close(MARIADB_PVIO *pvio) */
-my_bool ma_ssl_close(MARIADB_SSL *cssl)
+/* {{{ ma_bool ma_ssl_close(MARIADB_PVIO *pvio) */
+ma_bool ma_ssl_close(MARIADB_SSL *cssl)
 {
   SC_CTX *sctx= (SC_CTX *)cssl->ssl; 
   

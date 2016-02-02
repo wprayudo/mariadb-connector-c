@@ -26,17 +26,17 @@
 #include <descrip.h>
 #endif /* VMS */
 
-static my_string NEAR_F expand_tilde(my_string *path);
+static ma_string NEAR_F expand_tilde(ma_string *path);
 
 	/* Pack a dirname ; Changes HOME to ~/ and current dev to ./ */
 	/* from is a dirname (from dirname() ?) ending with FN_LIBCHAR */
 	/* to may be == from */
 
-void pack_dirname(my_string to, const char *from)
+void pack_dirname(ma_string to, const char *from)
 {
   int cwd_err;
   uint d_length,length,buff_length= 0;
-  my_string start;
+  ma_string start;
   char buff[FN_REFLEN];
   DBUG_ENTER("pack_dirname");
 
@@ -50,7 +50,7 @@ void pack_dirname(my_string to, const char *from)
     start=to;
 
   LINT_INIT(buff_length);
-  if (!(cwd_err= my_getwd(buff,FN_REFLEN,MYF(0))))
+  if (!(cwd_err= ma_getwd(buff,FN_REFLEN,MYF(0))))
   {
     buff_length= (uint) strlen(buff);
     d_length=(uint) (start-to);
@@ -115,21 +115,21 @@ void pack_dirname(my_string to, const char *from)
 	/* Unpacks home_dir if "~/.." used */
 	/* Unpacks current dir if if "./.." used */
 
-uint cleanup_dirname(register my_string to, const char *from)
+uint cleanup_dirname(register ma_string to, const char *from)
 						/* to may be == from */
 
 {
   reg5 uint length;
-  reg2 my_string pos;
-  reg3 my_string from_ptr;
-  reg4 my_string start;
+  reg2 ma_string pos;
+  reg3 ma_string from_ptr;
+  reg4 ma_string start;
   char parent[5],				/* for "FN_PARENTDIR" */
        buff[FN_REFLEN+1],*end_parentdir;
   DBUG_ENTER("cleanup_dirname");
   DBUG_PRINT("enter",("from: '%s'",from));
 
   start=buff;
-  from_ptr=(my_string) from;
+  from_ptr=(ma_string) from;
 #ifdef FN_DEVCHAR
   if ((pos=strrchr(from_ptr,FN_DEVCHAR)) != 0)
   {						/* Skipp device part */
@@ -165,7 +165,7 @@ uint cleanup_dirname(register my_string to, const char *from)
 	  }
 	  if (*pos == FN_CURLIB && (pos == start || pos[-1] == FN_LIBCHAR))
 	  {
-	    if (my_getwd(curr_dir,FN_REFLEN,MYF(0)))
+	    if (ma_getwd(curr_dir,FN_REFLEN,MYF(0)))
 	    {
 	      pos+=length+1;			/* Don't unpack ./.. */
 	      continue;
@@ -220,7 +220,7 @@ uint cleanup_dirname(register my_string to, const char *from)
 	*/
 	  
 
-my_bool my_use_symdir=0;	/* Set this if you want to use symdirs */
+ma_bool ma_use_symdir=0;	/* Set this if you want to use symdirs */
 
 #ifdef USE_SYMDIR
 void symdirget(char *dir)
@@ -232,7 +232,7 @@ void symdirget(char *dir)
     FILE *fp;
     char temp= *(--pos);            /* May be "/" or "\" */
     strmov(pos,".sym");
-    fp = my_fopen(dir, O_RDONLY,MYF(0));
+    fp = ma_fopen(dir, O_RDONLY,MYF(0));
     *pos++=temp; *pos=0;	  /* Restore old filename */
     if (fp)
     {
@@ -248,7 +248,7 @@ void symdirget(char *dir)
 
 	strmake(dir,buff, (uint) (pos-buff));
       }
-      my_fclose(fp,MYF(0));
+      ma_fclose(fp,MYF(0));
     }
   }
 }
@@ -260,7 +260,7 @@ void symdirget(char *dir)
 	/* Uses cleanup_dirname and changes ~/.. to home_dir/.. */
 	/* Returns length of new directory */
 
-uint unpack_dirname(my_string to, const char *from)
+uint unpack_dirname(ma_string to, const char *from)
 
 						  /* to may be == from */
 {
@@ -300,7 +300,7 @@ uint unpack_dirname(my_string to, const char *from)
     }
   }
 #ifdef USE_SYMDIR
-  if (my_use_symdir)
+  if (ma_use_symdir)
     symdirget(buff);
 #endif
   DBUG_RETURN(system_filename(to,buff));	/* Fix for open */
@@ -310,7 +310,7 @@ uint unpack_dirname(my_string to, const char *from)
 	/* Expand tilde to home or user-directory */
 	/* Path is reset to point at FN_LIBCHAR after ~xxx */
 
-static my_string NEAR_F expand_tilde(my_string *path)
+static ma_string NEAR_F expand_tilde(ma_string *path)
 {
   if (path[0][0] == FN_LIBCHAR)
     return home_dir;			/* ~/ expanded to home */
@@ -332,14 +332,14 @@ static my_string NEAR_F expand_tilde(my_string *path)
     }
   }
 #endif
-  return (my_string) 0;
+  return (ma_string) 0;
 }
 
 	/* fix filename so it can be used by open, create .. */
 	/* to may be == from */
 	/* Returns to */
 
-my_string unpack_filename(my_string to, const char *from)
+ma_string unpack_filename(ma_string to, const char *from)
 {
   uint length,n_length;
   char buff[FN_REFLEN];
@@ -362,7 +362,7 @@ my_string unpack_filename(my_string to, const char *from)
 	/* Used before system command's like open(), create() .. */
 	/* Returns to */
 
-uint system_filename(my_string to, const char *from)
+uint system_filename(ma_string to, const char *from)
 {
 #ifndef FN_C_BEFORE_DIR
   return (uint) (strmake(to,from,FN_REFLEN-1)-to);
@@ -376,7 +376,7 @@ uint system_filename(my_string to, const char *from)
 	/* change 'dev:/x' to 'dev:[000000]x' */
 
   int libchar_found,length;
-  my_string to_pos,from_pos,pos;
+  ma_string to_pos,from_pos,pos;
   char buff[FN_REFLEN];
   DBUG_ENTER("system_filename");
 
@@ -431,7 +431,7 @@ uint system_filename(my_string to, const char *from)
 
 	/* Fix a filename to intern (UNIX format) */
 
-my_string intern_filename(my_string to, const char *from)
+ma_string intern_filename(ma_string to, const char *from)
 {
 #ifndef VMS
   {
@@ -456,7 +456,7 @@ my_string intern_filename(my_string to, const char *from)
 	/* change '[000000.x] or [x.000000]' to '/x/' */
 
   int par_length,root_length;
-  my_string pos,from_pos,to_pos,end_pos;
+  ma_string pos,from_pos,to_pos,end_pos;
   char buff[FN_REFLEN];
 
   (void) strmov(buff,from);

@@ -22,7 +22,7 @@
 
 uint dirname_length(const char *name)
 {
-  register my_string pos,gpos;
+  register ma_string pos,gpos;
 #ifdef FN_DEVCHAR
   if ((pos=(char*)strrchr(name,FN_DEVCHAR)) == 0)
 #endif
@@ -43,7 +43,7 @@ uint dirname_length(const char *name)
 	/* Gives directory part of filename. Directory ends with '/' */
 	/* Returns length of directory part */
 
-uint dirname_part(my_string to, const char *name)
+uint dirname_part(ma_string to, const char *name)
 {
   uint length;
   DBUG_ENTER("dirname_part");
@@ -66,7 +66,7 @@ uint dirname_part(my_string to, const char *name)
 #define FN_DEVCHAR '\0'				/* For easier code */
 #endif
 
-char *convert_dirname(my_string to)
+char *convert_dirname(ma_string to)
 {
   reg1 char *pos;
 #if FN_LIBCHAR != '/'

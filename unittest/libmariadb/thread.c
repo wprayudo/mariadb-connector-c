@@ -1,7 +1,7 @@
 /*
 */
 
-#include "my_test.h"
+#include "ma_test.h"
 
 static int basic_connect(MYSQL *mysql)
 {
@@ -143,7 +143,7 @@ end:
   return 0;
 }
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"basic_connect", basic_connect, TEST_CONNECTION_NONE, 0,  NULL,  NULL},
   {"test_conc_27", test_conc_27, TEST_CONNECTION_NEW, 0, NULL, NULL},
   {NULL, NULL, 0, 0, NULL, NULL}
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   mysql_server_end();
   return(exit_status());

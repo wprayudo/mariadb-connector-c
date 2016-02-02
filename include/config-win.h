@@ -56,21 +56,21 @@
 #define F_TO_EOF        (INT_MAX32/2)   /* size for lock of all file */
 #define F_OK		0		/* parameter to access() */
 
-#define S_IROTH		S_IREAD		/* for my_lib */
+#define S_IROTH		S_IREAD		/* for ma_lib */
 
 #ifdef __BORLANDC__
-#define FILE_BINARY	O_BINARY	/* my_fopen in binary mode */
+#define FILE_BINARY	O_BINARY	/* ma_fopen in binary mode */
 #define O_TEMPORARY	0
 #define O_SHORT_LIVED	0
 #define SH_DENYNO	_SH_DENYNO
 #else
 #define O_BINARY        _O_BINARY       /* compability with MSDOS */
-#define FILE_BINARY     _O_BINARY       /* my_fopen in binary mode */
+#define FILE_BINARY     _O_BINARY       /* ma_fopen in binary mode */
 #define O_TEMPORARY     _O_TEMPORARY
 #define O_SHORT_LIVED   _O_SHORT_LIVED
 #define SH_DENYNO       _SH_DENYNO
 #endif
-#define NO_OPEN_3			/* For my_create() */
+#define NO_OPEN_3			/* For ma_create() */
 
 #define	SIGQUIT		SIGTERM		/* No SIGQUIT */
 
@@ -90,7 +90,7 @@ typedef __int64	longlong;
 typedef int sigset_t;
 #define longlong_defined
 /* off_t should not be __int64 because of conflicts in header files;
-   Use my_off_t or os_off_t instead */
+   Use ma_off_t or os_off_t instead */
 typedef	long off_t;
 typedef __int64 os_off_t;
 #ifdef _WIN64
@@ -105,7 +105,7 @@ typedef uint rf_SetTimer;
 #endif
 
 #define Socket_defined
-#define my_socket SOCKET
+#define ma_socket SOCKET
 #ifndef bool
 #define bool BOOL
 #endif
@@ -114,7 +114,7 @@ typedef uint rf_SetTimer;
 #define QSORT_TYPE_IS_VOID
 #define RETSIGTYPE void
 #define SOCKET_SIZE_TYPE int
-#define my_socket_defined
+#define ma_socket_defined
 #define bool_defined
 #define byte_defined
 #define HUGE_PTR
@@ -156,7 +156,7 @@ inline double rint(double nr)
 
 #ifdef _WIN64
 #define ulonglong2double(A) ((double) (A))
-#define my_off_t2double(A)  ((double) (A))
+#define ma_off_t2double(A)  ((double) (A))
 
 #else
 inline double ulonglong2double(ulonglong value)
@@ -166,7 +166,7 @@ inline double ulonglong2double(ulonglong value)
     return (double) nr;
   return (18446744073709551616.0 + (double) nr);
 }
-#define my_off_t2double(A) ulonglong2double(A)
+#define ma_off_t2double(A) ulonglong2double(A)
 #endif /* _WIN64 */
 #else
 #define inline __inline
@@ -231,8 +231,8 @@ inline double ulonglong2double(ulonglong value)
 #define HAVE_SYS_UTIME_H
 #define HAVE_STRTOUL
 #endif
-#define my_reinterpret_cast(A) reinterpret_cast <A>
-#define my_const_cast(A) const_cast<A>
+#define ma_reinterpret_cast(A) reinterpret_cast <A>
+#define ma_const_cast(A) const_cast<A>
 
 /* MYSQL OPTIONS */
 

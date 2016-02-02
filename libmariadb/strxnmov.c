@@ -20,7 +20,7 @@
     needed.
 */
 
-#include <my_global.h>
+#include <ma_global.h>
 #include "m_string.h"
 #include <stdarg.h>
 

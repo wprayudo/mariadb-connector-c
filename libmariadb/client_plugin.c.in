@@ -34,14 +34,14 @@
 #define FORCE_INIT_OF_VARS 1
 #endif
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <ma_common.h> 
 #include <m_string.h>
 #ifdef THREAD
-#include <my_pthread.h>
+#include <ma_pthread.h>
 #else
-#include <my_no_pthread.h>
+#include <ma_no_pthread.h>
 #endif
 
 #include "errmsg.h"
@@ -53,7 +53,7 @@ struct st_client_plugin_int {
   struct st_mysql_client_plugin *plugin;
 };
 
-static my_bool initialized= 0;
+static ma_bool initialized= 0;
 static MEM_ROOT mem_root;
 
 static uint valid_plugins[][2]= {
@@ -94,7 +94,7 @@ static int is_not_initialized(MYSQL *mysql, const char *name)
   if (initialized)
     return 0;
 
-  my_set_error(mysql, CR_AUTH_PLUGIN_CANNOT_LOAD,
+  ma_set_error(mysql, CR_AUTH_PLUGIN_CANNOT_LOAD,
                SQLSTATE_UNKNOWN, ER(CR_AUTH_PLUGIN_CANNOT_LOAD),
                name, "not initialized");
   return 1;
@@ -109,7 +109,7 @@ static int get_plugin_nr(int type)
   return -1;
 }
 
-static my_bool check_plugin_version(struct st_mysql_client_plugin *plugin, unsigned int version, char *errmsg)
+static ma_bool check_plugin_version(struct st_mysql_client_plugin *plugin, unsigned int version, char *errmsg)
 {
   if (plugin->interface_version < version ||
       (plugin->interface_version >> 8) > (version >> 8))
@@ -218,7 +218,7 @@ err2:
   if (plugin->deinit)
     plugin->deinit();
 err1:
-  my_set_error(mysql, CR_AUTH_PLUGIN_CANNOT_LOAD, SQLSTATE_UNKNOWN,
+  ma_set_error(mysql, CR_AUTH_PLUGIN_CANNOT_LOAD, SQLSTATE_UNKNOWN,
                ER(CR_AUTH_PLUGIN_CANNOT_LOAD), plugin->name, errmsg);
   if (dlhandle)
     (void)dlclose(dlhandle);
@@ -250,7 +250,7 @@ static void load_env_plugins(MYSQL *mysql)
   if (!s)
     return;
 
-  free_env= plugs= my_strdup(s, MYF(MY_WME));
+  free_env= plugs= ma_strdup(s, MYF(MY_WME));
 
   do {
     if ((s= strchr(plugs, ';')))
@@ -259,7 +259,7 @@ static void load_env_plugins(MYSQL *mysql)
     plugs= s + 1;
   } while (s);
 
-  my_free(free_env);
+  ma_free(free_env);
 }
 
 /********** extern functions to be used by libmariadb *********************/
@@ -351,7 +351,7 @@ mysql_client_register_plugin(MYSQL *mysql,
   /* make sure the plugin wasn't loaded meanwhile */
   if (find_plugin(plugin->name, plugin->type))
   {
-    my_set_error(mysql, CR_AUTH_PLUGIN_CANNOT_LOAD,
+    ma_set_error(mysql, CR_AUTH_PLUGIN_CANNOT_LOAD,
                  SQLSTATE_UNKNOWN, ER(CR_AUTH_PLUGIN_CANNOT_LOAD),
                  plugin->name, "it is already loaded");
     plugin= NULL;
@@ -449,7 +449,7 @@ mysql_load_plugin_v(MYSQL *mysql, const char *name, int type,
 
 err:
   pthread_mutex_unlock(&LOCK_load_client_plugin);
-  my_set_error(mysql, CR_AUTH_PLUGIN_CANNOT_LOAD, SQLSTATE_UNKNOWN,
+  ma_set_error(mysql, CR_AUTH_PLUGIN_CANNOT_LOAD, SQLSTATE_UNKNOWN,
                ER(CR_AUTH_PLUGIN_CANNOT_LOAD), name, errmsg);
   return NULL;
 }
@@ -479,7 +479,7 @@ mysql_client_find_plugin(MYSQL *mysql, const char *name, int type)
 
   if (plugin_nr == -1)
   {
-    my_set_error(mysql, CR_AUTH_PLUGIN_CANNOT_LOAD, SQLSTATE_UNKNOWN,
+    ma_set_error(mysql, CR_AUTH_PLUGIN_CANNOT_LOAD, SQLSTATE_UNKNOWN,
                  ER(CR_AUTH_PLUGIN_CANNOT_LOAD), name, "invalid type");
   }
 

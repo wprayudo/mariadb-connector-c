@@ -21,13 +21,13 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#include "my_test.h"
+#include "ma_test.h"
 
 static int test_view(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
   int rc, i;
-  MYSQL_BIND      my_bind[1];
+  MYSQL_BIND      ma_bind[1];
   char            str_data[50];
   ulong           length = 0L;
   long            is_null = 0L;
@@ -78,14 +78,14 @@ static int test_view(MYSQL *mysql)
   check_stmt_rc(rc, stmt);
 
   strcpy(str_data, "TEST");
-  memset(my_bind, '\0', sizeof(MYSQL_BIND));
-  my_bind[0].buffer_type= MYSQL_TYPE_STRING;
-  my_bind[0].buffer= (char *)&str_data;
-  my_bind[0].buffer_length= 50;
-  my_bind[0].length= &length;
+  memset(ma_bind, '\0', sizeof(MYSQL_BIND));
+  ma_bind[0].buffer_type= MYSQL_TYPE_STRING;
+  ma_bind[0].buffer= (char *)&str_data;
+  ma_bind[0].buffer_length= 50;
+  ma_bind[0].length= &length;
   length= 4;
-  my_bind[0].is_null= (char*)&is_null;
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  ma_bind[0].is_null= (char*)&is_null;
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   for (i= 0; i < 3; i++)
@@ -160,7 +160,7 @@ static int test_view_2where(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
   int rc, i;
-  MYSQL_BIND      my_bind[8];
+  MYSQL_BIND      ma_bind[8];
   char            parms[8][100];
   ulong           length[8];
   const char *query=
@@ -206,21 +206,21 @@ static int test_view_2where(MYSQL *mysql)
                   " AENAME,T0001.DEPENDVARS AS DEPENDVARS,T0001.INACTIVE AS "
                   " INACTIVE from LTDX T0001 where (T0001.SRTF2 = 0)");
   check_mysql_rc(rc, mysql);
-  memset(my_bind, '\0', sizeof(MYSQL_BIND));
+  memset(ma_bind, '\0', sizeof(MYSQL_BIND));
   for (i=0; i < 8; i++) {
     strcpy(parms[i], "1");
-    my_bind[i].buffer_type = MYSQL_TYPE_VAR_STRING;
-    my_bind[i].buffer = (char *)&parms[i];
-    my_bind[i].buffer_length = 100;
-    my_bind[i].is_null = 0;
-    my_bind[i].length = &length[i];
+    ma_bind[i].buffer_type = MYSQL_TYPE_VAR_STRING;
+    ma_bind[i].buffer = (char *)&parms[i];
+    ma_bind[i].buffer_length = 100;
+    ma_bind[i].is_null = 0;
+    ma_bind[i].length = &length[i];
     length[i] = 1;
   }
   stmt= mysql_stmt_init(mysql);
   rc= mysql_stmt_prepare(stmt, query, strlen(query));
   check_stmt_rc(rc, stmt);
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -244,7 +244,7 @@ static int test_view_star(MYSQL *mysql)
 {
   MYSQL_STMT *stmt;
   int rc, i;
-  MYSQL_BIND      my_bind[8];
+  MYSQL_BIND      ma_bind[8];
   char            parms[8][100];
   ulong           length[8];
   const char *query= "SELECT * FROM vt1 WHERE a IN (?,?)";
@@ -257,14 +257,14 @@ static int test_view_star(MYSQL *mysql)
   check_mysql_rc(rc, mysql);
   rc= mysql_query(mysql, "CREATE VIEW vt1 AS SELECT a FROM t1");
   check_mysql_rc(rc, mysql);
-  memset(my_bind, '\0', sizeof(MYSQL_BIND));
+  memset(ma_bind, '\0', sizeof(MYSQL_BIND));
   for (i= 0; i < 2; i++) {
     sprintf((char *)&parms[i], "%d", i);
-    my_bind[i].buffer_type = MYSQL_TYPE_VAR_STRING;
-    my_bind[i].buffer = (char *)&parms[i];
-    my_bind[i].buffer_length = 100;
-    my_bind[i].is_null = 0;
-    my_bind[i].length = &length[i];
+    ma_bind[i].buffer_type = MYSQL_TYPE_VAR_STRING;
+    ma_bind[i].buffer = (char *)&parms[i];
+    ma_bind[i].buffer_length = 100;
+    ma_bind[i].is_null = 0;
+    ma_bind[i].length = &length[i];
     length[i] = 1;
   }
 
@@ -272,7 +272,7 @@ static int test_view_star(MYSQL *mysql)
   rc= mysql_stmt_prepare(stmt, query, strlen(query));
   check_stmt_rc(rc, stmt);
 
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   for (i= 0; i < 3; i++)
@@ -298,10 +298,10 @@ static int test_view_insert(MYSQL *mysql)
 {
   MYSQL_STMT *insert_stmt, *select_stmt;
   int rc, i;
-  MYSQL_BIND      my_bind[1];
-  int             my_val = 0;
-  ulong           my_length = 0L;
-  long            my_null = 0L;
+  MYSQL_BIND      ma_bind[1];
+  int             ma_val = 0;
+  ulong           ma_length = 0L;
+  long            ma_null = 0L;
   const char *query=
     "insert into v1 values (?)";
 
@@ -324,18 +324,18 @@ static int test_view_insert(MYSQL *mysql)
   rc= mysql_stmt_prepare(select_stmt, query, strlen(query));
   check_stmt_rc(rc, select_stmt);
 
-  memset(my_bind, '\0', sizeof(MYSQL_BIND));
-  my_bind[0].buffer_type = MYSQL_TYPE_LONG;
-  my_bind[0].buffer = (char *)&my_val;
-  my_bind[0].length = &my_length;
-  my_bind[0].is_null = (char*)&my_null;
-  rc= mysql_stmt_bind_param(insert_stmt, my_bind);
+  memset(ma_bind, '\0', sizeof(MYSQL_BIND));
+  ma_bind[0].buffer_type = MYSQL_TYPE_LONG;
+  ma_bind[0].buffer = (char *)&ma_val;
+  ma_bind[0].length = &ma_length;
+  ma_bind[0].is_null = (char*)&ma_null;
+  rc= mysql_stmt_bind_param(insert_stmt, ma_bind);
   check_stmt_rc(rc, select_stmt);
 
   for (i= 0; i < 3; i++)
   {
     int rowcount= 0;
-    my_val= i;
+    ma_val= i;
 
     rc= mysql_stmt_execute(insert_stmt);
     check_stmt_rc(rc, insert_stmt);;
@@ -408,7 +408,7 @@ static int test_view_insert_fields(MYSQL *mysql)
   ulong         l[11];
   int           rc, i;
   int           rowcount= 0;
-  MYSQL_BIND    my_bind[11];
+  MYSQL_BIND    ma_bind[11];
   const char    *query= "INSERT INTO `v1` ( `K1C4` ,`K2C4` ,`K3C4` ,`K4N4` ,`F1C4` ,`F2I4` ,`F3N5` ,`F7F8` ,`F6N4` ,`F5C8` ,`F9D8` ) VALUES( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )";
 
   rc= mysql_query(mysql, "DROP TABLE IF EXISTS t1, v1");
@@ -436,22 +436,22 @@ static int test_view_insert_fields(MYSQL *mysql)
                   " F7F8 AS F7F8, F6N4 AS F6N4, F5C8 AS F5C8, F9D8 AS F9D8"
                   " from t1 T0001");
 
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
   for (i= 0; i < 11; i++)
   {
     l[i]= 20;
-    my_bind[i].buffer_type= MYSQL_TYPE_STRING;
-    my_bind[i].is_null= 0;
-    my_bind[i].buffer= (char *)&parm[i];
+    ma_bind[i].buffer_type= MYSQL_TYPE_STRING;
+    ma_bind[i].is_null= 0;
+    ma_bind[i].buffer= (char *)&parm[i];
 
     strcpy(parm[i], "1");
-    my_bind[i].buffer_length= 2;
-    my_bind[i].length= &l[i];
+    ma_bind[i].buffer_length= 2;
+    ma_bind[i].length= &l[i];
   }
   stmt= mysql_stmt_init(mysql);
   rc= mysql_stmt_prepare(stmt, query, strlen(query));
   check_stmt_rc(rc, stmt);
-  rc= mysql_stmt_bind_param(stmt, my_bind);
+  rc= mysql_stmt_bind_param(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_execute(stmt);
@@ -579,7 +579,7 @@ static int test_bug19671(MYSQL *mysql)
 static int test_bug11111(MYSQL *mysql)
 {
   MYSQL_STMT    *stmt;
-  MYSQL_BIND    my_bind[2];
+  MYSQL_BIND    ma_bind[2];
   char          buf[2][20];
   ulong         len[2];
   int i;
@@ -608,16 +608,16 @@ static int test_bug11111(MYSQL *mysql)
   rc= mysql_stmt_execute(stmt);
   check_stmt_rc(rc, stmt);
 
-  memset(my_bind, '\0', sizeof(my_bind));
+  memset(ma_bind, '\0', sizeof(ma_bind));
   for (i=0; i < 2; i++)
   {
-    my_bind[i].buffer_type= MYSQL_TYPE_STRING;
-    my_bind[i].buffer= (uchar* *)&buf[i];
-    my_bind[i].buffer_length= 20;
-    my_bind[i].length= &len[i];
+    ma_bind[i].buffer_type= MYSQL_TYPE_STRING;
+    ma_bind[i].buffer= (uchar* *)&buf[i];
+    ma_bind[i].buffer_length= 20;
+    ma_bind[i].length= &len[i];
   }
 
-  rc= mysql_stmt_bind_result(stmt, my_bind);
+  rc= mysql_stmt_bind_result(stmt, ma_bind);
   check_stmt_rc(rc, stmt);
 
   rc= mysql_stmt_fetch(stmt);
@@ -670,7 +670,7 @@ static int test_bug29306(MYSQL *mysql)
 }
 
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"test_view", test_view, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
   {"test_view_where", test_view_where, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
   {"test_view_2where", test_view_2where, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
@@ -692,7 +692,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

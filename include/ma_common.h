@@ -52,10 +52,10 @@ struct st_mysql_options_extension {
   char *ssl_fp; /* finger print of server certificate */
   char *ssl_fp_list; /* white list of finger prints */
   char *ssl_pw; /* password for encrypted certificates */
-  my_bool multi_command; /* indicates if client wants to send multiple
+  unsigned int multi_command; /* indicates if client wants to send multiple
                             commands in one packet */
   char *url; /* for connection handler we need to save URL for reconnect */
-  my_bool read_only;
+  ma_bool read_only;
   HASH userdata;
 };
 

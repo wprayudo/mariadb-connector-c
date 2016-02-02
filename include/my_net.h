@@ -17,7 +17,7 @@
 
 /* thread safe version of some common functions */
 
-/* for thread safe my_inet_ntoa */
+/* for thread safe ma_inet_ntoa */
 #ifdef	__cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -41,7 +41,7 @@ extern "C" {
 #define h_errno errno
 #endif
 
-void my_inet_ntoa(struct in_addr in, char *buf);
+void ma_inet_ntoa(struct in_addr in, char *buf);
 
 #ifdef	__cplusplus
 }

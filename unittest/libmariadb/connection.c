@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
   Some basic tests of the client API.
 */
 
-#include "my_test.h"
+#include "ma_test.h"
 
 static int test_conc66(MYSQL *my)
 {
@@ -453,18 +453,21 @@ static int test_bug33831(MYSQL *mysql)
 
 static int test_opt_reconnect(MYSQL *mysql)
 {
-  my_bool my_true= TRUE;
+  ma_bool ma_true= 1;
   int rc;
+  ma_bool reconnect;
 
   mysql= mysql_init(NULL);
   FAIL_IF(!mysql, "not enough memory");
 
-  FAIL_UNLESS(mysql->reconnect == 0, "reconnect != 0");
+  mysql_get_option(mysql, MYSQL_OPT_RECONNECT, &reconnect);
+  FAIL_UNLESS(reconnect == 0, "reconnect != 0");
 
-  rc= mysql_options(mysql, MYSQL_OPT_RECONNECT, &my_true);
+  rc= mysql_options(mysql, MYSQL_OPT_RECONNECT, &ma_true);
   check_mysql_rc(rc, mysql);
 
-  FAIL_UNLESS(mysql->reconnect == 1, "reconnect != 1");
+  mysql_get_option(mysql, MYSQL_OPT_RECONNECT, &reconnect);
+  FAIL_UNLESS(reconnect == 1, "reconnect != 1");
 
   if (!(mysql_real_connect(mysql, hostname, username,
                            password, schema, port,
@@ -475,14 +478,16 @@ static int test_opt_reconnect(MYSQL *mysql)
     return FAIL;
   }
 
-  FAIL_UNLESS(mysql->reconnect == 1, "reconnect != 1");
+  mysql_get_option(mysql, MYSQL_OPT_RECONNECT, &reconnect);
+  FAIL_UNLESS(reconnect == 1, "reconnect != 1");
 
   mysql_close(mysql);
 
   mysql= mysql_init(NULL);
   FAIL_IF(!mysql, "not enough memory");
 
-  FAIL_UNLESS(mysql->reconnect == 0, "reconnect != 0");
+  mysql_get_option(mysql, MYSQL_OPT_RECONNECT, &reconnect);
+  FAIL_UNLESS(reconnect == 0, "reconnect != 0");
 
   if (!(mysql_real_connect(mysql, hostname, username,
                            password, schema, port,
@@ -493,7 +498,8 @@ static int test_opt_reconnect(MYSQL *mysql)
     return FAIL;
   }
 
-  FAIL_UNLESS(mysql->reconnect == 0, "reconnect != 0");
+  mysql_get_option(mysql, MYSQL_OPT_RECONNECT, &reconnect);
+  FAIL_UNLESS(reconnect == 0, "reconnect != 0");
 
   mysql_close(mysql);
   return OK;
@@ -535,19 +541,22 @@ static int test_compress(MYSQL *mysql)
 
 static int test_reconnect(MYSQL *mysql)
 {
-  my_bool my_true= TRUE;
+  ma_bool ma_true= TRUE;
   MYSQL *mysql1;
   int rc;
+  ma_bool reconnect;
 
   mysql1= mysql_init(NULL);
   FAIL_IF(!mysql1, "not enough memory");
 
-  FAIL_UNLESS(mysql1->reconnect == 0, "reconnect != 0");
+  mysql_get_option(mysql1, MYSQL_OPT_RECONNECT, &reconnect);
+  FAIL_UNLESS(reconnect == 0, "reconnect != 0");
 
-  rc= mysql_options(mysql1, MYSQL_OPT_RECONNECT, &my_true);
+  rc= mysql_options(mysql1, MYSQL_OPT_RECONNECT, &ma_true);
   check_mysql_rc(rc, mysql1);
 
-  FAIL_UNLESS(mysql1->reconnect == 1, "reconnect != 1");
+  mysql_get_option(mysql1, MYSQL_OPT_RECONNECT, &reconnect);
+  FAIL_UNLESS(reconnect == 1, "reconnect != 1");
 
   if (!(mysql_real_connect(mysql1, hostname, username,
                            password, schema, port,
@@ -558,7 +567,8 @@ static int test_reconnect(MYSQL *mysql)
     return FAIL;
   }
 
-  FAIL_UNLESS(mysql1->reconnect == 1, "reconnect != 1");
+  mysql_get_option(mysql1, MYSQL_OPT_RECONNECT, &reconnect);
+  FAIL_UNLESS(reconnect == 1, "reconnect != 1");
 
   diag("Thread_id before kill: %lu", mysql_thread_id(mysql1));
   mysql_kill(mysql, mysql_thread_id(mysql1));
@@ -570,7 +580,8 @@ static int test_reconnect(MYSQL *mysql)
   check_mysql_rc(rc, mysql1);
   diag("Thread_id after kill: %lu", mysql_thread_id(mysql1));
 
-  FAIL_UNLESS(mysql1->reconnect == 1, "reconnect != 1");
+  mysql_get_option(mysql1, MYSQL_OPT_RECONNECT, &reconnect);
+  FAIL_UNLESS(reconnect == 1, "reconnect != 1");
   mysql_close(mysql1);
   return OK;
 }
@@ -647,8 +658,10 @@ int test_connection_timeout(MYSQL *my)
 static int test_conc118(MYSQL *mysql)
 {
   int rc;
+  ma_bool reconnect= 1;
 
-  mysql->reconnect= 1;
+  mysql_options(mysql, MYSQL_OPT_RECONNECT, &reconnect);
+
   mysql->options.unused_1= 1;
 
   rc= mysql_kill(mysql, mysql_thread_id(mysql));
@@ -745,9 +758,10 @@ static int test_bind_address(MYSQL *my)
 static int test_get_options(MYSQL *my)
 {
   MYSQL *mysql= mysql_init(NULL);
-  int options_int[]= {MYSQL_OPT_CONNECT_TIMEOUT, MYSQL_REPORT_DATA_TRUNCATION, MYSQL_OPT_LOCAL_INFILE,
-                      MYSQL_OPT_RECONNECT, MYSQL_OPT_PROTOCOL, MYSQL_OPT_READ_TIMEOUT, MYSQL_OPT_WRITE_TIMEOUT, 0};
-  my_bool options_bool[]= {MYSQL_OPT_COMPRESS, MYSQL_OPT_SSL_VERIFY_SERVER_CERT, MYSQL_SECURE_AUTH,
+  int options_int[]= {MYSQL_OPT_CONNECT_TIMEOUT, MYSQL_OPT_LOCAL_INFILE,
+                      MYSQL_OPT_PROTOCOL, MYSQL_OPT_READ_TIMEOUT, MYSQL_OPT_WRITE_TIMEOUT, 0};
+  ma_bool options_bool[]= {MYSQL_OPT_RECONNECT, MYSQL_REPORT_DATA_TRUNCATION,
+                           MYSQL_OPT_COMPRESS, MYSQL_OPT_SSL_VERIFY_SERVER_CERT, MYSQL_SECURE_AUTH,
 #ifdef _WIN32    
     MYSQL_OPT_NAMED_PIPE,
 #endif
@@ -755,7 +769,7 @@ static int test_get_options(MYSQL *my)
   int options_char[]= {MYSQL_READ_DEFAULT_FILE, MYSQL_READ_DEFAULT_GROUP, MYSQL_SET_CHARSET_NAME,
                        MYSQL_OPT_SSL_KEY, MYSQL_OPT_SSL_CA, MYSQL_OPT_SSL_CERT, MYSQL_OPT_SSL_CAPATH,
                        MYSQL_OPT_SSL_CIPHER, MYSQL_OPT_BIND, MARIADB_OPT_SSL_FP, MARIADB_OPT_SSL_FP_LIST,
-                       MARIADB_OPT_SSL_PASSWORD, 0};
+                       /* MARIADB_OPT_SSL_PASSPHRASE, */ 0};
 
   char *init_command[3]= {"SET @a:=1", "SET @b:=2", "SET @c:=3"};
   int elements= 0;
@@ -763,7 +777,7 @@ static int test_get_options(MYSQL *my)
 
 
   int intval[2]= {1, 0};
-  my_bool boolval[2]= {1, 0};
+  ma_bool boolval[2]= {1, 0};
   char *char1= "test", *char2;
   int i;
   MYSQL *userdata;
@@ -783,7 +797,7 @@ static int test_get_options(MYSQL *my)
     mysql_options(mysql, options_bool[i], &boolval[0]);
     intval[1]= 0;
     mysql_get_optionv(mysql, options_bool[i], &boolval[1]);
-    FAIL_IF(boolval[0] != boolval[1], "mysql_get_optionv (my_bool) failed");
+    FAIL_IF(boolval[0] != boolval[1], "mysql_get_optionv (ma_bool) failed");
   }
   for (i=0; options_char[i]; i++)
   {
@@ -818,15 +832,15 @@ static int test_get_options(MYSQL *my)
   free(key);
   free(val);
 
-  mysql_optionsv(mysql, MARIADB_OPT_USERDATA, "my_app", (void *)mysql);
-  mysql_get_optionv(mysql, MARIADB_OPT_USERDATA, "my_app", &userdata);
+  mysql_optionsv(mysql, MARIADB_OPT_USERDATA, "ma_app", (void *)mysql);
+  mysql_get_optionv(mysql, MARIADB_OPT_USERDATA, "ma_app", &userdata);
 
   FAIL_IF(mysql != userdata, "wrong userdata");
   mysql_close(mysql);
   return OK;
 }
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"test_get_options", test_get_options, TEST_CONNECTION_DEFAULT, 0, NULL,  NULL},
   {"test_wrong_bind_address", test_wrong_bind_address, TEST_CONNECTION_DEFAULT, 0, NULL,  NULL},
   {"test_bind_address", test_bind_address, TEST_CONNECTION_DEFAULT, 0, NULL,  NULL},
@@ -853,7 +867,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

@@ -1,11 +1,11 @@
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <mysql.h>
 #include <mysql/client_plugin.h>
 #include <getopt.h>
 #include <stdio.h>
-#include <my_dir.h>
+#include <ma_dir.h>
 #include <m_string.h>
 
 #define CLIENT_PLUGIN_INFO_VERSION "1.0.0"
@@ -41,7 +41,7 @@ struct st_plugin_type
 };
 
 #ifndef _WIN32
-int my_errno=0;
+int g_errno=0;
 #endif
 
 static struct st_plugin_type plugin_types[]=
@@ -56,16 +56,16 @@ static struct st_plugin_type plugin_types[]=
 
 static void version()
 {
-  printf("%s Version %s\n", my_progname, CLIENT_PLUGIN_INFO_VERSION);
+  printf("%s Version %s\n", ma_progname, CLIENT_PLUGIN_INFO_VERSION);
 }
 
 static void usage(void)
 {
   int i=0;
-  printf("%s Version %s\n", my_progname, CLIENT_PLUGIN_INFO_VERSION);
+  printf("%s Version %s\n", ma_progname, CLIENT_PLUGIN_INFO_VERSION);
   puts("Copyright 2015 MariaDB Corporation AB");
   puts("Show client plugin information for MariaDB Connector/C.");
-  printf("Usage: %s [OPTIONS] [plugin_name]\n", my_progname);
+  printf("Usage: %s [OPTIONS] [plugin_name]\n", ma_progname);
   while (long_options[i].name)
   {
     printf("  --%-12s -%s\n", long_options[i].name, values[i]);
@@ -85,7 +85,7 @@ static char *get_type_name(int type)
   return plugin_types[i].typename;
 }
 
-static void show_plugin_info(struct st_mysql_client_plugin *plugin, my_bool builtin)
+static void show_plugin_info(struct st_mysql_client_plugin *plugin, ma_bool builtin)
 {
   printf("Name: %s\n", plugin->name);
   printf("Type: %s\n", get_type_name(plugin->type));
@@ -141,7 +141,7 @@ static void show_dynamic(const char *directory)
 
   printf("plugin_dir %s\n", plugin_dir);
 
-  dir= my_dir(plugin_dir, 0);
+  dir= ma_dir(plugin_dir, 0);
 
   if (!dir || !dir->number_off_files)
   {
@@ -157,14 +157,14 @@ static void show_dynamic(const char *directory)
   }
 end:
   if (dir)
-    my_dirend(dir);
+    ma_dirend(dir);
 }
 
 int main(int argc, char *argv[])
 {
   int option_index= 0;
   int c;
-  my_progname= argv[0];
+  ma_progname= argv[0];
 
   mysql_server_init(0, NULL, NULL);
 

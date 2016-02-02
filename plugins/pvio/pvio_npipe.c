@@ -22,8 +22,8 @@
 
 #ifdef _WIN32
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <errmsg.h>
 #include <mysql.h>
 #include <mysql/client_plugin.h>
@@ -31,20 +31,20 @@
 #include <m_string.h>
 
 /* Function prototypes */
-my_bool pvio_npipe_set_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout);
+ma_bool pvio_npipe_set_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout);
 int pvio_npipe_get_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type);
 size_t pvio_npipe_read(MARIADB_PVIO *pvio, uchar *buffer, size_t length);
 size_t pvio_npipe_async_read(MARIADB_PVIO *pvio, uchar *buffer, size_t length);
 size_t pvio_npipe_write(MARIADB_PVIO *pvio, const uchar *buffer, size_t length);
 size_t pvio_npipe_async_write(MARIADB_PVIO *pvio, const uchar *buffer, size_t length);
-int pvio_npipe_wait_io_or_timeout(MARIADB_PVIO *pvio, my_bool is_read, int timeout);
-my_bool pvio_npipe_blocking(MARIADB_PVIO *pvio, my_bool value, my_bool *old_value);
-my_bool pvio_npipe_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo);
-my_bool pvio_npipe_close(MARIADB_PVIO *pvio);
+int pvio_npipe_wait_io_or_timeout(MARIADB_PVIO *pvio, ma_bool is_read, int timeout);
+ma_bool pvio_npipe_blocking(MARIADB_PVIO *pvio, ma_bool value, ma_bool *old_value);
+ma_bool pvio_npipe_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo);
+ma_bool pvio_npipe_close(MARIADB_PVIO *pvio);
 int pvio_npipe_fast_send(MARIADB_PVIO *pvio);
 int pvio_npipe_keepalive(MARIADB_PVIO *pvio);
-my_bool pvio_npipe_get_handle(MARIADB_PVIO *pvio, void *handle);
-my_bool pvio_npipe_is_blocking(MARIADB_PVIO *pvio);
+ma_bool pvio_npipe_get_handle(MARIADB_PVIO *pvio, void *handle);
+ma_bool pvio_npipe_is_blocking(MARIADB_PVIO *pvio);
 
 struct st_ma_pvio_methods pvio_npipe_methods= {
   pvio_npipe_set_timeout,
@@ -88,7 +88,7 @@ struct st_pvio_npipe {
   MYSQL *mysql;
 };
 
-my_bool pvio_npipe_set_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout)
+ma_bool pvio_npipe_set_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout)
 {
   if (!pvio)
     return 1;
@@ -153,7 +153,7 @@ end:
   return r;
 }
 
-int pvio_npipe_wait_io_or_timeout(MARIADB_PVIO *pvio, my_bool is_read, int timeout)
+int pvio_npipe_wait_io_or_timeout(MARIADB_PVIO *pvio, ma_bool is_read, int timeout)
 {
   int r= -1;
   DWORD status;
@@ -179,7 +179,7 @@ int pvio_npipe_wait_io_or_timeout(MARIADB_PVIO *pvio, my_bool is_read, int timeo
   return -1;
 }
 
-my_bool pvio_npipe_blocking(MARIADB_PVIO *pvio, my_bool block, my_bool *previous_mode)
+ma_bool pvio_npipe_blocking(MARIADB_PVIO *pvio, ma_bool block, ma_bool *previous_mode)
 {
   /* not supported */
   DWORD flags= 0;
@@ -211,7 +211,7 @@ int pvio_npipe_fast_send(MARIADB_PVIO *pvio)
   /* not supported */
   return 0;
 }
-my_bool pvio_npipe_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo)
+ma_bool pvio_npipe_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo)
 {
   struct st_pvio_npipe *cpipe= NULL;
 
@@ -231,7 +231,7 @@ my_bool pvio_npipe_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo)
 
   if (cinfo->type == PVIO_TYPE_NAMEDPIPE)
   {
-    my_bool has_timedout= 0;
+    ma_bool has_timedout= 0;
     char szPipeName[MAX_PATH];
     DWORD dwMode;
 
@@ -299,7 +299,7 @@ end:
   return 1;
 }
 
-my_bool pvio_npipe_close(MARIADB_PVIO *pvio)
+ma_bool pvio_npipe_close(MARIADB_PVIO *pvio)
 {
   struct st_pvio_npipe *cpipe= NULL;
   int r= 0;
@@ -322,7 +322,7 @@ my_bool pvio_npipe_close(MARIADB_PVIO *pvio)
   return r;
 }
 
-my_bool pvio_npipe_get_handle(MARIADB_PVIO *pvio, void *handle)
+ma_bool pvio_npipe_get_handle(MARIADB_PVIO *pvio, void *handle)
 {
   if (pvio && pvio->data)
   {
@@ -332,7 +332,7 @@ my_bool pvio_npipe_get_handle(MARIADB_PVIO *pvio, void *handle)
   return 1;
 } 
 
-my_bool pvio_npipe_is_blocking(MARIADB_PVIO *pvio)
+ma_bool pvio_npipe_is_blocking(MARIADB_PVIO *pvio)
 {
   DWORD flags= 0;
   struct st_pvio_npipe *cpipe= NULL;

@@ -20,7 +20,7 @@
 #include "mysys_priv.h"
 #include <m_string.h>
 
-/* for thread safe my_inet_ntoa */
+/* for thread safe ma_inet_ntoa */
 #if !defined(MSDOS) && !defined(_WIN32)
 #include <netdb.h>
 #ifdef HAVE_SYS_SOCKET_H
@@ -34,7 +34,7 @@
 #endif
 #endif /* !defined(MSDOS) && !defined(_WIN32) */
 
-void my_inet_ntoa(struct in_addr in, char *buf)
+void ma_inet_ntoa(struct in_addr in, char *buf)
 {
   char *ptr;
   pthread_mutex_lock(&THR_LOCK_net);

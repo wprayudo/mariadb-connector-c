@@ -22,8 +22,8 @@
 
 /* MariaDB Connection plugin for Aurora failover  */
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <errmsg.h>
 #include <ma_common.h>
 #include <mysql.h>
@@ -44,9 +44,9 @@ MYSQL *aurora_connect(MYSQL *mysql, const char *host, const char *user, const ch
     const char *db, unsigned int port, const char *unix_socket, unsigned long clientflag);
 void aurora_close(MYSQL *mysql);
 int aurora_command(MYSQL *mysql,enum enum_server_command command, const char *arg,
-    size_t length, my_bool skipp_check, void *opt_arg);
+    size_t length, ma_bool skipp_check, void *opt_arg);
 int aurora_set_options(MYSQL *msql, enum mysql_option option, void *arg);
-my_bool aurora_reconnect(MYSQL *mysql);
+ma_bool aurora_reconnect(MYSQL *mysql);
 
 #define AURORA_MAX_INSTANCES 16
 
@@ -94,7 +94,7 @@ typedef struct st_aurora_instance {
 typedef struct st_conn_aurora {
   MARIADB_PVIO *pvio[2];
   MYSQL *mysql[2];
-  my_bool active[2];
+  ma_bool active[2];
   char *url;
   unsigned int num_instances;
   AURORA_INSTANCE instance[AURORA_MAX_INSTANCES];
@@ -110,8 +110,8 @@ typedef struct st_conn_aurora {
 #define AURORA_IS_BLACKLISTED(a, i) \
   ((time(NULL) - (a)->instance[(i)].blacklisted) < AURORA_BLACKLIST_TIMEOUT)
 
-/* {{{ my_bool aurora_swutch_connection */
-my_bool aurora_switch_connection(MYSQL *mysql, AURORA *aurora, int type)
+/* {{{ ma_bool aurora_swutch_connection */
+ma_bool aurora_switch_connection(MYSQL *mysql, AURORA *aurora, int type)
 {
   switch (type)
   {
@@ -172,14 +172,14 @@ void aurora_close_memory(AURORA *aurora)
 }
 /* }}} */
 
-/* {{{ my_bool aurora_parse_url 
+/* {{{ ma_bool aurora_parse_url 
  * 
  *    parse url
  *   Url has the following format:
  *   instance1:port, instance2:port, .., instanceN:port
  *
  */
-my_bool aurora_parse_url(const char *url, AURORA *aurora)
+ma_bool aurora_parse_url(const char *url, AURORA *aurora)
 {
   char *p, *c;
   unsigned int i;
@@ -271,7 +271,7 @@ int aurora_get_instance_type(MYSQL *mysql)
 }
 /* }}} */
 
-/* {{{ my_bool aurora_get_primary_id 
+/* {{{ ma_bool aurora_get_primary_id 
  *
  *   try to find primary instance from slave by retrieving
  *   primary_id information_schema.replica_host_status information
@@ -284,9 +284,9 @@ int aurora_get_instance_type(MYSQL *mysql)
  *     0 if an error occured or primary_id couldn't be 
  *       found
  */
-my_bool aurora_get_primary_id(MYSQL *mysql, AURORA *aurora)
+ma_bool aurora_get_primary_id(MYSQL *mysql, AURORA *aurora)
 {
-  my_bool rc= 0;
+  ma_bool rc= 0;
 
   if (!mariadb_api->mysql_query(mysql, "select server_id from information_schema.replica_host_status "
         "where session_id = 'MASTER_SESSION_ID'"))
@@ -414,11 +414,11 @@ void aurora_copy_mysql(MYSQL *from, MYSQL *to)
 }
 /* }}} */
 
-/* {{{ my_bool aurora_find_replica() */
-my_bool aurora_find_replica(AURORA *aurora)
+/* {{{ ma_bool aurora_find_replica() */
+ma_bool aurora_find_replica(AURORA *aurora)
 {
   int valid_instances;
-  my_bool replica_found= 0;
+  ma_bool replica_found= 0;
   AURORA_INSTANCE *instance[AURORA_MAX_INSTANCES];
   MYSQL mysql;
 
@@ -483,13 +483,13 @@ AURORA_INSTANCE *aurora_get_primary_id_instance(AURORA *aurora)
 }
 /* }}} */
 
-/* {{{ my_bool aurora_find_primary() */
-my_bool aurora_find_primary(AURORA *aurora)
+/* {{{ ma_bool aurora_find_primary() */
+ma_bool aurora_find_primary(AURORA *aurora)
 {
   unsigned int i;
   AURORA_INSTANCE *instance= NULL;
   MYSQL mysql;
-  my_bool check_primary= 1;
+  ma_bool check_primary= 1;
 
   if (!aurora->num_instances)
     return 0;
@@ -549,7 +549,7 @@ MYSQL *aurora_connect(MYSQL *mysql, const char *host, const char *user, const ch
 {
   AURORA *aurora= NULL;
   MA_CONNECTION_HANDLER *hdlr= mysql->net.conn_hdlr;
-  my_bool is_reconnect= 0;
+  ma_bool is_reconnect= 0;
 
   if (!mariadb_api)
     mariadb_api= mysql->methods->api;
@@ -643,12 +643,12 @@ error:
 }
 /* }}} */
 
-/* {{{ my_bool aurora_reconnect */
-my_bool aurora_reconnect(MYSQL *mysql)
+/* {{{ ma_bool aurora_reconnect */
+ma_bool aurora_reconnect(MYSQL *mysql)
 {
   AURORA *aurora;
   MA_CONNECTION_HANDLER *hdlr= mysql->net.conn_hdlr;
-  my_bool rc= 1;
+  ma_bool rc= 1;
 
   aurora= (AURORA *)hdlr->data;
 
@@ -719,8 +719,8 @@ void aurora_close(MYSQL *mysql)
 }
 /* }}} */
 
-/* {{{ my_bool is_replica_command */
-my_bool is_replica_command(const char *buffer, size_t buffer_len)
+/* {{{ ma_bool is_replica_command */
+ma_bool is_replica_command(const char *buffer, size_t buffer_len)
 {
   const char *buffer_end= buffer + buffer_len;
 
@@ -738,8 +738,8 @@ my_bool is_replica_command(const char *buffer, size_t buffer_len)
 }
 /* }}} */
 
-/* {{{ my_bool is_replica_stmt */
-my_bool is_replica_stmt(MYSQL *mysql, const char *buffer)
+/* {{{ ma_bool is_replica_stmt */
+ma_bool is_replica_stmt(MYSQL *mysql, const char *buffer)
 {
   unsigned long stmt_id= uint4korr(buffer);
   LIST *stmt_list= mysql->stmts;
@@ -756,7 +756,7 @@ my_bool is_replica_stmt(MYSQL *mysql, const char *buffer)
 
 /* {{{ int aurora_command */
 int aurora_command(MYSQL *mysql,enum enum_server_command command, const char *arg,
-    size_t length, my_bool skipp_check, void *opt_arg)
+    size_t length, ma_bool skipp_check, void *opt_arg)
 {
   AURORA *aurora= (AURORA *)mysql->net.conn_hdlr->data;
 

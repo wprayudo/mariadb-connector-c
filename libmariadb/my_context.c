@@ -22,7 +22,7 @@
 
 #include "mysys_priv.h"
 #include "m_string.h"
-#include "my_context.h"
+#include "ma_context.h"
 
 #ifdef HAVE_VALGRIND
 #include <valgrind/valgrind.h>
@@ -46,16 +46,16 @@ union pass_void_ptr_as_2_int {
   the actual type (as the actual type can differ from call to call).
 */
 static void
-my_context_spawn_internal(i0, i1)
+ma_context_spawn_internal(i0, i1)
 int i0, i1;
 {
   int err;
-  struct my_context *c;
+  struct ma_context *c;
   union pass_void_ptr_as_2_int u;
 
   u.a[0]= i0;
   u.a[1]= i1;
-  c= (struct my_context *)u.p;
+  c= (struct ma_context *)u.p;
 
   (*c->user_func)(c->user_data);
   c->active= 0;
@@ -65,7 +65,7 @@ int i0, i1;
 
 
 int
-my_context_continue(struct my_context *c)
+ma_context_continue(struct ma_context *c)
 {
   int err;
 
@@ -87,7 +87,7 @@ my_context_continue(struct my_context *c)
 
 
 int
-my_context_spawn(struct my_context *c, void (*f)(void *), void *d)
+ma_context_spawn(struct ma_context *c, void (*f)(void *), void *d)
 {
   int err;
   union pass_void_ptr_as_2_int u;
@@ -102,15 +102,15 @@ my_context_spawn(struct my_context *c, void (*f)(void *), void *d)
   c->user_data= d;
   c->active= 1;
   u.p= c;
-  makecontext(&c->spawned_context, my_context_spawn_internal, 2,
+  makecontext(&c->spawned_context, ma_context_spawn_internal, 2,
               u.a[0], u.a[1]);
 
-  return my_context_continue(c);
+  return ma_context_continue(c);
 }
 
 
 int
-my_context_yield(struct my_context *c)
+ma_context_yield(struct ma_context *c)
 {
   int err;
 
@@ -124,7 +124,7 @@ my_context_yield(struct my_context *c)
 }
 
 int
-my_context_init(struct my_context *c, size_t stack_size)
+ma_context_init(struct ma_context *c, size_t stack_size)
 {
 #if SIZEOF_CHARP > SIZEOF_INT*2
 #error Error: Unable to store pointer in 2 ints on this architecture
@@ -141,7 +141,7 @@ my_context_init(struct my_context *c, size_t stack_size)
 }
 
 void
-my_context_destroy(struct my_context *c)
+ma_context_destroy(struct ma_context *c)
 {
   if (c->stack)
   {
@@ -158,7 +158,7 @@ my_context_destroy(struct my_context *c)
 
 #ifdef MY_CONTEXT_USE_X86_64_GCC_ASM
 /*
-  GCC-amd64 implementation of my_context.
+  GCC-amd64 implementation of ma_context.
 
   This is slightly optimized in the common case where we never yield
   (eg. fetch next row and it is already fully received in buffer). In this
@@ -186,7 +186,7 @@ my_context_destroy(struct my_context *c)
 */
 
 int
-my_context_spawn(struct my_context *c, void (*f)(void *), void *d)
+ma_context_spawn(struct ma_context *c, void (*f)(void *), void *d)
 {
   int ret;
 
@@ -259,7 +259,7 @@ my_context_spawn(struct my_context *c, void (*f)(void *), void *d)
 }
 
 int
-my_context_continue(struct my_context *c)
+ma_context_continue(struct ma_context *c)
 {
   int ret;
 
@@ -300,12 +300,12 @@ my_context_continue(struct my_context *c)
      /*
        Come here when operation is done.
        Be sure to use the same callee-save register for %[save] here and in
-       my_context_spawn(), so we preserve the value correctly at this point.
+       ma_context_spawn(), so we preserve the value correctly at this point.
      */
      "1:\n\t"
      "movq (%[save]), %%rsp\n\t"
      "movq 8(%[save]), %%rbp\n\t"
-     /* %rbx is preserved from my_context_spawn() in this case. */
+     /* %rbx is preserved from ma_context_spawn() in this case. */
      "movq 24(%[save]), %%r12\n\t"
      "movq 32(%[save]), %%r13\n\t"
      "movq 40(%[save]), %%r14\n\t"
@@ -328,7 +328,7 @@ my_context_continue(struct my_context *c)
 }
 
 int
-my_context_yield(struct my_context *c)
+ma_context_yield(struct ma_context *c)
 {
   uint64_t *save= &c->save[0];
   __asm__ __volatile__
@@ -369,7 +369,7 @@ my_context_yield(struct my_context *c)
 }
 
 int
-my_context_init(struct my_context *c, size_t stack_size)
+ma_context_init(struct ma_context *c, size_t stack_size)
 {
   bzero(c, sizeof(*c));
 
@@ -391,7 +391,7 @@ my_context_init(struct my_context *c, size_t stack_size)
 }
 
 void
-my_context_destroy(struct my_context *c)
+ma_context_destroy(struct ma_context *c)
 {
   if (c->stack_bot)
   {
@@ -408,7 +408,7 @@ my_context_destroy(struct my_context *c)
 
 #ifdef MY_CONTEXT_USE_I386_GCC_ASM
 /*
-  GCC-i386 implementation of my_context.
+  GCC-i386 implementation of ma_context.
 
   This is slightly optimized in the common case where we never yield
   (eg. fetch next row and it is already fully received in buffer). In this
@@ -434,7 +434,7 @@ my_context_destroy(struct my_context *c)
 */
 
 int
-my_context_spawn(struct my_context *c, void (*f)(void *), void *d)
+ma_context_spawn(struct ma_context *c, void (*f)(void *), void *d)
 {
   int ret;
 
@@ -506,7 +506,7 @@ my_context_spawn(struct my_context *c, void (*f)(void *), void *d)
 }
 
 int
-my_context_continue(struct my_context *c)
+ma_context_continue(struct ma_context *c)
 {
   int ret;
 
@@ -545,7 +545,7 @@ my_context_continue(struct my_context *c)
      /*
        Come here when operation is done.
        Be sure to use the same callee-save register for %[save] here and in
-       my_context_spawn(), so we preserve the value correctly at this point.
+       ma_context_spawn(), so we preserve the value correctly at this point.
      */
      "2:\n\t"
      "movl (%[save]), %%esp\n\t"
@@ -571,7 +571,7 @@ my_context_continue(struct my_context *c)
 }
 
 int
-my_context_yield(struct my_context *c)
+ma_context_yield(struct ma_context *c)
 {
   uint64_t *save= &c->save[0];
   __asm__ __volatile__
@@ -610,7 +610,7 @@ my_context_yield(struct my_context *c)
 }
 
 int
-my_context_init(struct my_context *c, size_t stack_size)
+ma_context_init(struct ma_context *c, size_t stack_size)
 {
   bzero(c, sizeof(*c));
   if (!(c->stack_bot= malloc(stack_size)))
@@ -627,7 +627,7 @@ my_context_init(struct my_context *c, size_t stack_size)
 }
 
 void
-my_context_destroy(struct my_context *c)
+ma_context_destroy(struct ma_context *c)
 {
   if (c->stack_bot)
   {
@@ -644,7 +644,7 @@ my_context_destroy(struct my_context *c)
 
 #ifdef MY_CONTEXT_USE_WIN32_FIBERS
 int
-my_context_yield(struct my_context *c)
+ma_context_yield(struct ma_context *c)
 {
   c->return_value= 1;
   SwitchToFiber(c->app_fiber);
@@ -653,9 +653,9 @@ my_context_yield(struct my_context *c)
 
 
 static void WINAPI
-my_context_trampoline(void *p)
+ma_context_trampoline(void *p)
 {
-  struct my_context *c= (struct my_context *)p;
+  struct ma_context *c= (struct ma_context *)p;
   /*
     Reuse the Fiber by looping infinitely, each time we are scheduled we
     spawn the appropriate function and switch back when it is done.
@@ -672,17 +672,17 @@ my_context_trampoline(void *p)
 }
 
 int
-my_context_init(struct my_context *c, size_t stack_size)
+ma_context_init(struct ma_context *c, size_t stack_size)
 {
   bzero(c, sizeof(*c));
-  c->lib_fiber= CreateFiber(stack_size, my_context_trampoline, c);
+  c->lib_fiber= CreateFiber(stack_size, ma_context_trampoline, c);
   if (c->lib_fiber)
     return 0;
   return -1;
 }
 
 void
-my_context_destroy(struct my_context *c)
+ma_context_destroy(struct ma_context *c)
 {
   DBUG_FREE_CODE_STATE(&c->dbug_state);
   if (c->lib_fiber)
@@ -693,7 +693,7 @@ my_context_destroy(struct my_context *c)
 }
 
 int
-my_context_spawn(struct my_context *c, void (*f)(void *), void *d)
+ma_context_spawn(struct ma_context *c, void (*f)(void *), void *d)
 {
   void *current_fiber;
   c->user_func= f;
@@ -714,7 +714,7 @@ my_context_spawn(struct my_context *c, void (*f)(void *), void *d)
 }
 
 int
-my_context_continue(struct my_context *c)
+ma_context_continue(struct ma_context *c)
 {
   DBUG_SWAP_CODE_STATE(&c->dbug_state);
   SwitchToFiber(c->lib_fiber);
@@ -726,33 +726,33 @@ my_context_continue(struct my_context *c)
 
 #ifdef MY_CONTEXT_DISABLE
 int
-my_context_continue(struct my_context *c)
+ma_context_continue(struct ma_context *c)
 {
   return -1;
 }
 
 
 int
-my_context_spawn(struct my_context *c, void (*f)(void *), void *d)
+ma_context_spawn(struct ma_context *c, void (*f)(void *), void *d)
 {
   return -1;
 }
 
 
 int
-my_context_yield(struct my_context *c)
+ma_context_yield(struct ma_context *c)
 {
   return -1;
 }
 
 int
-my_context_init(struct my_context *c, size_t stack_size)
+ma_context_init(struct ma_context *c, size_t stack_size)
 {
   return -1;                                  /* Out of memory */
 }
 
 void
-my_context_destroy(struct my_context *c)
+ma_context_destroy(struct ma_context *c)
 {
 }
 

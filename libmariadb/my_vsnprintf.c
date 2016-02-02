@@ -22,18 +22,18 @@
 #include <m_ctype.h>
 
 
-int my_snprintf(char* to, size_t n, const char* fmt, ...)
+int ma_snprintf(char* to, size_t n, const char* fmt, ...)
 {
   int result;
   va_list args;
   va_start(args,fmt);
-  result= my_vsnprintf(to, n, fmt, args);
+  result= ma_vsnprintf(to, n, fmt, args);
   va_end(args);
   return result;
 }
 
 
-int my_vsnprintf(char *to, size_t n, const char* fmt, va_list ap)
+int ma_vsnprintf(char *to, size_t n, const char* fmt, va_list ap)
 {
   char *start=to, *end=to+n-1;
   for (; *fmt ; fmt++)
@@ -86,13 +86,13 @@ int my_vsnprintf(char *to, size_t n, const char* fmt, va_list ap)
 
 
 #ifdef MAIN
-static void my_printf(const char * fmt, ...)
+static void ma_printf(const char * fmt, ...)
 {
   char buf[32];
   int n;
   va_list ar;
   va_start(ar, fmt);
-  n = my_vsnprintf(buf, sizeof(buf),fmt, ar);
+  n = ma_vsnprintf(buf, sizeof(buf),fmt, ar);
   printf(buf);
   printf("n=%d, strlen=%d\n", n, strlen(buf));
   va_end(ar);
@@ -102,16 +102,16 @@ static void my_printf(const char * fmt, ...)
 int main()
 {
   
-  my_printf("Hello\n");
-  my_printf("Hello int, %d\n", 1);
-  my_printf("Hello string '%s'\n", "I am a string");
-  my_printf("Hello hack hack hack hack hack hack hack %d\n", 1);
-  my_printf("Hello %d hack  %d\n", 1, 4);
-  my_printf("Hello %d hack hack hack hack hack %d\n", 1, 4);
-  my_printf("Hello '%s' hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\n", "hack");
-  my_printf("Hello hhhhhhhhhhhhhh %d sssssssssssssss\n", 1);
-  my_printf("Hello  %u\n", 1);
-  my_printf("conn %ld to: '%-.64s' user: '%-.32s' host:\
+  ma_printf("Hello\n");
+  ma_printf("Hello int, %d\n", 1);
+  ma_printf("Hello string '%s'\n", "I am a string");
+  ma_printf("Hello hack hack hack hack hack hack hack %d\n", 1);
+  ma_printf("Hello %d hack  %d\n", 1, 4);
+  ma_printf("Hello %d hack hack hack hack hack %d\n", 1, 4);
+  ma_printf("Hello '%s' hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\n", "hack");
+  ma_printf("Hello hhhhhhhhhhhhhh %d sssssssssssssss\n", 1);
+  ma_printf("Hello  %u\n", 1);
+  ma_printf("conn %ld to: '%-.64s' user: '%-.32s' host:\
  `%-.64s' (%-.64s)", 1, 0,0,0,0);
   return 0;
 }

@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#include "my_test.h"
+#include "ma_test.h"
 
 /* Test warnings */
 
@@ -256,7 +256,7 @@ static int test_parse_error_and_bad_length(MYSQL *mysql)
 }
 
 
-struct my_tests_st my_tests[] = {
+struct ma_tests_st ma_tests[] = {
   {"test_client_warnings", test_client_warnings, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
   {"test_ps_client_warnings", test_ps_client_warnings, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
   {"test_server_warnings", test_server_warnings, TEST_CONNECTION_DEFAULT, 0, NULL , NULL},
@@ -276,7 +276,7 @@ int main(int argc, char **argv)
 
   get_envvars();
 
-  run_tests(my_tests);
+  run_tests(ma_tests);
 
   return(exit_status());
 }

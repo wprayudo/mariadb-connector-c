@@ -33,7 +33,7 @@
 
 
 
-double my_ulonglong2double(unsigned long long nr)
+double ma_ulonglong2double(unsigned long long nr)
 {
   return (double) nr;
 }

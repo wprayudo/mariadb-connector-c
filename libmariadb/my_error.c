@@ -23,13 +23,13 @@
 
 /* Define some external variables for error handling */
 
-const char ** NEAR my_errmsg[MAXMAPS]={0,0,0,0};
+const char ** NEAR ma_errmsg[MAXMAPS]={0,0,0,0};
 char NEAR errbuff[NRERRBUFFS][ERRMSGSIZE];
 
 /* Error message to user */
 /*VARARGS2*/
 
-int my_error(int nr,myf MyFlags, ...)
+int ma_error(int nr,myf MyFlags, ...)
 {
   va_list	ap;
   uint		olen, plen;
@@ -37,15 +37,15 @@ int my_error(int nr,myf MyFlags, ...)
   reg2 char	*endpos;
   char		* par;
   char		ebuff[ERRMSGSIZE+20];
-  DBUG_ENTER("my_error");
+  DBUG_ENTER("ma_error");
 
   va_start(ap,MyFlags);
   DBUG_PRINT("my", ("nr: %d  MyFlags: %d  errno: %d", nr, MyFlags, errno));
 
-  if (nr / ERRMOD == GLOB && my_errmsg[GLOB] == 0)
+  if (nr / ERRMOD == GLOB && ma_errmsg[GLOB] == 0)
     init_glob_errs();
 
-  olen=(uint) strlen(tpos=my_errmsg[nr / ERRMOD][nr % ERRMOD - EE_FIRSTERROR]);
+  olen=(uint) strlen(tpos=ma_errmsg[nr / ERRMOD][nr % ERRMOD - EE_FIRSTERROR]);
   endpos=ebuff;
 
   while (*tpos)
@@ -105,7 +105,7 @@ int my_error(int nr,myf MyFlags, ...)
 
 	/* Error as printf */
 
-int my_printf_error (uint error, const char *format, myf MyFlags, ...)
+int ma_printf_error (uint error, const char *format, myf MyFlags, ...)
 {
   va_list args;
   char ebuff[ERRMSGSIZE+20];
@@ -118,7 +118,7 @@ int my_printf_error (uint error, const char *format, myf MyFlags, ...)
 
 	/* Give message using error_handler_hook */
 
-int my_message(uint error, const char *str, register myf MyFlags)
+int ma_message(uint error, const char *str, register myf MyFlags)
 {
   return (*error_handler_hook)(error, str, MyFlags);
 }

@@ -21,12 +21,12 @@
 
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <ma_common.h>
 #include <ma_pvio.h>
 #include <errmsg.h>
-#include <my_pthread.h>
+#include <ma_pthread.h>
 #include <mysql/client_plugin.h>
 #include <string.h>
 #include <ma_ssl.h>
@@ -34,9 +34,9 @@
 pthread_mutex_t LOCK_gnutls_config;
 
 static gnutls_certificate_credentials_t GNUTLS_xcred;
-extern my_bool ma_ssl_initialized;
+extern ma_bool ma_ssl_initialized;
 
-static int my_verify_callback(gnutls_session_t ssl);
+static int ma_verify_callback(gnutls_session_t ssl);
 
 #define MAX_SSL_ERR_LEN 100
 
@@ -57,7 +57,7 @@ static void ma_ssl_set_error(MYSQL *mysql, int ssl_errno)
                    ssl_error_reason);
     return;
   }
-  my_snprintf(ssl_error, MAX_SSL_ERR_LEN, "SSL errno=%lu", ssl_errno, mysql->charset);
+  ma_snprintf(ssl_error, MAX_SSL_ERR_LEN, "SSL errno=%lu", ssl_errno, mysql->charset);
   pvio->set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN, 
                  ssl_error);
 }
@@ -85,7 +85,7 @@ static void ma_ssl_get_error(char *errmsg, size_t length, int ssl_errno)
   context SSL_context
 
   SYNOPSIS
-    my_gnutls_start
+    ma_gnutls_start
       mysql        connection handle
 
   RETURN VALUES
@@ -121,7 +121,7 @@ end:
    mysql_server_end() function
 
    SYNOPSIS
-     my_gnutls_end()
+     ma_gnutls_end()
        void
 
    RETURN VALUES
@@ -162,7 +162,7 @@ static int ma_ssl_set_certs(MYSQL *mysql)
       goto error;
   }
   gnutls_certificate_set_verify_function(GNUTLS_xcred,
-                                         my_verify_callback);
+                                         ma_verify_callback);
 
   /* GNUTLS doesn't support ca_path */
 
@@ -185,7 +185,7 @@ static int ma_ssl_set_certs(MYSQL *mysql)
 
 error:
   if (cipher)
-    my_free(cipher);
+    ma_free(cipher);
   return ssl_error;
 }
 
@@ -241,10 +241,10 @@ static int ma_ssl_pull_timeout(gnutls_transport_ptr_t ptr, unsigned int ms)
   return pvio->methods->wait_io_or_timeout(pvio, 0, ms);
 }
 
-my_bool ma_ssl_connect(MARIADB_SSL *cssl)
+ma_bool ma_ssl_connect(MARIADB_SSL *cssl)
 {
   gnutls_session_t ssl = (gnutls_session_t)cssl->ssl;
-  my_bool blocking;
+  ma_bool blocking;
   MYSQL *mysql;
   MARIADB_PVIO *pvio;
   int ret;
@@ -293,7 +293,7 @@ size_t ma_ssl_write(MARIADB_SSL *cssl, const uchar* buffer, size_t length)
   return gnutls_record_send((gnutls_session_t )cssl->ssl, (void *)buffer, length);
 }
 
-my_bool ma_ssl_close(MARIADB_SSL *cssl)
+ma_bool ma_ssl_close(MARIADB_SSL *cssl)
 {
   gnutls_bye((gnutls_session_t )cssl->ssl, GNUTLS_SHUT_WR);
   gnutls_deinit((gnutls_session_t )cssl->ssl);
@@ -315,7 +315,7 @@ const char *ma_ssl_get_cipher(MARIADB_SSL *cssl)
   return gnutls_cipher_get_name (gnutls_cipher_get((gnutls_session_t )cssl->ssl));
 }
 
-static int my_verify_callback(gnutls_session_t ssl)
+static int ma_verify_callback(gnutls_session_t ssl)
 {
   unsigned int status;
   const gnutls_datum_t *cert_list;
@@ -406,7 +406,7 @@ unsigned int ma_ssl_get_finger_print(MARIADB_SSL *cssl, unsigned char *fp, unsig
   cert_list = gnutls_certificate_get_peers (cssl->ssl, &cert_list_size);
   if (cert_list == NULL)
   {
-    my_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
+    ma_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
                         ER(CR_SSL_CONNECTION_ERROR), 
                         "Unable to get server certificate");
     return 0;
@@ -416,14 +416,14 @@ unsigned int ma_ssl_get_finger_print(MARIADB_SSL *cssl, unsigned char *fp, unsig
     return fp_len;
   else
   {
-    my_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
+    ma_set_error(mysql, CR_SSL_CONNECTION_ERROR, SQLSTATE_UNKNOWN,
                         ER(CR_SSL_CONNECTION_ERROR), 
                         "Finger print buffer too small");
     return 0;
   }
 }
 
-my_bool ma_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version)
+ma_bool ma_ssl_get_protocol_version(MARIADB_SSL *cssl, struct st_ssl_version *version)
 {
   if (!cssl || !cssl->ssl)
     return 1;

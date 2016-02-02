@@ -18,8 +18,8 @@
 /* Error messages for MySQL clients */
 /* error messages for the demon is in share/language/errmsg.sys */
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include "errmsg.h"
 #include <stdarg.h>
 
@@ -156,5 +156,5 @@ const char *mariadb_client_errors[] =
 
 void init_client_errs(void)
 {
-  my_errmsg[CLIENT_ERRMAP] = &client_errors[0];
+  ma_errmsg[CLIENT_ERRMAP] = &client_errors[0];
 }

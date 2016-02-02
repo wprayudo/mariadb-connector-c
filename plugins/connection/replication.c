@@ -22,8 +22,8 @@
 
 /* MariaDB Connection plugin for load balancing  */
 
-#include <my_global.h>
-#include <my_sys.h>
+#include <ma_global.h>
+#include <ma_sys.h>
 #include <errmsg.h>
 #include <mysql.h>
 #include <mysql/client_plugin.h>
@@ -39,7 +39,7 @@ MYSQL *repl_connect(MYSQL *mysql, const char *host, const char *user, const char
 		    const char *db, unsigned int port, const char *unix_socket, unsigned long clientflag);
 void repl_close(MYSQL *mysql);
 int repl_command(MYSQL *mysql,enum enum_server_command command, const char *arg,
-                      size_t length, my_bool skipp_check, void *opt_arg);
+                      size_t length, ma_bool skipp_check, void *opt_arg);
 int repl_set_options(MYSQL *msql, enum mysql_option option, void *arg);
 
 #define MARIADB_MASTER 0
@@ -72,8 +72,8 @@ MARIADB_CONNECTION_PLUGIN _mysql_client_plugin_declaration_ =
 typedef struct st_conn_repl {
   MARIADB_PVIO *pvio[2];
   MYSQL *slave_mysql;
-  my_bool read_only;
-  my_bool round_robin;
+  ma_bool read_only;
+  ma_bool round_robin;
   char *url;
   char *host[2];
   int port[2];
@@ -99,7 +99,7 @@ typedef struct st_conn_repl {
  *
  */
 
-my_bool repl_parse_url(const char *url, REPL_DATA *data)
+ma_bool repl_parse_url(const char *url, REPL_DATA *data)
 {
   char *p;
   char *slaves[64];
@@ -262,7 +262,7 @@ void repl_close(MYSQL *mysql)
   mysql->net.conn_hdlr->data= NULL;
 }
 
-static my_bool is_slave_command(const char *buffer, size_t buffer_len)
+static ma_bool is_slave_command(const char *buffer, size_t buffer_len)
 {
   const char *buffer_end= buffer + buffer_len;
 
@@ -279,7 +279,7 @@ static my_bool is_slave_command(const char *buffer, size_t buffer_len)
   return 0;
 }
 
-static my_bool is_slave_stmt(MYSQL *mysql, const char *buffer)
+static ma_bool is_slave_stmt(MYSQL *mysql, const char *buffer)
 {
   unsigned long stmt_id= uint4korr(buffer);
   LIST *stmt_list= mysql->stmts;
@@ -295,7 +295,7 @@ static my_bool is_slave_stmt(MYSQL *mysql, const char *buffer)
 
 
 int repl_command(MYSQL *mysql,enum enum_server_command command, const char *arg,
-                     size_t length, my_bool skipp_check, void *opt_arg)
+                     size_t length, ma_bool skipp_check, void *opt_arg)
 {
   REPL_DATA *data= (REPL_DATA *)mysql->net.conn_hdlr->data; 
 
@@ -334,11 +334,11 @@ int repl_set_options(MYSQL *mysql, enum mysql_option option, void *arg)
  
   switch(option) {
   case MARIADB_OPT_CONNECTION_READ_ONLY:
-    data->read_only= *(my_bool *)arg;
+    data->read_only= *(ma_bool *)arg;
     return 0;
 /*
   case MARIADB_OPT_CONNECTION_ROUND_ROBIN:
-    data->round_robin= *(my_bool *)arg;
+    data->round_robin= *(ma_bool *)arg;
     return 0; */
   default:
     return -1;

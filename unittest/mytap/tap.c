@@ -19,7 +19,7 @@
 
 #include "tap.h"
 
-#include "my_global.h"
+#include "ma_global.h"
 
 #include <stdlib.h>
 #include <stdarg.h>
@@ -30,7 +30,7 @@
 /*
   Visual Studio 2003 does not know vsnprintf but knows _vsnprintf.
   We don't put this #define in config-win.h because we prefer
-  my_vsnprintf everywhere instead, except when linking with libmysys
+  ma_vsnprintf everywhere instead, except when linking with libmysys
   is not desirable - the case here.
 */
 #if defined(_MSC_VER) && ( _MSC_VER == 1310 )
@@ -341,7 +341,7 @@ int exit_status() {
    In contrast, the following are typical unit tests:
 
    - Can the 'String' class handle a specified list of character sets?
-   - Does all operations for 'my_bitmap' produce the correct result?
+   - Does all operations for 'ma_bitmap' produce the correct result?
    - Does all the NIST test vectors for the AES implementation encrypt
      correctly?
 

@@ -36,7 +36,7 @@ struct st_remember {
 struct irem {
     struct remember *_pNext;		/* Linked list of structures	   */
     struct remember *_pPrev;		/* Other link			   */
-    my_string _sFileName;		/* File in which memory was new'ed */
+    ma_string _sFileName;		/* File in which memory was new'ed */
     uint _uLineNum;			/* Line number in above file	   */
     uint _uDataSize;			/* Size requested		   */
     long _lSpecialValue;		/* Underrun marker value	   */
@@ -49,21 +49,21 @@ struct remember {
 
 extern char	NEAR curr_dir[FN_REFLEN],NEAR home_dir_buff[FN_REFLEN];
 
-extern volatile int _my_signals;
-extern struct st_remember _my_sig_remember[MAX_SIGNALS];
+extern volatile int _ma_signals;
+extern struct st_remember _ma_sig_remember[MAX_SIGNALS];
 
 extern const char *soundex_map;
 
-extern USED_MEM* my_once_root_block;
-extern uint	 my_once_extra;
+extern USED_MEM* ma_once_root_block;
+extern uint	 ma_once_extra;
 
 #if !defined(HAVE_TEMPNAM) || defined(HPUX11)
-extern int	_my_tempnam_used;
+extern int	_ma_tempnam_used;
 #endif
 
 extern uint	cNewCount;
 extern struct remember *pRememberRoot;
 
 #if defined(THREAD) && !defined(__WIN__)
-extern sigset_t my_signals;		/* signals blocked by mf_brkhant */
+extern sigset_t ma_signals;		/* signals blocked by mf_brkhant */
 #endif

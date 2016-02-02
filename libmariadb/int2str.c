@@ -39,7 +39,7 @@
 	itoa assumes that 10 -base numbers are allways signed and other arn't.
 */
 
-#include <my_global.h>
+#include <ma_global.h>
 #include "m_string.h"
 
 char NEAR _dig_vec[] =
@@ -138,13 +138,13 @@ char *int10_to_str(long int val, char *dst, int radix)
 
 	/* Change to less general itoa interface */
 
-char *my_itoa(int val, char *dst, int radix)
+char *ma_itoa(int val, char *dst, int radix)
 {
   VOID(int2str((long) val,dst,(radix == 10 ? -10 : radix)));
   return dst;
 }
 
-char *my_ltoa(long int val, char *dst, int radix)
+char *ma_ltoa(long int val, char *dst, int radix)
 {
   VOID(int2str((long) val,dst,(radix == 10 ? -10 : radix)));
   return dst;

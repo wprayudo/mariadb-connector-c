@@ -39,7 +39,7 @@ extern char * mysql_read_body_name;
 /* Packet handling */
 #define PACKET_INIT(packet, enum_type, c_type)  \
 	{ \
-		packet = (c_type) my_mcalloc( packet_methods[enum_type].struct_size, MYF(MY_WME | MY_ZEROFILL)); \
+		packet = (c_type) ma_mcalloc( packet_methods[enum_type].struct_size, MYF(MY_WME | MY_ZEROFILL)); \
 		((c_type) (packet))->header.m = &packet_methods[enum_type]; \
 	}
 #define PACKET_WRITE(packet, conn)	((packet)->header.m->write_to_net((packet), (conn)))
@@ -78,9 +78,9 @@ extern const char * const mysql_command_to_text[MYSQL_COM_END];
 /* Low-level extraction functionality */
 typedef struct st_mysql_packet_methods {
 	size_t	struct_size;
-	my_bool (*read_from_net)(void *packet, MYSQL *conn);
+	ma_bool (*read_from_net)(void *packet, MYSQL *conn);
 	size_t (*write_to_net)(void *packet, MYSQL *conn);
-	void (*free_mem)(void *packet, my_bool alloca);
+	void (*free_mem)(void *packet, ma_bool alloca);
 } mysql_packet_methods;
 
 extern mysql_packet_methods packet_methods[];
@@ -104,7 +104,7 @@ typedef struct st_php_mysql_packet_greet {
 	mysql_1b		charset_no;
 	mysql_2b		server_status;
 	/* 13 byte pad*/
-	my_bool		pre41;
+	ma_bool		pre41;
 	/* If error packet, we use these */
 	char 			error[MYSQL_ERRMSG_SIZE+1];
 	char 			sqlstate[SQLSTATE_LENGTH + 1];
@@ -135,8 +135,8 @@ typedef struct st_php_mysql_packet_auth {
 typedef struct st_php_mysql_packet_ok {
 	mysql_packet_header		header;
 	mysql_1b		field_count; /* always 0x0 */
-	my_ulonglong	affected_rows;
-	my_ulonglong	last_insert_id;
+	ma_ulonglong	affected_rows;
+	ma_ulonglong	last_insert_id;
 	mysql_2b	server_status;
 	mysql_2b	warning_count;
 	char		*message;
@@ -187,8 +187,8 @@ typedef struct st_php_mysql_packet_rset_header {
 	*/
 	mysql_2b			warning_count;
 	mysql_2b			server_status;
-	my_ulonglong		affected_rows;
-	my_ulonglong		last_insert_id;
+	ma_ulonglong		affected_rows;
+	ma_ulonglong		last_insert_id;
 	/* This is for both LOAD DATA or info, when no result set */
 	char				*info_or_local_file;
 	size_t				info_or_local_file_len;
@@ -202,8 +202,8 @@ typedef struct st_php_mysql_packet_res_field {
 	mysql_packet_header	header;
 	MYSQL_FIELD			*metadata;
 	/* For table definitions, empty for result sets */
-	my_bool				skip_parsing;
-	my_bool				stupid_list_fields_eof;
+	ma_bool				skip_parsing;
+	ma_bool				stupid_list_fields_eof;
 } php_mysql_packet_res_field;
 
 
@@ -212,7 +212,7 @@ struct st_php_mysql_packet_row {
 	mysql_packet_header	header;
 	uchar			**fields; /* ??? */
 	mysql_4b		field_count;
-	my_bool		eof;
+	ma_bool		eof;
 	/*
 	  These are, of course, only for SELECT in the EOF packet,
 	  which is detected by this packet
@@ -222,8 +222,8 @@ struct st_php_mysql_packet_row {
 
 	uchar		*row_buffer;
 
-	my_bool		skip_extraction;
-	my_bool		binary_protocol;
+	ma_bool		skip_extraction;
+	ma_bool		binary_protocol;
 	MYSQL_FIELD	*fields_metadata;
 	/* We need this to alloc bigger bufs in non-PS mode */
 	unsigned int	bit_fields_count;
@@ -279,7 +279,7 @@ size_t php_mysql_consume_uneaten_data(const MYSQL *conn, enum php_mysql_server_c
 
 
 unsigned long	php_mysql_net_field_length(uchar **packet);
-uchar *	php_mysql_net_store_length(uchar *packet, my_ulonglong length);
+uchar *	php_mysql_net_store_length(uchar *packet, ma_ulonglong length);
 
 extern char * const mysql_empty_string;
 
