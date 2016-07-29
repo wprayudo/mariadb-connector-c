@@ -29,7 +29,9 @@ extern "C" {
 #define LIBMARIADB
 #endif
 #ifndef MYSQL_CLIENT
+#ifndef MYSQL_SERVER
 #define MYSQL_CLIENT
+#endif
 #endif
 
 #include <stdarg.h>
@@ -839,10 +841,9 @@ struct st_mariadb_methods {
 
 #define HAVE_MYSQL_REAL_CONNECT
 
-#ifndef MYSQL_SERVER  
+
 #ifdef	__cplusplus
 }
-#endif
 #endif
 
 #endif
