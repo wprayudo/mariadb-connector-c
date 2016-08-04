@@ -60,6 +60,7 @@ enum enum_stmt_attr_type
   STMT_ATTR_PREBIND_PARAMS=200
 };
 
+
 enum enum_cursor_type
 {
   CURSOR_TYPE_NO_CURSOR= 0,
@@ -89,7 +90,7 @@ typedef struct st_mysql_bind
   /* set this if you want to track data truncations happened during fetch */
   my_bool        *error;
   unsigned char  *row_ptr;         /* for the current data position */
-  void (*store_param_func)(NET *net, struct st_mysql_bind *param);
+  void (*store_param_func)(MA_NET *net, struct st_mysql_bind *param);
   void (*fetch_result)(struct st_mysql_bind *, MYSQL_FIELD *,
                        unsigned char **row);
   void (*skip_result)(struct st_mysql_bind *, MYSQL_FIELD *,
@@ -219,7 +220,7 @@ typedef struct st_mysql_perm_bind {
 extern MYSQL_PS_CONVERSION mysql_ps_fetch_functions[MYSQL_TYPE_GEOMETRY + 1];
 unsigned long ma_net_safe_read(MYSQL *mysql);
 void mysql_init_ps_subsystem(void);
-unsigned long net_field_length(unsigned char **packet);
+unsigned long STDCALL net_field_length(unsigned char **packet);
 int ma_simple_command(MYSQL *mysql,enum enum_server_command command, const char *arg,
           	       size_t length, my_bool skipp_check, void *opt_arg);
 /*

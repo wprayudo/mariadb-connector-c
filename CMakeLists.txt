@@ -40,6 +40,9 @@ ENDIF()
 OPTION(WITH_UNITTEST "build test suite" ON)
 OPTION(WITH_DYNCOL "Enables support of dynamic coluumns" ON)
 OPTION(WITH_EXTERNAL_ZLIB "Enables use of external zlib" OFF)
+IF(NOT WITH_EXTERNAL_ZLIB)
+ ADD_DEFINITIONS(-DZ_PREFIX) # protect from multiple definitions of zlib functions
+ENDIF()
 ###############
 IF(WITH_SIGNCODE)
   IF(WIN32)
@@ -142,8 +145,8 @@ INCLUDE(${PROJECT_SOURCE_DIR}/cmake/SearchLibrary.cmake)
 
 IF(WITH_EXTERNAL_ZLIB)
   FIND_PACKAGE(ZLIB QUIET)
-  IF(${ZLIB_FOUND})
-    SET(LIBZ "-z")
+  IF(ZLIB_FOUND)
+    SET(LIBZ ${ZLIB_LIBRARIES})
   ENDIF()
 ENDIF()
 

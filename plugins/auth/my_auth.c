@@ -38,7 +38,7 @@ auth_plugin_t native_password_client_plugin=
 {
   MYSQL_CLIENT_AUTHENTICATION_PLUGIN,
   MYSQL_CLIENT_AUTHENTICATION_PLUGIN_INTERFACE_VERSION,
-  native_password_plugin_name,
+  "mysql_native_password",
   "R.J.Silk, Sergei Golubchik",
   "Native MySQL authentication",
   {1, 0, 0},
@@ -157,7 +157,7 @@ static int send_client_reply_packet(MCPVIO_EXT *mpvio,
                                     const uchar *data, int data_len)
 {
   MYSQL *mysql= mpvio->mysql;
-  NET *net= &mysql->net;
+  MA_NET *net= &mysql->net;
   char *buff, *end;
   size_t conn_attr_len= (mysql->options.extension) ? 
                          mysql->options.extension->connect_attrs_len : 0;
@@ -401,7 +401,7 @@ static int client_mpvio_write_packet(struct st_plugin_vio *mpv,
   }
   else
   {
-    NET *net= &mpvio->mysql->net;
+    MA_NET *net= &mpvio->mysql->net;
     if (mpvio->mysql->thd)
       res= 1; /* no chit-chat in embedded */
     else
@@ -579,7 +579,7 @@ int run_plugin_auth(MYSQL *mysql, char *data, uint data_len,
     if (pkt_length == 1)
     {
       /* old "use short scramble" packet */
-      auth_plugin_name= old_password_plugin_name;
+      auth_plugin_name= "mysql_old_password";
       mpvio.cached_server_reply.pkt= (uchar*)mysql->scramble_buff;
       mpvio.cached_server_reply.pkt_len= SCRAMBLE_LENGTH + 1;
     }

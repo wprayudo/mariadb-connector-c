@@ -413,13 +413,13 @@ ma_pvio_wait_async(struct mysql_async_context *b, enum enum_pvio_io_event event,
 {
   switch (event)
   {
-  case VIO_IO_EVENT_READ:
+  case PVIO_IO_EVENT_READ:
     b->events_to_wait_for = MYSQL_WAIT_READ;
     break;
-  case VIO_IO_EVENT_WRITE:
+  case PVIO_IO_EVENT_WRITE:
     b->events_to_wait_for = MYSQL_WAIT_WRITE;
     break;
-  case VIO_IO_EVENT_CONNECT:
+  case PVIO_IO_EVENT_CONNECT:
     b->events_to_wait_for = MYSQL_WAIT_WRITE | IF_WIN(0, MYSQL_WAIT_EXCEPT);
     break;
   }
@@ -443,7 +443,7 @@ int ma_pvio_wait_io_or_timeout(MARIADB_PVIO *pvio, my_bool is_read, int timeout)
 {
   if (IS_PVIO_ASYNC_ACTIVE(pvio))
     return ma_pvio_wait_async(pvio->mysql->options.extension->async_context, 
-                             (is_read) ? VIO_IO_EVENT_READ : VIO_IO_EVENT_WRITE,
+                             (is_read) ? PVIO_IO_EVENT_READ : PVIO_IO_EVENT_WRITE,
                               timeout);
 
   if (pvio && pvio->methods->wait_io_or_timeout)
@@ -480,7 +480,7 @@ my_bool ma_pvio_is_blocking(MARIADB_PVIO *pvio)
 /* }}} */
 
 /* {{{ ma_pvio_has_data */
-my_bool ma_pvio_has_data(MARIADB_PVIO *pvio, ssize_t *data_len)
+my_bool ma_pvio_has_data(MARIADB_PVIO *pvio, size_t *data_len)
 {
   /* check if we still have unread data in cache */
   if (pvio && pvio->cache)

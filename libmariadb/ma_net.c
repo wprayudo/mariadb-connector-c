@@ -94,12 +94,12 @@ extern pthread_mutex_t LOCK_bytes_sent , LOCK_bytes_received;
 ** can't normally do this the client should have a bigger max-buffer.
 */
 
-static int ma_net_write_buff(NET *net,const char *packet, size_t len);
+static int ma_net_write_buff(MA_NET *net,const char *packet, size_t len);
 
 
 	/* Init with packet info */
 
-int ma_net_init(NET *net, MARIADB_PVIO* pvio)
+int ma_net_init(MA_NET *net, MARIADB_PVIO* pvio)
 {
   if (!(net->buff=(uchar*) malloc(net_buffer_length)))
     return 1;
@@ -135,7 +135,7 @@ int ma_net_init(NET *net, MARIADB_PVIO* pvio)
   return 0;
 }
 
-void ma_net_end(NET *net)
+void ma_net_end(MA_NET *net)
 {
   free(net->buff);
   free(net->extension->mbuff);
@@ -145,7 +145,7 @@ void ma_net_end(NET *net)
 
 /* Realloc the packet buffer */
 
-static my_bool net_realloc(NET *net, my_bool is_multi, size_t length)
+static my_bool net_realloc(MA_NET *net, my_bool is_multi, size_t length)
 {
   uchar *buff;
   size_t pkt_length;
@@ -179,7 +179,7 @@ static my_bool net_realloc(NET *net, my_bool is_multi, size_t length)
 }
 
 /* Remove unwanted characters from connection */
-void ma_net_clear(NET *net)
+void ma_net_clear(MA_NET *net)
 {
 //  size_t len;
 /*  if (net->pvio)
@@ -192,7 +192,7 @@ void ma_net_clear(NET *net)
 }
 
 /* Flush write_buffer if not empty. */
-int ma_net_flush(NET *net)
+int ma_net_flush(MA_NET *net)
 {
   int error=0;
 
@@ -219,7 +219,7 @@ int ma_net_flush(NET *net)
 */
 
 int
-ma_net_write(NET *net, const uchar *packet, size_t len)
+ma_net_write(MA_NET *net, const uchar *packet, size_t len)
 {
   uchar buff[NET_HEADER_SIZE];
   while (len >= MAX_PACKET_LENGTH)
@@ -243,7 +243,7 @@ ma_net_write(NET *net, const uchar *packet, size_t len)
 }
 
 int
-ma_net_write_command(NET *net, uchar command,
+ma_net_write_command(MA_NET *net, uchar command,
                   const char *packet, size_t len)
 {
   uchar buff[NET_HEADER_SIZE+1];
@@ -282,7 +282,7 @@ ma_net_write_command(NET *net, uchar command,
 
 
 static int
-ma_net_write_buff(NET *net,const char *packet, size_t len)
+ma_net_write_buff(MA_NET *net,const char *packet, size_t len)
 {
   size_t left_length;
 
@@ -325,7 +325,7 @@ ma_net_write_buff(NET *net,const char *packet, size_t len)
   return 0;
 }
 
-int net_add_multi_command(NET *net, uchar command, const uchar *packet,
+int net_add_multi_command(MA_NET *net, uchar command, const uchar *packet,
                           size_t length)
 {
   size_t left_length;
@@ -378,7 +378,7 @@ error:
 /*  Read and write using timeouts */
 
 int
-ma_net_real_write(NET *net,const char *packet,size_t  len)
+ma_net_real_write(MA_NET *net,const char *packet,size_t  len)
 {
   size_t length;
   char *pos,*end;
@@ -439,7 +439,7 @@ ma_net_real_write(NET *net,const char *packet,size_t  len)
 ** Read something from server/clinet
 *****************************************************************************/
 static ulong
-ma_real_read(NET *net, size_t *complen)
+ma_real_read(MA_NET *net, size_t *complen)
 {
   uchar *pos;
   size_t length;
@@ -515,7 +515,7 @@ end:
   return(len);
 }
 
-ulong ma_net_read(NET *net)
+ulong ma_net_read(MA_NET *net)
 {
   size_t len,complen;
 

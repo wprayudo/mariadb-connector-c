@@ -51,7 +51,7 @@ extern void mysql_close_slow_part(MYSQL *mysql);
 
 
 void
-my_context_install_suspend_resume_hook(struct mysql_async_context *b,
+ma_context_install_suspend_resume_hook(struct mysql_async_context *b,
                                        void (*hook)(my_bool, void *),
                                        void *user_data)
 {
@@ -62,7 +62,7 @@ my_context_install_suspend_resume_hook(struct mysql_async_context *b,
 
 /* Asynchronous connect(); socket must already be set non-blocking. */
 int
-my_connect_async(MARIADB_PVIO *pvio,
+ma_connect_async(MARIADB_PVIO *pvio,
                  const struct sockaddr *name, uint namelen, int vio_timeout)
 {
   int res;

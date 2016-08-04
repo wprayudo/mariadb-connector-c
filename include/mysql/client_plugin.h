@@ -36,7 +36,7 @@
 #define PLUGINDIR "lib/plugin"
 #endif
 
-#define plugin_declarations_sym "_mysql_client_plugin_declaration_"
+
 
 /* known plugin types */
 #define MYSQL_CLIENT_PLUGIN_RESERVED         0 
@@ -93,13 +93,13 @@ typedef struct st_ma_connection_plugin
 {
   MYSQL_CLIENT_PLUGIN_HEADER
   /* functions */
-  MYSQL *(*connect)(MYSQL *mysql, const char *host, const char *user, const char *passwd,
+  struct st_mysql *(*connect)(struct st_mysql *mysql, const char *host, const char *user, const char *passwd,
 		    const char *db, unsigned int port, const char *unix_socket, unsigned long clientflag);
-  void (*close)(MYSQL *mysql);
-  int (*set_options)(MYSQL *mysql, enum mysql_option, void *arg);
-  int (*set_connection)(MYSQL *mysql,enum enum_server_command command, const char *arg,
-                        size_t length, my_bool skipp_check, void *opt_arg);
-  my_bool (*reconnect)(MYSQL *mysql);
+  void (*close)(struct st_mysql *mysql);
+  int (*set_options)(struct st_mysql *mysql, enum mysql_option, void *arg);
+  int (*set_connection)(struct st_mysql *mysql,enum enum_server_command command, const char *arg,
+                        size_t length, char skipp_check, void *opt_arg);
+  char (*reconnect)(struct st_mysql *mysql);
 } MARIADB_CONNECTION_PLUGIN;
 
 #define MARIADB_DB_DRIVER(a) ((a)->ext_db)
@@ -175,7 +175,7 @@ typedef struct st_mysql_client_plugin_REMOTEIO
   @retval
   a pointer to the loaded plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin * STDCALL
+struct st_mysql_client_plugin * 
 mysql_load_plugin(struct st_mysql *mysql, const char *name, int type,
                   int argc, ...);
 
@@ -196,7 +196,7 @@ mysql_load_plugin(struct st_mysql *mysql, const char *name, int type,
   @retval
   a pointer to the loaded plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin * STDCALL
+struct st_mysql_client_plugin * 
 mysql_load_plugin_v(struct st_mysql *mysql, const char *name, int type,
                     int argc, va_list args);
 
@@ -211,7 +211,7 @@ mysql_load_plugin_v(struct st_mysql *mysql, const char *name, int type,
   @retval
   a pointer to the plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin * STDCALL
+struct st_mysql_client_plugin * 
 mysql_client_find_plugin(struct st_mysql *mysql, const char *name, int type);
 
 /**
@@ -228,12 +228,21 @@ mysql_client_find_plugin(struct st_mysql *mysql, const char *name, int type);
   @retval
   a pointer to the plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin * STDCALL
+struct st_mysql_client_plugin * 
 mysql_client_register_plugin(struct st_mysql *mysql,
                              struct st_mysql_client_plugin *plugin);
 
 extern struct st_mysql_client_plugin *mysql_client_builtins[];
 
+/**
+  first byte of the question string is the question "type".
+  It can be an "ordinary" or a "password" question.
+  The last bit set marks a last question in the authentication exchange.
+*/
+#define ORDINARY_QUESTION       "\2"
+#define LAST_QUESTION           "\3"
+#define PASSWORD_QUESTION       "\4"
+#define LAST_PASSWORD           "\5"
 #endif
 
 

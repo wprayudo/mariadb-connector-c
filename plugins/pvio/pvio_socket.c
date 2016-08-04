@@ -33,6 +33,8 @@
 #include <mariadb_async.h>
 #include <ma_common.h>
 #include <string.h>
+#include <ma_pvio.h>
+#include <mysql/client_plugin.h>
 #ifndef _WIN32
 #ifdef HAVE_SYS_UN_H
 #include <sys/un.h>
@@ -75,7 +77,7 @@ int pvio_socket_keepalive(MARIADB_PVIO *pvio);
 my_bool pvio_socket_get_handle(MARIADB_PVIO *pvio, void *handle);
 my_bool pvio_socket_is_blocking(MARIADB_PVIO *pvio);
 my_bool pvio_socket_is_alive(MARIADB_PVIO *pvio);
-my_bool pvio_socket_has_data(MARIADB_PVIO *pvio, ssize_t *data_len);
+my_bool pvio_socket_has_data(MARIADB_PVIO *pvio, size_t *data_len);
 int pvio_socket_shutdown(MARIADB_PVIO *pvio);
 
 static int pvio_socket_init(char *unused1, 
@@ -726,7 +728,7 @@ pvio_socket_connect_sync_or_async(MARIADB_PVIO *pvio,
      * via mysql_get_socket api call, so we need to assign pvio */
     mysql->options.extension->async_context->pvio= pvio;
     pvio_socket_blocking(pvio, 0, 0);
-    return my_connect_async(pvio, name, namelen, pvio->timeout[PVIO_CONNECT_TIMEOUT]);
+    return ma_connect_async(pvio, name, namelen, pvio->timeout[PVIO_CONNECT_TIMEOUT]);
   }
 
   return pvio_socket_internal_connect(pvio, name, namelen);
@@ -1002,7 +1004,7 @@ my_bool pvio_socket_is_alive(MARIADB_PVIO *pvio)
 /* }}} */
 
 /* {{{ my_boool pvio_socket_has_data */
-my_bool pvio_socket_has_data(MARIADB_PVIO *pvio, ssize_t *data_len)
+my_bool pvio_socket_has_data(MARIADB_PVIO *pvio, size_t *data_len)
 {
   struct st_pvio_socket *csock= NULL;
   char tmp_buf;

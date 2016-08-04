@@ -67,7 +67,7 @@ static void parse_server_packet(char *packet, size_t packet_len, char *spn, char
  */
 void log_client_error(MYSQL *mysql,  const char *format, ...)
 {
-  NET *net= &mysql->net;
+  MA_NET *net= &mysql->net;
   va_list args;
 
   net->last_errno= ER_UNKNOWN_ERROR;

@@ -128,7 +128,7 @@
 /* all zlib structs in zlib.h and zconf.h */
 #  define gz_header_s           z_gz_header_s
 #  define internal_state        z_internal_state
-
+#  define z_errmsg              zz_errmsg
 #endif
 
 #if defined(__MSDOS__) && !defined(MSDOS)

@@ -86,7 +86,7 @@ extern const MARIADB_CHARSET_INFO * mysql_find_charset_nr(uint charsetnr);
 extern const MARIADB_CHARSET_INFO * mysql_find_charset_name(const char * const name);
 extern int run_plugin_auth(MYSQL *mysql, char *data, uint data_len,
                            const char *data_plugin, const char *db);
-extern int net_add_multi_command(NET *net, uchar command, const uchar *packet,
+extern int net_add_multi_command(MA_NET *net, uchar command, const uchar *packet,
                                  size_t length);
 
 extern LIST *pvio_callback;
@@ -105,7 +105,7 @@ extern my_bool _mariadb_read_options(MYSQL *mysql, const char *config_file,
 extern unsigned char *mysql_net_store_length(unsigned char *packet, size_t length);
 
 extern void
-my_context_install_suspend_resume_hook(struct mysql_async_context *b,
+ma_context_install_suspend_resume_hook(struct mysql_async_context *b,
                                        void (*hook)(my_bool, void *),
                                        void *user_data);
 
@@ -125,6 +125,9 @@ static char *mariadb_protocols[]= {"TCP",
 #else
 #define CONNECT_TIMEOUT 0
 #endif
+
+#define native_password_plugin_name "mysql_native_password"
+#define old_password_plugin_name    "mysql_old_password"
 
 struct st_mariadb_methods MARIADB_DEFAULT_METHODS;
 
@@ -191,7 +194,7 @@ void net_get_error(char *buf, size_t buf_len,
 ulong
 ma_net_safe_read(MYSQL *mysql)
 {
-  NET *net= &mysql->net;
+  MA_NET *net= &mysql->net;
   ulong len=0;
 
 restart:
@@ -287,7 +290,7 @@ static int cli_report_progress(MYSQL *mysql, uchar *packet, uint length)
 }
 
 /* Get the length of next field. Change parameter to point at fieldstart */
-ulong
+ulong STDCALL
 net_field_length(uchar **packet)
 {
   reg1 uchar *pos= *packet;
@@ -363,7 +366,7 @@ int
 mthd_my_send_cmd(MYSQL *mysql,enum enum_server_command command, const char *arg,
 	       size_t length, my_bool skipp_check, void *opt_arg)
 {
-  NET *net= &mysql->net;
+  MA_NET *net= &mysql->net;
   int result= -1;
   enum mariadb_com_multi multi= MARIADB_COM_MULTI_END;
 
@@ -799,7 +802,7 @@ MYSQL_DATA *mthd_my_read_rows(MYSQL *mysql,MYSQL_FIELD *mysql_fields,
   char	*to, *end_to;
   MYSQL_DATA *result;
   MYSQL_ROWS **prev_ptr,*cur;
-  NET *net = &mysql->net;
+  MA_NET *net = &mysql->net;
 
   if ((pkt_len= ma_net_safe_read(mysql)) == packet_error)
     return(0);
@@ -1152,7 +1155,7 @@ MYSQL *mthd_my_real_connect(MYSQL *mysql, const char *host, const char *user,
   my_bool is_maria= 0;
   const char *scramble_plugin;
   uint pkt_length, scramble_len, pkt_scramble_len= 0;
-  NET	*net= &mysql->net;
+  MA_NET	*net= &mysql->net;
 
   if (!mysql->methods)
     mysql->methods= &MARIADB_DEFAULT_METHODS;
@@ -1555,7 +1558,7 @@ my_bool STDCALL mariadb_reconnect(MYSQL *mysql)
     hook_data.orig_mysql= mysql;
     hook_data.new_mysql= &tmp_mysql;
     hook_data.orig_pvio= mysql->net.pvio;
-    my_context_install_suspend_resume_hook(ctxt, my_suspend_hook, &hook_data);
+    ma_context_install_suspend_resume_hook(ctxt, my_suspend_hook, &hook_data);
   }
 
   if (!mysql_real_connect(&tmp_mysql,mysql->host,mysql->user,mysql->passwd,
@@ -1564,7 +1567,7 @@ my_bool STDCALL mariadb_reconnect(MYSQL *mysql)
       mysql_set_character_set(&tmp_mysql, mysql->charset->csname))
   {
     if (ctxt)
-      my_context_install_suspend_resume_hook(ctxt, NULL, NULL);
+      ma_context_install_suspend_resume_hook(ctxt, NULL, NULL);
     /* don't free options (CONC-118) */
     memset(&tmp_mysql.options, 0, sizeof(struct st_mysql_options));
     my_set_error(mysql, tmp_mysql.net.last_errno, 
@@ -2954,6 +2957,8 @@ mysql_optionsv(MYSQL *mysql,enum mysql_option option, ...)
     break;
   case MARIADB_OPT_CONNECTION_READ_ONLY:
     OPT_SET_EXTENDED_VALUE_INT(&mysql->options, read_only, *(my_bool *)arg1);
+    break;
+  case MYSQL_OPT_USE_THREAD_SPECIFIC_MEMORY:
     break;
   default:
     va_end(ap);

@@ -38,9 +38,9 @@ enum enum_pvio_timeout {
 
 enum enum_pvio_io_event
 {
-  VIO_IO_EVENT_READ,
-  VIO_IO_EVENT_WRITE,
-  VIO_IO_EVENT_CONNECT
+  PVIO_IO_EVENT_READ,
+  PVIO_IO_EVENT_WRITE,
+  PVIO_IO_EVENT_CONNECT
 };
 
 enum enum_pvio_type {
@@ -56,26 +56,26 @@ enum enum_pvio_operation {
 };
 
 struct st_pvio_callback;
-
+struct st_mysql;
 typedef struct st_pvio_callback {
-  void (*callback)(MYSQL *mysql, uchar *buffer, size_t size);
+  void (*callback)(struct st_mysql *mysql, unsigned char *buffer, size_t size);
   struct st_pvio_callback *next;
 } PVIO_CALLBACK;
 
 struct st_ma_pvio {
   void *data;
   /* read ahead cache */
-  uchar *cache;
-  uchar *cache_pos;
+  unsigned char *cache;
+  unsigned char *cache_pos;
   size_t cache_size;
   enum enum_pvio_type type;
   int timeout[3];
   int ssl_type;  /* todo: change to enum (ssl plugins) */
   MARIADB_TLS *ctls;
-  MYSQL *mysql;
+  struct st_mysql *mysql;
   PVIO_METHODS *methods;
-  void (*set_error)(MYSQL *mysql, unsigned int error_nr, const char *sqlstate, const char *format, ...);
-  void (*callback)(MARIADB_PVIO *pvio, my_bool is_read, const char *buffer, size_t length);
+  void (*set_error)(struct st_mysql *mysql, unsigned int error_nr, const char *sqlstate, const char *format, ...);
+  void(*callback)(struct st_ma_pvio *pvio, char is_read, const char *buffer, size_t length);
 };
 
 typedef struct st_ma_pvio_cinfo
@@ -84,48 +84,48 @@ typedef struct st_ma_pvio_cinfo
   const char *unix_socket;
   int port;
   enum enum_pvio_type type;
-  MYSQL *mysql;
+  struct st_mysql *mysql;
 } MA_PVIO_CINFO;
 
 struct st_ma_pvio_methods
 {
-  my_bool (*set_timeout)(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout);
-  int (*get_timeout)(MARIADB_PVIO *pvio, enum enum_pvio_timeout type);
-  size_t (*read)(MARIADB_PVIO *pvio, uchar *buffer, size_t length);
-  size_t (*async_read)(MARIADB_PVIO *pvio, uchar *buffer, size_t length);
-  size_t (*write)(MARIADB_PVIO *pvio, const uchar *buffer, size_t length);
-  size_t (*async_write)(MARIADB_PVIO *pvio, const uchar *buffer, size_t length);
-  int (*wait_io_or_timeout)(MARIADB_PVIO *pvio, my_bool is_read, int timeout);
-  my_bool (*blocking)(MARIADB_PVIO *pvio, my_bool value, my_bool *old_value);
-  my_bool (*connect)(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo);
-  my_bool (*close)(MARIADB_PVIO *pvio);
-  int (*fast_send)(MARIADB_PVIO *pvio);
-  int (*keepalive)(MARIADB_PVIO *pvio);
-  my_bool (*get_handle)(MARIADB_PVIO *pvio, void *handle);
-  my_bool (*is_blocking)(MARIADB_PVIO *pvio);
-  my_bool (*is_alive)(MARIADB_PVIO *pvio);
-  my_bool (*has_data)(MARIADB_PVIO *pvio, ssize_t *data_len);
-  int(*shutdown)(MARIADB_PVIO *pvio);
+  char (*set_timeout)(struct st_ma_pvio *pvio, enum enum_pvio_timeout type, int timeout);
+  int (*get_timeout)(struct st_ma_pvio *pvio, enum enum_pvio_timeout type);
+  size_t (*read)(struct st_ma_pvio *pvio, unsigned char *buffer, size_t length);
+  size_t (*async_read)(struct st_ma_pvio *pvio, unsigned char *buffer, size_t length);
+  size_t (*write)(struct st_ma_pvio *pvio, const unsigned char *buffer, size_t length);
+  size_t (*async_write)(struct st_ma_pvio *pvio, const unsigned char *buffer, size_t length);
+  int (*wait_io_or_timeout)(struct st_ma_pvio *pvio, char is_read, int timeout);
+  char (*blocking)(struct st_ma_pvio *pvio, char value, char *old_value);
+  char (*connect)(struct st_ma_pvio *pvio, MA_PVIO_CINFO *cinfo);
+  char (*close)(struct st_ma_pvio *pvio);
+  int (*fast_send)(struct st_ma_pvio *pvio);
+  int (*keepalive)(struct st_ma_pvio *pvio);
+  char (*get_handle)(struct st_ma_pvio *pvio, void *handle);
+  char (*is_blocking)(struct st_ma_pvio *pvio);
+  char (*is_alive)(struct st_ma_pvio *pvio);
+  char (*has_data)(struct st_ma_pvio *pvio, size_t *data_len);
+  int(*shutdown)(struct st_ma_pvio *pvio);
 };
 
 /* Function prototypes */
-MARIADB_PVIO *ma_pvio_init(MA_PVIO_CINFO *cinfo);
-void ma_pvio_close(MARIADB_PVIO *pvio);
-size_t ma_pvio_cache_read(MARIADB_PVIO *pvio, uchar *buffer, size_t length);
-size_t ma_pvio_read(MARIADB_PVIO *pvio, uchar *buffer, size_t length);
-size_t ma_pvio_write(MARIADB_PVIO *pvio, const uchar *buffer, size_t length);
-int ma_pvio_get_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type);
-my_bool ma_pvio_set_timeout(MARIADB_PVIO *pvio, enum enum_pvio_timeout type, int timeout);
-int ma_pvio_fast_send(MARIADB_PVIO *pvio);
-int ma_pvio_keepalive(MARIADB_PVIO *pvio);
-my_socket ma_pvio_get_socket(MARIADB_PVIO *pvio);
-my_bool ma_pvio_is_blocking(MARIADB_PVIO *pvio);
-my_bool ma_pvio_blocking(MARIADB_PVIO *pvio, my_bool block, my_bool *previous_mode);
-my_bool ma_pvio_is_blocking(MARIADB_PVIO *pvio);
-int ma_pvio_wait_io_or_timeout(MARIADB_PVIO *pvio, my_bool is_read, int timeout);
-my_bool ma_pvio_connect(MARIADB_PVIO *pvio, MA_PVIO_CINFO *cinfo);
-my_bool ma_pvio_is_alive(MARIADB_PVIO *pvio);
-my_bool ma_pvio_get_handle(MARIADB_PVIO *pvio, void *handle);
-my_bool ma_pvio_has_data(MARIADB_PVIO *pvio, ssize_t *length);
+struct st_ma_pvio *ma_pvio_init(MA_PVIO_CINFO *cinfo);
+void ma_pvio_close(struct st_ma_pvio *pvio);
+size_t ma_pvio_cache_read(struct st_ma_pvio *pvio, unsigned char *buffer, size_t length);
+size_t ma_pvio_read(struct st_ma_pvio *pvio, unsigned char *buffer, size_t length);
+size_t ma_pvio_write(struct st_ma_pvio *pvio, const unsigned char *buffer, size_t length);
+int ma_pvio_get_timeout(struct st_ma_pvio *pvio, enum enum_pvio_timeout type);
+char ma_pvio_set_timeout(struct st_ma_pvio *pvio, enum enum_pvio_timeout type, int timeout);
+int ma_pvio_fast_send(struct st_ma_pvio *pvio);
+int ma_pvio_keepalive(struct st_ma_pvio *pvio);
+int ma_pvio_get_socket(struct st_ma_pvio *pvio);
+char ma_pvio_is_blocking(struct st_ma_pvio *pvio);
+char ma_pvio_blocking(struct st_ma_pvio *pvio, char block, char *previous_mode);
+char ma_pvio_is_blocking(struct st_ma_pvio *pvio);
+int ma_pvio_wait_io_or_timeout(struct st_ma_pvio *pvio, char is_read, int timeout);
+char ma_pvio_connect(struct st_ma_pvio *pvio, MA_PVIO_CINFO *cinfo);
+char ma_pvio_is_alive(struct st_ma_pvio *pvio);
+char ma_pvio_get_handle(struct st_ma_pvio *pvio, void *handle);
+char ma_pvio_has_data(struct st_ma_pvio *pvio, size_t *length);
 
 #endif /* _ma_pvio_h_ */
