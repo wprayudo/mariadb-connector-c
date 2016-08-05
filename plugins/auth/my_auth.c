@@ -421,7 +421,7 @@ static int client_mpvio_write_packet(struct st_plugin_vio *mpv,
   connection
 */
 
-void mpvio_info(MARIADB_PVIO *pvio, MYSQL_PLUGIN_VIO_INFO *info)
+static void ma_mpvio_info(MARIADB_PVIO *pvio, MYSQL_PLUGIN_VIO_INFO *info)
 {
   memset(info, 0, sizeof(*info));
   switch (pvio->type) {
@@ -468,7 +468,7 @@ static void client_mpvio_info(MYSQL_PLUGIN_VIO *vio,
                               MYSQL_PLUGIN_VIO_INFO *info)
 {
   MCPVIO_EXT *mpvio= (MCPVIO_EXT*)vio;
-  mpvio_info(mpvio->mysql->net.pvio, info);
+  ma_mpvio_info(mpvio->mysql->net.pvio, info);
 }
 
 /**

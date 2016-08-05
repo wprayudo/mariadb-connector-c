@@ -26,6 +26,29 @@
 #ifndef MYSQL_CLIENT_PLUGIN_INCLUDED
 #define MYSQL_CLIENT_PLUGIN_INCLUDED
 
+#ifdef MYSQL_PLUGIN_EXPORT
+#undef MYSQL_PLUGIN_EXPORT
+#endif
+
+/*
+  On Windows, exports from DLL need to be declared
+  Also, plugin needs to be declared as extern "C" because MSVC 
+  unlike other compilers, uses C++ mangling for variables not only
+  for functions.
+*/
+#if defined(_MSC_VER)
+  #ifdef __cplusplus
+    #define MYSQL_PLUGIN_EXPORT extern "C" __declspec(dllexport)
+  #else
+    #define MYSQL_PLUGIN_EXPORT __declspec(dllexport)
+  #endif
+#else /*_MSC_VER */
+  #ifdef __cplusplus
+    #define  MYSQL_PLUGIN_EXPORT extern "C"
+  #else
+    #define MYSQL_PLUGIN_EXPORT 
+  #endif
+#endif
 #ifndef MYSQL_ABI_CHECK
 #include <stdarg.h>
 #include <stdlib.h>
@@ -60,7 +83,7 @@
 #define MARIADB_CLIENT_MAX_PLUGINS             4
 
 #define mysql_declare_client_plugin(X)          \
-     struct st_mysql_client_plugin_ ## X        \
+     MYSQL_PLUGIN_EXPORT struct st_mysql_client_plugin_ ## X        \
         _mysql_client_plugin_declaration_ = {   \
           MYSQL_CLIENT_ ## X ## _PLUGIN,        \
           MYSQL_CLIENT_ ## X ## _PLUGIN_INTERFACE_VERSION,
