@@ -578,8 +578,6 @@ unsigned char *net_store_length(unsigned char *pkg, ulonglong length);
 char *octet2hex(char *to, const char *str, unsigned int len);
 ulong my_net_read_packet(NET *net, my_bool read_from_server);
 
-void create_random_string(char *to, unsigned int length,
-struct my_rnd_struct *rand_st);
 my_bool check_scramble_323(const unsigned char *reply, const char *message,
   unsigned long *salt);
 my_bool check_scramble(const unsigned char *reply, const char *message,
@@ -587,6 +585,7 @@ my_bool check_scramble(const unsigned char *reply, const char *message,
 const char *mysql_errno_to_sqlstate(uint mysql_errno);
 void get_salt_from_password_323(ulong *res, const char *password);
 void get_salt_from_password(uint8 *hash_stage2, const char *password);
+struct my_rnd_struct;
 void create_random_string(char *to, uint length, struct my_rnd_struct *rand_st);
 ulong STDCALL net_field_length(uchar **packet);
 my_ulonglong net_field_length_ll(uchar **packet);
