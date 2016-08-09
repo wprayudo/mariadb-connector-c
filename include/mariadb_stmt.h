@@ -57,7 +57,9 @@ enum enum_stmt_attr_type
   STMT_ATTR_UPDATE_MAX_LENGTH,
   STMT_ATTR_CURSOR_TYPE,
   STMT_ATTR_PREFETCH_ROWS,
-  STMT_ATTR_PREBIND_PARAMS=200
+  STMT_ATTR_PREBIND_PARAMS=200,
+  STMT_ATTR_ARRAY_SIZE,
+  STMT_ATTR_ROW_SIZE
 };
 
 
@@ -67,6 +69,15 @@ enum enum_cursor_type
   CURSOR_TYPE_READ_ONLY= 1,
   CURSOR_TYPE_FOR_UPDATE= 2,
   CURSOR_TYPE_SCROLLABLE= 4
+};
+
+enum enum_indicator_type
+{
+  STMT_INDICATOR_NTS=-1,
+  STMT_INDICATOR_NONE=0,
+  STMT_INDICATOR_NULL=1,
+  STMT_INDICATOR_DEFAULT=2,
+  STMT_INDICATOR_IGNORE=3
 };
 
 typedef enum mysql_stmt_state
@@ -97,7 +108,12 @@ typedef struct st_mysql_bind
           unsigned char **row);
   /* output buffer length, must be set when fetching str/binary */
   unsigned long  buffer_length;
-  unsigned long  offset;           /* offset position for char/binary fetch */
+  union {
+    unsigned long  offset;           /* offset position for char/binary fetch */
+    struct {
+      unsigned char *indicator;
+    };
+  } u;
   unsigned long  length_value;     /* Used if length is 0 */
   unsigned int   flags;            /* special flags, e.g. for dummy bind  */
   unsigned int   pack_length;      /* Internal length for packed data */
@@ -207,6 +223,8 @@ struct st_mysql_stmt
   unsigned int             execute_count;/* count how many times the stmt was executed */
   mysql_stmt_use_or_store_func default_rset_handler;
   struct st_mysqlnd_stmt_methods  *m;
+  unsigned int             array_size;
+  size_t row_size;
 };
 
 typedef void (*ps_field_fetch_func)(MYSQL_BIND *r_param, const MYSQL_FIELD * field, unsigned char **row);

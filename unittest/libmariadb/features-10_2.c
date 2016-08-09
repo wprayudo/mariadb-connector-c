@@ -61,7 +61,7 @@ static int com_multi_1(MYSQL *mysql)
   rc= mysql_query(mysql, "select 1");
   check_mysql_rc(rc, mysql);
   res= mysql_store_result(mysql);
-  FAIL_UNLESS(res, "2 simple query no result");
+  FAIL_UNLESS(res != NULL, "2 simple query no result");
   mysql_free_result(res);
 
   /* question: how will result sets look like ? */
@@ -77,6 +77,7 @@ static int com_multi_1(MYSQL *mysql)
 static int com_multi_2(MYSQL *mysql)
 {
   int rc;
+  unsigned int i, j;
   enum mariadb_com_multi status;
 
 
@@ -87,7 +88,7 @@ static int com_multi_2(MYSQL *mysql)
 
   /* TEST COM_MULTI */
 
-  for (uint i= 0; i < repeat2; i++)
+  for (i= 0; i < repeat2; i++)
   {
     status= MARIADB_COM_MULTI_BEGIN;
     if (mysql_options(mysql, MARIADB_OPT_COM_MULTI, &status))
@@ -97,7 +98,7 @@ static int com_multi_2(MYSQL *mysql)
       return SKIP;
     }
 
-    for (uint j= 0; j < repeat1; j++)
+    for (j= 0; j < repeat1; j++)
     {
       rc= mysql_query(mysql, "insert into t1 values (1)");
       rc= mysql_query(mysql, "insert into t1 values (2)");
@@ -107,7 +108,7 @@ static int com_multi_2(MYSQL *mysql)
     status= MARIADB_COM_MULTI_END;
     rc= mysql_options(mysql, MARIADB_OPT_COM_MULTI, &status);
 
-    for (uint j= 0; j < repeat1; j++)
+    for (j= 0; j < repeat1; j++)
     {
       /* 1 INSERT */
       check_mysql_rc(rc, mysql);
@@ -211,9 +212,12 @@ static int com_multi_ps2(MYSQL *mysql)
   return OK;
 }
 
+
+
 static int execute_direct(MYSQL *mysql)
 {
-  long rc= 0, i= 0;
+  int rc= 0;
+  long i= 0;
   MYSQL_STMT *stmt;
   MYSQL_BIND bind;
   unsigned int param_count= 1;
@@ -261,12 +265,53 @@ static int execute_direct(MYSQL *mysql)
   return OK;
 }
 
+static int execute_direct_example(MYSQL *mysql)
+{
+  MYSQL_STMT *stmt= mysql_stmt_init(mysql);
+  MYSQL_BIND bind[2];
+  int intval= 1;
+  int param_count= 2;
+  char *strval= "execute_direct_example";
+
+  /* Direct execution without parameters */
+  if (mariadb_stmt_execute_direct(stmt, "DROP TABLE IF EXISTS execute_direct", -1))
+    goto error;
+  if (mariadb_stmt_execute_direct(stmt, "CREATE TABLE execute_direct (a int, b varchar(20))", -1))
+    goto error;
+
+  memset(bind, 0, sizeof(MYSQL_BIND) * 2);
+  bind[0].buffer_type= MYSQL_TYPE_SHORT;
+  bind[0].buffer= &intval;
+  bind[1].buffer_type= MYSQL_TYPE_STRING;
+  bind[1].buffer= strval;
+  bind[1].buffer_length= strlen(strval);
+
+  /* set number of parameters */
+  if (mysql_stmt_attr_set(stmt, STMT_ATTR_PREBIND_PARAMS, &param_count))
+    goto error;
+
+  /* bind parameters */
+  if (mysql_stmt_bind_param(stmt, bind))
+    goto error;
+
+  if (mariadb_stmt_execute_direct(stmt, "INSERT INTO execute_direct VALUES (?,?)", -1))
+    goto error;
+
+  mysql_stmt_close(stmt);
+  return OK;
+error:
+  printf("Error: %s\n", mysql_stmt_error(stmt));
+  mysql_stmt_close(stmt);
+  return FAIL;
+}
+
 struct my_tests_st my_tests[] = {
   {"com_multi_1", com_multi_1, TEST_CONNECTION_NEW, 0,  NULL,  NULL},
   {"com_multi_2", com_multi_2, TEST_CONNECTION_NEW, 0,  NULL,  NULL},
   {"com_multi_ps1", com_multi_ps1, TEST_CONNECTION_NEW, 0,  NULL,  NULL},
   {"com_multi_ps2", com_multi_ps2, TEST_CONNECTION_NEW, 0,  NULL,  NULL},
   {"execute_direct", execute_direct, TEST_CONNECTION_DEFAULT, 0,  NULL,  NULL},
+  {"execute_direct_example", execute_direct_example, TEST_CONNECTION_DEFAULT, 0,  NULL,  NULL},
   {NULL, NULL, 0, 0, NULL, NULL}
 };
 
